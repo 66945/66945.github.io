@@ -1,0 +1,122 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+	background-color: #DDCAB8;
+	color: #462A13;
+}
+h1 {
+    font-family: "Courier new";
+	text-align: center;
+	border-left: 6px solid #462A13;
+	border-right: 6px solid #462A13;
+	background-color: #835D3B;
+	color: #462A13;
+}
+ul {
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #9C7451;
+}
+
+ul li {
+    float: left;
+}
+
+ul li a {
+    display: block;
+    color: #462A13;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ul li a:hover {
+	background-color: #835D3B;
+	color: #DDCAB8;
+}
+
+input[type=text]{
+	font-family: "Courier new";
+	width: 25%;
+	background-color: #DDCAB8;
+	border: none;
+	border-bottom: 2px solid #462A13;
+	margin: 8px 0;
+	padding: 12px 20px;
+}
+
+input[type=text]:focus {
+  background-color: AC8664;
+  width: 50%;
+}
+
+input[type=text]:hover {
+	animation-name: lengthen;
+	animation-duration: 1s;
+	background-color: #AC8664;
+	width: 50%;
+}
+
+@keyframes lengthen {
+	from {width: 25%; background-color: #DDCAB8;}
+	to {width: 50%; background-color: #AC8664;}
+}
+       
+.link {
+	text-decoration: none;
+	color: #462A13;
+	border-left: 6px solid #462A13;
+}
+
+.link:hover {
+	text-decoration: none;
+	color: black;
+	background-color: #AC8664;
+	border-left: 6px solid #835D3B;
+}
+
+.current {
+	background-color: #462A13;
+	color: #DDCAB8;
+}
+
+.current:hover {
+	background-color: #462A13;
+	color: #DDCAB8;
+}
+
+.right {
+	float:right;
+}
+
+.drop {
+    position: relative;
+    display: inline-block;
+}
+
+.dropcontent {
+    display: none;
+    position: absolute;
+    background-color: black;
+    min-width: 160px;
+    box-shadow: 0px 80px 160px 0px rgba(100,0,0,0.2 );
+    z-index: 1;
+}
+
+.drop:hover .dropcontent {
+    display: block;
+}
+
+.hackbutton{
+    border: red;
+    color: black;
+    background-color: #990000;
+    padding: 15px 32px;
+    border-radius: 10px
+}
+
+.hackbutton:hover{
+    background-color: #ff0000;
+}
