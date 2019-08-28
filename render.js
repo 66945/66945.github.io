@@ -164,6 +164,15 @@ function line(x1, y1, x2, y2){
 	ctx.closePath();
 }
 
+function setFont(font){
+	ctx.font = font;
+}
+
+function text(x, y, text){
+	ctx.textAlign = "center";
+	ctx.fillText(text, x, y);
+}
+
 function polygon(points){
 	ctx.beginPath();
 	for(var i = 0; i < points.length; i++){
