@@ -9,13 +9,20 @@ p {
 	font-size: 20px;
 }
 
+.par {
+	margin: auto;
+	max-width: 1000px;
+	padding-top: 20px;
+	font-size: 20px;
+}
+
 h1 {
     font-family: "Courier new";
 	text-align: center;
 	border-left: 6px solid #462A13;
 	border-right: 6px solid #462A13;
 	background-color: #835D3B;
-	color: #462A13;
+	color: #DDCAB8;
 }
 
 ul {
