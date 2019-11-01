@@ -25,6 +25,12 @@ h1 {
 	color: #DDCAB8;
 }
 
+h2 {
+    font-family: "Courier new";
+	text-align: center;
+	border-bottom: 6px solid #462A13;
+}
+
 ul {
 	list-style-type: none;
     margin: 0;
