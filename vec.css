@@ -51,7 +51,3 @@ textarea:hover{
 	box-sizing: border-box;
 	box-shadow: 0px 0px 0px grey;
 }
-
-.graph:hover{
-	box-shadow: 10px 10px 10px;
-}
