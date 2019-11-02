@@ -1,11 +1,20 @@
-dir = 1;
+let dir;
 
-x = 80;
-deg = 0;
+let x;
+let deg;
 
 function start(){
+	//Setup the animation
+	dir = 1;
+
+	x = 80;
+	deg = 0;
+
 	setCanvas(500, 200);
 	setFont("50px Courier new");
+
+	//setup the projects
+	loadProjects();
 }
 
 function draw(){
