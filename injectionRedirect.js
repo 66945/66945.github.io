@@ -1,6 +1,10 @@
 const NINEPM = 18;
 
-let date = new Date();
+redirect();
 
-if(date.getHours() >= NINEPM)
-    location.replace("https://google.com/search?q=cats");
+function redirect() {
+    let date = new Date();
+
+    if(date.getHours() >= NINEPM)
+        location.replace("https://google.com/search?q=cats");
+}
