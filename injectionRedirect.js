@@ -5,6 +5,8 @@ function redirect() {
 
     if(date.getHours() >= NINEPM)
         location.replace("https://google.com/search?q=cats");
+    else
+        alert("Welcome to FCHS");
 }
 
 redirect();
