@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <style>
+            body {
+                --main-bg-color: /*#dbdbdb*/#292929;
+                --num-bg-color: /*#c5c5c5*/#3a3a3a;
+                --num-bg-light-color: /*#b7b9c7*/#3a3a3a;
+                --num-text-color: /*#000000*/#818181;
+                --main-bg-active-color: /*#a8f5ff*/#5a5a5a;
+
+                --tag-text-color: /*#2f33ff*/#ff0062;
+
+                background-color: var(--main-bg-color);
+
+                font-family: monospace;
+                font-size: 16px;
+
+                color: /*black*/white;
+            }
+
+            ol {
+                background-color: var(--num-bg-color);
+
+                padding-left: 20px;
+
+                counter-reset: list;
+            }
+
+            ol li {
+                background-color: var(--main-bg-color);
+
+                counter-increment: list;
+                list-style-type: none;
+                position: relative;
+            }
+
+            ol li:nth-child(odd) {
+                background-color: var(--num-bg-light-color);
+            }
+
+            ol li::before {
+                background-color: var(--num-bg-color);
+                color: var(--num-text-color);
+
+                content: counter(list);
+                padding-right: 10px;
+                text-align: right;
+            }
+
+            .active {
+                background-color: var(--main-bg-active-color);
+            }
+
+            .tag {
+                color: var(--tag-text-color);
+
+                font-weight: bold;
+                font-style: italic;
+            }
+        </style>
+    </head>
+
+    <body>
+        <ol id="code"></ol>
+
+        <script>
+            let code = [
+                '<!DOCTYPE html>',
+                '<html>',
+                '<head>',
+                '<title>My Webpage</title>',
+                '</head>',
+                '',
+                '<body>',
+                '<h1>Hello World</h1>',
+                '</body>',
+                '</html>'
+            ];
+
+            for(let i = 0; i < code.length; i++) {
+                let line = '';
+
+                for(let j = 0; j < code[i].length; j++) {
+                    switch(code[i].charAt(j)) {
+                        case '<':
+                            if(code[i].charAt(j + 1) == '/') {
+                                line += '&lt;/<span class=\"tag\">';
+                                j++;
+                            } else {
+                                line += '&lt;<span class=\"tag\">';
+                            }
+                            break;
+                        case '>':
+                            line += '</span>&gt;';
+                            break;
+                        default:
+                            line += code[i].charAt(j);
+                    }
+                }
+
+                $('#code').append('<li>' + line + '</li>');
+            }
+
+            $(document).ready(function() {
+                $('li').hover(
+                    function() {
+                        $(this).addClass('active');
+                    },
+                    function() {
+                        $(this).removeClass('active');
+                    }
+                );
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,1 @@
+javascript:(function(){var head = document.head;var headString = head.innerHTML;headString = headString.replace(/http/g, "https");head.innerHTML = headString;})()

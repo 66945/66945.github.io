@@ -138,16 +138,12 @@ input[type=password]:hover {
 }
 
 .dropcontent {
-    display: none;
+    display: block;
     position: absolute;
     background-color: black;
     min-width: 160px;
     box-shadow: 0px 80px 160px 0px rgba(100,0,0,0.2 );
     z-index: 1;
-}
-
-.drop:hover .dropcontent {
-    display: block;
 }
 
 .button{

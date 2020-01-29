@@ -1,38 +1,63 @@
 <html>
-<head>
-<link href="Moocss.css" rel="stylesheet" type="text/css">
-<title>MOO something</title>
-<center>
-<h1>66945 Web</h1>
-</center>
-<ul>
-<li><a href="index.html">Home</a></li>
-<li><a href="admin.html">Admin</a></li>
-<li class="right"><a href="info.html">Info</a></li>
-</ul>
-</head>
-<br>
-<div class="par">
-<p>
-text <a class="link">link</a>
-</p>
+    <head>
+        <link href="Moocss.css" rel="stylesheet" type="text/css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/addons/p5.dom.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/addons/p5.sound.min.js"></script>
+        <script>
+            let videoShowing = false;
 
-<br>
+            $(document).ready(function() {
+                $('.dropcontent').hide();
 
-<div class="drop">
-    <img src="thumb.png" width="108" height="72">
-    <div class="dropcontent">
-        <video width="640" height="480" controls src="geo.mp4" type="video/mp4"></video>
-    </div>
-</div>
+                $('img[src="thumb.png"]').on('click', function() {
+                    if(videoShowing)
+                        $('.dropcontent').hide();
+                    else
+                        $('.dropcontent').show();
 
-<br>
-<input type="text" placeholder="Text input"></input>
-<br>
-<button class="button">Button</button>
-<br>
-<button class="hackbutton">Emergency</button>
-<br>
-moo
-</div>
+                    videoShowing = !videoShowing;
+                });
+            });
+        </script>
+        <title>MOO something</title>
+
+        <center>
+            <h1>66945 Web</h1>
+        </center>
+
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="admin.html">Admin</a></li>
+            <li class="right"><a href="info.html">Info</a></li>
+        </ul>
+    </head>
+
+    <body>
+        <br>
+        <div class="par">
+            <p>
+                text <a class="link">link</a>
+            </p>
+        
+            <br>
+        
+            <div class="drop">
+                <img src="thumb.png" width="108" height="72">
+                <div class="dropcontent">
+                    <video width="640" height="480" controls src="geo.mp4" type="video/mp4"></video>
+                </div>
+            </div>
+        
+            <br>
+            <input type="text" placeholder="Text input"></input>
+            <br>
+            <button class="button">Button</button>
+            <br>
+            <button class="hackbutton">Emergency</button>
+            <br>
+            moo
+        </div>
+    </body>
 </html>

@@ -1,14 +1,19 @@
+//For when I move on to the Google sheets api:
+//My access token is ya29.Il-vB0IRiAppkVpR9LejCdHbXfZHMZL1Y-qbLSqAy9zWtAf_BXphegQVaUfhlv7M8ecPdsWAKLBCZqo6iOGcKBf0kDOi_pbYqjqKrWaaadjqpXS4AhVenNud7yLphCt0TQ
+
 //============================================================//
 //                                                            //
 //              These are the actual projects                 //
 //              They are stored in the format:                //
-//[[name, description, [links]], [name, description, link]]//
+//[[name, [descriptions], link], [name, [descriptions], link]]//
 //                                                            //
 //============================================================//
 const projects = [
     [
         "Vector Translate",
-        ["a program I created that allows you to transform equations and polygons automatically."],
+        [
+            "a program I created that allows you to transform equations and polygons automatically."
+        ],
         "vec.html"
     ],
     [
@@ -29,11 +34,6 @@ const projects = [
     ]
 ];
 
-//============================================================//
-//                                                            //
-//          The actual code for loading the projects          //
-//                                                            //
-//============================================================//
 let projectDiv = document.getElementById("projects");
 
 function addProject(project) {

@@ -1,12 +1,15 @@
-//Variables
-var canvas = document.getElementById("canvas");
-var PI = Math.PI;
-var TAU = 2 * Math.PI;
-var FILL = true;
-var NOFILL = false;
+//constants
+const PI = Math.PI;
+const TAU = 2 * Math.PI;
+const FILL = true;
+const NOFILL = false;
 
-var width = 0;
-var height = 0;
+//variables
+let canvas = document.getElementById("canvas");
+
+let width = 0;
+let height = 0;
+
 //Math
 function degToRad(deg){
 	return deg * Math.PI / 180;
@@ -21,28 +24,36 @@ function map(value, oldScale, newScale){
 }
 
 function random(min, max){
-  return Math.floor(Math.random()*(max-min+1)+min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function dist(x1, y1, x2, y2){
-	var newX = (x1 - x2) * (x1 - x2);
-	var newY = (y1 - y2) * (y1 - y2);
+	let newX = (x1 - x2) * (x1 - x2);
+	let newY = (y1 - y2) * (y1 - y2);
 	
 	return Math.sqrt(newX + newY);
 }
 
-function Vector(x, y){
-	this.x = x;
-	this.y = y;
-	
-	this.addVector = function(v2){
-		this.x += v2.x;
-		this.y += v2.y;
+class Vector {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
 	}
 }
+
+Vector.prototype.addVector = function(v2) {
+	this.x += v2.x;
+	this.y += v2.y;
+};
+
+Vector.prototype.subVector = function(v2) {
+	this.x -= v2.x;
+	this.y -= v2.y;
+};
+
 //RegEx
 function getMatch(regex, text){
-	var matches = [];
+	let matches = [];
 	
 	while(regex.test(text)){
 		matches.push(regex.exec(text)[1]);
@@ -52,9 +63,10 @@ function getMatch(regex, text){
 	}
 	return matches;
 }
+
 //Mouse Control
-var mouseX = 0;
-var mouseY = 0;
+let mouseX = 0;
+let mouseY = 0;
 
 function getCordinates(mouseEvent){
 	mouseX = mouseEvent.screenX;
@@ -62,9 +74,10 @@ function getCordinates(mouseEvent){
 }
 
 canvas.onmousemove = getCordinates;
+
 //Rendering - Canvas
-var ctx = canvas.getContext("2d");
-var framerate;
+let ctx = canvas.getContext("2d");
+let framerate;
 
 function main(){
 	start();
@@ -175,7 +188,7 @@ function text(x, y, text){
 
 function polygon(points){
 	ctx.beginPath();
-	for(var i = 0; i < points.length; i++){
+	for(let i = 0; i < points.length; i++){
 		ctx.lineTo(points[i].x, points[i].y);
 		ctx.moveTo(points[i].x, points[i].y);
 	}
@@ -189,16 +202,16 @@ function polygon(points){
 
 //Time
 function currentSec(){
-	var now = new Date();
+	let now = new Date();
 	return now.getSeconds();
 }
 
 function currentMin(){
-	var now = new Date();
+	let now = new Date();
 	return now.getMinutes();
 }
 
 function currentHour(){
-	var now = new Date();
+	let now = new Date();
 	return now.getHours();
 }
