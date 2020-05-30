@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #bbbbbb;
+    font-family: Calibri;
+    color: rgb(2, 2, 68);
+}
+
+hr {
+    border: 1px solid white;
+}
+
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    text-align: center;
+
+    width: 100%;
+    padding-left: 20pt;
+    padding-right: 20pt;
+
+    padding-top: 10pt;
+    padding-bottom: 10pt;
+
+    background-color: rgb(2, 2, 68);
+    background-size: 100%;
+}
+
+.nav .bankname {
+    font-size: 50pt;
+    font-family: 'Bebas Neue', cursive;
+    /*font-weight: bolder;*/
+    color: white;
+}
+
+.nav a {
+    padding: 10pt;
+
+    font-size: 15pt;
+    text-decoration: none;
+
+    color: white;
+}
+
+.nav a:hover {
+    text-decoration: underline;
+}
+
+/* .search {
+    margin-bottom: 10pt;
+}
+
+.search input{
+    padding: 5pt;
+    border: 0;
+
+    width: 50%;
+
+    font-size: 10pt;
+
+    background-color: rgba(255, 255, 255, 0.5);
+    
+    color: white;
+}
+
+.search input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ *
+    color: white;
+    opacity: 1; /* Firefox *
+}
+  
+.search input:-ms-input-placeholder { /* Internet Explorer 10-11 *
+    color: white;
+}
+  
+.search input::-ms-input-placeholder { /* Microsoft Edge *
+    color: white;
+}
+
+.search input:focus {
+    border: 1px solid white;
+    outline: none;
+} */
+
+.content {
+    padding-top: 140pt;
+    padding-bottom: 140pt;
+    margin: auto;
+    width: 80%;
+
+    text-align: center;
+}
+
+.login {
+    margin: auto;
+    width: 300pt;
+
+    text-align: start;
+
+    padding-left: 50pt;
+    padding-right: 50pt;
+
+    padding-top: 20pt;
+    padding-bottom: 50pt;
+
+    border-radius: 20pt;
+
+    background-color: white;
+}
+
+input, select {
+    padding: 10pt;
+    width: 100%;
+
+    font-size: 20pt;
+
+    border-top: 0;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid gray;
+}
+
+input, select:focus {
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding-top: 10pt;
+    padding-bottom: 10pt;
+
+    margin-top: 5pt;
+    margin-bottom: 5pt;
+
+    border: none;
+    border-radius: 5pt;
+
+    background-color: rgb(2, 2, 68);
+    color: white;
+
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: rgb(34, 34, 100);
+}
+
+button:focus {
+    outline: none;
+}
+
+#errorMsg {
+    color: red;
+}
+
+.section {
+    margin-top: 20pt;
+    margin-bottom: 20pt;
+
+    /* border: 2pt solid white;
+    background-color: #555555;
+    color: white; */
+}
+
+.section h1 {
+    font-size: 40pt;
+}
+
+.rickroll {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.rickroll div {
+    margin: 10pt;
+    padding: 20pt;
+
+    border-radius: 10pt;
+
+    font-size: 20pt;
+
+    background-color: #dddddd;
+    color: #999999;
+}
+
+.rickroll div hr {
+    border-color: #999999;
+}
+
+.rickroll div p {
+    font-size: 15pt;
+}
+
+.rickroll div button {
+    width: 80%;
+    padding-top: 5pt;
+    padding-bottom: 5pt;
+    border: none;
+    border-radius: 5pt;
+
+    background-color: rgb(67, 67, 161);
+    color: white;
+
+    font-size: 15pt;
+}
+
+.rickroll div button:hover {
+    background-color: rgb(116, 116, 177);
+}
+
+.rickroll div button:focus {
+    outline: none;
+}
+
+.overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    text-align: center;
+
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.overlay div {
+    margin: auto;
+    margin-top: 100pt;
+
+    padding: 50pt;
+
+    width: 40%;
+
+    border-radius: 20pt;
+
+    background-color: white;
+}
+
+.accounts h1 {
+    text-align: start;
+    font-size: 30pt;
+}
+
+.accounts button {
+    width: 40%;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: rgb(2, 2, 68);
+    color: white;
+}
+
+th {
+    padding: 10pt;
+    font-size: 20pt;
+}
+
+td {
+    padding: 10pt;
+    font-size: 15pt;
+}
+
+footer {
+    padding: 0;
+    margin: 0;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    background-color: grey;
+    color: white;
+
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    text-align: center;
+}

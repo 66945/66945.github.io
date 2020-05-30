@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Remmacs International Banking</title>
+        <link href="style.css" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div id="inspect">
+            <div class="nav">
+                <span class="bankname">Remmacs International Banking</span>
+                <p>
+                    <a href="#">Home</a>
+                    <a href="#">Personal</a>
+                    <a href="#">Buisiness</a>
+                    <a href="#">Credit Cards</a>
+                    <a href="#">Loans</a>
+                    <a href="#">Contact</a>
+                    <a href="index.html">Log Out</a>
+                </p>
+            </div>
+
+            <div class="content">
+                <div class="accounts">
+                    <h1>Accounts:</h1>
+                    <table id="accountTable">
+                        <tr>
+                            <th>Type</th>
+                            <th>Account Number</th>
+                            <th>Current Balance</th>
+                        </tr>
+                    </table>
+
+                    <button id="transfer">Transfer Funds</button>
+
+                    <br>
+
+                    <h1>Transactions:</h1>
+                    <table id="transactionTable">
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <footer>
+                Copyright &copy; Remmacs International Banking&trade; all rights reserved.
+            </footer>
+        </div>
+        <div class="overlay" id="error">
+            <div>
+                <h1>Warning: Suspicious activity has been detected on this account.</h1>
+                <p>Please answer the following question:</p>
+                <h2 id="question">What is this question?</h2>
+                <br>
+                <input id="answer" type="text" placeholder="Answer">
+                <br>
+                <button id="submit">Submit</button>
+                <p id="errorMsg">Incorrect response entered.</p>
+            </div>
+        </div>
+        <div class="overlay" id="transferDialog">
+            <div>
+                <h1>Transfer funds between accounts</h1>
+                <p>Please fill out the entire form:</p>
+                <h2>From account:</h2>
+                <br>
+                <select id="fromSelect"></select>
+                <h2>To account</h2>
+                <select id="toSelect"></select>
+                <h2>Amount</h2>
+                <br>
+                <input id="amount" type="text" placeholder="$00.00">
+                <br>
+                <button id="submitTransfer">Complete Transfer</button>
+            </div>
+        </div>
+        
+        <!-- jQuery import -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Account Manager -->
+        <script src="account.js"></script>
+
+        <!-- Inspect detector -->
+        <script src="debug.js"></script>
+        <script src="inspect.js"></script>
+    </body>
+</html>
