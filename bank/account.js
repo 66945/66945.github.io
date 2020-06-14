@@ -11,7 +11,8 @@ const descriptions = [
     "Netflix",
     "Amazon Delivery",
     "Student Loans",
-    "YouTube Premium"
+    "YouTube Premium",
+    "WinRar"
 ];
 
 let accounts = [];
@@ -40,6 +41,8 @@ function generateTransaction(description) {
     let transaction = [];
 
     transaction.push(randomDate(new Date(2020, 0, 1), new Date()).toDateString());
+
+    transaction.push(accounts[Math.floor(Math.random() * accounts.length)][1]);
 
     transaction.push(description);
     
@@ -105,31 +108,37 @@ $("#submitTransfer").click(function() {
     let from = $("#fromSelect").val();
     let to = $("#toSelect").val();
 
-    let transferAmount = parseFloat($("#amount").val());
+    if(from !== to) {
+        let transferAmount = parseFloat($("#amount").val());
 
-    let fromNum = accountNames.indexOf(from);
-    let toNum = accountNames.indexOf(to);
+        let fromNum = accountNames.indexOf(from);
+        let toNum = accountNames.indexOf(to);
 
-    let fromAmount = accounts[fromNum][2];
-    fromAmount = fromAmount.replace(/[\$,]/g, "");
-    fromAmount = parseFloat(fromAmount);
+        let fromAmount = accounts[fromNum][2];
+        fromAmount = fromAmount.replace(/[\$,]/g, "");
+        fromAmount = parseFloat(fromAmount);
 
-    let toAmount = accounts[toNum][2];
-    toAmount = toAmount.replace(/[\$,]/g, "");
-    toAmount = parseFloat(toAmount);
+        let toAmount = accounts[toNum][2];
+        toAmount = toAmount.replace(/[\$,]/g, "");
+        toAmount = parseFloat(toAmount);
 
-    let fromTotal = fromAmount - transferAmount;
-    let toTotal = toAmount + transferAmount;
+        let fromTotal = fromAmount - transferAmount;
+        let toTotal = toAmount + transferAmount;
 
-    console.log("from: " + fromTotal + " to: " + toTotal);
+        console.log("from: " + fromTotal + " to: " + toTotal);
 
-    accounts[fromNum][2] = "$" + fromTotal.toFixed(2);
-    accounts[toNum][2] = "$" + toTotal.toFixed(2);
+        accounts[fromNum][2] = "$" + fromTotal.toFixed(2);
+        accounts[toNum][2] = "$" + toTotal.toFixed(2);
 
-    freezeTest();
-    $("#" + from.replace(/[\s\.\#]/g, "") + " .2").html(accounts[fromNum][2]);
-    $("#" + to.replace(/[\s\.\#]/g, "") + " .2").html(accounts[toNum][2]);
-    unfreezeTest();
+        freezeTest();
+        $("#" + from.replace(/[\s\.\#]/g, "") + " .2").html(accounts[fromNum][2]);
+        $("#" + to.replace(/[\s\.\#]/g, "") + " .2").html(accounts[toNum][2]);
+        unfreezeTest();
+    }
 
     $("#transferDialog").hide();
+});
+
+$("#contactImg").click(function() {
+    $("#contact").html("<iframe src=\"messenger.html\"></iframe>");
 });

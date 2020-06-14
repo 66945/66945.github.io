@@ -1,0 +1,98 @@
+body {
+    text-align: center;
+    font-family: Calibri;
+    font-size: 15pt;
+
+    overflow: hidden;
+
+    background-color: white;
+}
+
+#msgs {
+    padding-bottom: 50pt;
+}
+
+.response {
+    margin-right: 20%;
+
+    left: 0;
+
+    padding: 10pt;
+    border-radius: 20pt 20pt 20pt 0pt;
+
+    background-color: rgb(2, 2, 68);
+    color: white;
+
+    animation: response 0.5s;
+}
+
+@keyframes response {
+    /*from {margin-right: 100%; font-size: 0pt; opacity: 0.0;}
+    to {margin-right: 20%; font-size: 15pt; opacity: 1.0;}*/
+
+    from {transform: scale(0); opacity: 0.0;}
+    to {transform: scale(1); opacity: 1.0;}
+}
+
+.question {
+    margin-left: 20%;
+
+    padding: 10pt;
+    border-radius: 20pt 20pt 0pt 20pt;
+
+    background-color: lightgray;
+
+    animation: question 0.5s;
+}
+
+@keyframes question {
+    /*from {margin-left: 100%; font-size: 0pt; opacity: 0.0;}
+    to {margin-left: 20%; font-size: 15pt; opacity: 1.0;}*/
+
+    from {transform: scale(0); opacity: 0.0;}
+    to {transform: scale(1); opacity: 1.0;}
+}
+
+.text {
+    display: flex;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    margin-left: 5%;
+    margin-right: 5%;
+
+    margin-bottom: 15pt;
+
+    width: 90%;
+    /* background-color: blue; */
+}
+
+input {
+    /* width: 90%;
+    height: 35pt; */
+    padding: 10pt;
+    width: 100%;
+
+    font-size: 20pt;
+
+    border-top: 0;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid gray;
+}
+
+input:focus {
+    outline: none;
+}
+
+img {
+    min-width: 30pt;
+    height: 30pt;
+
+    padding: 5pt;
+
+    filter: invert(7%) sepia(35%) saturate(6491%) hue-rotate(237deg) brightness(92%) contrast(118%);
+}

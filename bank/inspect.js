@@ -3,7 +3,8 @@ const authQuestions = [
     ["What is your date of birth?", "MM / DD / YYYY", "08 / 20 / 1943"],
     ["What is your anniversary date?", "MM / DD", "12 / 05"],
     ["What is your mothers maiden name?", "Last Name", "Floondis"],
-    ["What is your favorite book?", "Book Title", "The secret adversary"]
+    ["What is your favorite book?", "Book Title", "The secret adversary"],
+    ["What is your daughters date of birth?", "MM / DD / YYYY", "11 / 31 / 1980"]
 ];
 
 let unedited = $("#inspect").html();
@@ -23,10 +24,10 @@ function unfreezeTest() {
 
 function testEdit() {
     if(!frozen && $("#inspect").html() != unedited) {
-        debugWarning();
         $("#inspect").html(unedited);
+        debugWarning();
 
-        setTimeout(scamWarning, 1000);
+        setTimeout(scamWarning, 2000);
     }
 
     if(!frozen) {
@@ -65,7 +66,7 @@ $("#submit").click(function() {
         $("#error").hide();
     } else {
         $("#errorMsg").show();
-        setTimeout(reload, 3000);
+        setTimeout(reload, 1000);
     }
 });
 
