@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $(".question > p").append(" <img src=\"/imgs/chevron.png\">");
+    $(".question > p").append(" <img src=\"https://66945.github.io/Health/imgs/chevron.png\">");
     // $(".question > .answer").hide();
     $(this).find(".answer").addClass("closed");
 
