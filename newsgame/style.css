@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background-color: #1b1336;
+    font-family: 'Abril Fatface', cursive;
+}
+
+.banner {
+    width: 100%;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    text-align: center;
+
+    background-color: #0000005d;
+
+    font-size: 2em;
+    color: white;
+}
+
+#headlineDiv {
+    height: 65%;
+
+    display: grid;
+    place-items: center;
+
+    text-align: center;
+    color: white;
+}
+
+#headline {
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 0;
+    padding: 5%;
+
+    font-size: 3em;
+
+    border: 2px solid white;
+
+    animation: grow 1s;
+}
+
+@keyframes grow {
+    from {opacity: 0; transform: scale(0.5);}
+    to {opacity: 1; transform: scale(1);}
+}
+
+#buttons {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: center;
+    height: 35%;
+}
+
+.button {
+    height: 100%;
+    width: 20%;
+
+    margin-right: 10pt;
+    margin-left: 10pt;
+
+    border-radius: 20pt;
+
+    display: grid;
+    place-items: center;
+
+    transition: transform 100ms ease-in-out;
+}
+
+.button:hover {
+    filter: brightness(1.5);
+    cursor: pointer;
+
+    transform: translateY(-10pt);
+}
+
+.button img {
+    height: 40%;
+    max-width: 100%;
+}
+
+#cnn {
+    background-color: #cc0000;
+}
+
+#fox {
+    background-color: #003366;
+}
+
+#times {
+    background-color: #252525;
+}
+
+#onion {
+    background-color: #088f53;
+}
+
+#false {
+    color: red;
+
+    font-size: 200pt;
+
+    border: 10px solid red;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    transform: translate(200pt, 150pt) rotate(30deg);
+
+    animation: drop 0.5s;
+}
+
+@keyframes drop {
+    from {opacity: 0; transform: translate(250pt, 100pt) rotate(25deg) scale(2);}
+}
+
+.overlay {
+    width: 100%;
+    height: 100%;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    display: grid;
+    place-items: center;
+}
+
+.dark {
+    background-color: #00000088;
+
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+}
+
+.darker {
+    background-color: black;
+}
+
+#check img {
+    height: 50%;
+
+    animation: check 0.5s;
+}
+
+@keyframes check {
+    from {opacity: 0; transform: scale(0.5);}
+}
+
+.popup {
+    height: 75%;
+    width: 50%;
+
+    text-align: center;
+    font-size: 2em;
+
+    border-radius: 20pt;
+
+    background-color: white;
+    color: #1b1336;
+
+    animation: slideIn 1s;
+}
+
+@keyframes slideIn {
+    0% {opacity: 0; transform: translateY(-20%);}
+    50% {opacity: 0; transform: translateY(-20%);}
+}
+
+.popup h1 {
+    font-size: 1.5em;
+}
+
+#percent {
+    font-size: 4em;
+    /* font-weight: bold; */
+
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 2pt;
+    -webkit-text-stroke-color: #1b1336;
+}
+
+.popup button {
+    margin-top: 10%;
+    padding: 20pt;
+
+    background-color: white;
+    border: 2px solid #1b1336;
+
+    font-family: 'Abril Fatface', cursive;
+    font-size: 1em;
+
+    color: #1b1336;
+}
+
+.popup button:hover {
+    background-color: #ded4ff;
+    cursor: pointer;
+}

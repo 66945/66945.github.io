@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Headline</title>
+
+        <link href="style.css" rel="stylesheet">
+
+        <!-- JQuery import -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- main script -->
+        <script src="script.js"></script>
+
+        <!-- headline script -->
+        <script src="headlines.js"></script>
+    </head>
+    <body>
+        <div class="banner">
+            0 / 12
+        </div>
+
+        <div id="headlineDiv">
+            <h1 id="headline">Loading...</h1>
+        </div>
+
+        <div id="buttons">
+            <div id="cnn" class="button">
+                <img src="/imgs/cnn.png">
+            </div>
+
+            <div id="fox" class="button">
+                <img src="/imgs/fox_news.png">
+            </div>
+
+            <div id="times" class="button">
+                <img src="/imgs/new_york_times.png">
+            </div>
+
+            <div id="onion" class="button">
+                <img src="/imgs/onion.png">
+            </div>
+        </div>
+
+        <span id="false">FALSE</span>
+        <div id="check" class="overlay">
+            <img src="/imgs/check.png">
+        </div>
+
+        <div id="start" class="overlay darker">
+            <div class="popup">
+                <h1>Headline Game</h1>
+                The game where you see if the news<br>
+                is so biased that you can tell who wrote it<br>
+                just by looking at the headline<br>
+
+                <button id="startBtn">Start Game >></button>
+            </div>
+        </div>
+
+        <div id="end" class="overlay dark">
+            <div class="popup">
+                <h1>Thank you for playing!</h1>
+                Your headline accuracy score is:<br>
+                <span id="percent">00%</span><br>
+                <span id="joke">funny joke</span><br>
+
+                <button onclick="startGame()">Play Again >></button>
+            </div>
+        </div>
+    </body>
+</html>
