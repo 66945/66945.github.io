@@ -26,7 +26,7 @@ let currentNum = 0;
 let correct = 0;
 
 $(document).ready(function() {
-    collectHeadlinesTest();
+    collectHeadlines();
 
     $("#cnn").click(function() {
         submitResponse(0);
