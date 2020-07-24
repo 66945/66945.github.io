@@ -90,6 +90,8 @@ function setupGame() {
 
 function startGame() {
     if(currentNum > 0) {
+        correct = 0;
+        
         $("#false").hide();
         $("#check").hide();
         $("#end").hide();
