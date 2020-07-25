@@ -10,10 +10,10 @@ const TIMES_RE  = /title>(.*)</g;
 const MAX_PER_ORG = 4;
 
 const JOKES = [
-    "Oof. Looks like you need to read a little more.",
-    "Well, maybe the news isn't as clear cut as I thought.",
+    "Oof.",
+    "Hard to tell parady from real life, right?",
     "Not bad. Just goes to show how weird the news is.",
-    "Wow. The media is just as biased as they say everyone else is.",
+    "Great job, but next time you can do better.",
     "Hmph. Lucky guess."
 ];
 
