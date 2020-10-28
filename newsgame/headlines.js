@@ -42,7 +42,7 @@ function collectHeadlines() {
         console.log(response["items"]);
 
         for(let i = 0; i < items.length && i < MAX_PER_ORG; i++) {
-            headlines.push([items[i]["title"], 3]);
+            headlines.push([items[i]["title"], 2]);
             // console.log(items[i]["title"]);
         }
 
