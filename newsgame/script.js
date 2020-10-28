@@ -36,12 +36,12 @@ $(document).ready(function() {
         submitResponse(1);
     });
 
-    $("#times").click(function() {
-        submitResponse(2);
-    });
+    // $("#times").click(function() {
+    //     submitResponse(3);
+    // });
 
     $("#onion").click(function() {
-        submitResponse(3);
+        submitResponse(2);
     });
 
     $("#false").hide();
