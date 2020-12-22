@@ -122,9 +122,8 @@
             }
 
             function sendCmd(command) {
-                xhttp.open("POST", "https://www.bicycletrip.org/robot/robot.php", true);
+                xhttp.open("POST", "http://www.bicycletrip.org/robot/robot.php", true);
                 xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhttp.setRequestHeader("Access-Control-Allow-Origin", "https://www.bicycletrip.org/");
                 var request_string="request=send_command" +
                                 "&session=" + session +
                             "&user_password=" + user_password +
