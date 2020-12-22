@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas style="position: fixed; top: 0; left: 0;" id="canvas"></canvas>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
+        <script>
+            let xhttp;
+
+            let session;
+            let user_password;
+
+            let resized;
+            let smaller;
+
+            let joystickActive;
+            let offset;
+
+            let activeMode = -1;
+
+            function setup() {
+                xhttp = new XMLHttpRequest();
+
+                session = getURLParams().session;
+                user_password = getURLParams().user_password;
+
+                createCanvas(windowWidth, windowHeight);
+                resized = false;
+                smaller = 100;
+
+                joystickActive = false;
+                offset = createVector(0, 0);
+
+                angleMode(DEGREES);
+            }
+
+            function draw() {
+                if(resized) {
+                    background(255);
+
+                    if(joystickActive) {
+                        let mode = round(((offset.heading() + 180)/360)*8);
+                        console.log(mode);
+                        if(mode != activeMode) {
+                            switch(mode) {
+                                case 0:
+                                    sendCmd('turnLeft,250');
+                                    break;
+                                case 1:
+                                    sendCmd('forwardLeft,250');
+                                    break;
+                                case 2:
+                                    sendCmd('driveForward,250');
+                                    break;
+                                case 3:
+                                    sendCmd('forwardRight,250');
+                                    break;
+                                case 4:
+                                    sendCmd('turnRight,250');
+                                    break;
+                                case 5:
+                                    sendCmd('backwardRight,250');
+                                    break;
+                                case 6:
+                                    sendCmd('driveBackward,250');
+                                    break;
+                                case 7:
+                                    sendCmd('backwardLeft,250');
+                                    break;
+                            }
+
+                            activeMode = mode;
+                        }
+                    } else if(activeMode != -1) {
+                        sendCmd('stop,0');
+
+                        activeMode = -1;
+                    }
+
+                    stroke(100);
+                    strokeWeight(10);
+                    fill(255);
+                    ellipse(width/2, height/2, smaller/1.5, smaller/1.5);
+
+                    noStroke();
+                    fill(0);
+                    ellipse((width/2) + offset.x, (height/2) + offset.y, smaller/3, smaller/3);
+                } else background(0);
+            }
+
+            function mousePressed() {
+                if(!resized) {
+                    resize();
+
+                    resized = true;
+                } else if(dist(width/2, height/2, mouseX, mouseY) < smaller/3) {
+                    joystickActive = true;
+                }
+            }
+
+            function mouseDragged() {
+                if(joystickActive) {
+                    offset.set(mouseX - (width/2), mouseY - (height/2));
+                    offset = offset.limit(smaller/4);
+                }
+            }
+
+            function mouseReleased() {
+                offset.set(0, 0);
+
+                joystickActive = false;
+            }
+
+            function windowResized() {
+                resize();
+            }
+
+            function resize() {
+                resizeCanvas(windowWidth, windowHeight);
+
+                smaller = width < height ? width : height;
+                console.log(smaller);
+            }
+
+            function sendCmd(command) {
+                xhttp.open("POST", "https://www.bicycletrip.org/robot/robot.php", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.setRequestHeader("Access-Control-Allow-Origin", "https://www.bicycletrip.org/");
+                var request_string="request=send_command" +
+                                "&session=" + session +
+                            "&user_password=" + user_password +
+                            "&command=" + command;
+                xhttp.send(request_string);
+            }
+        </script>
+    </body>
+</html>
