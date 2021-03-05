@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rokkitt:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Imbue:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-image:
+        linear-gradient(#b490df, #b490df),
+        linear-gradient(black, black),
+        url("background_imgs/school2.jpg");
+    background-blend-mode: multiply, saturation;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Comfortaa', cursive;
+    margin: 0px;
+}
+
+.name {
+    position: fixed;
+    top: 45%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: white;
+    font-family: 'Imbue', serif;
+    /* font-family: 'Anton', sans-serif; */
+    /* font-family: 'Rokkitt', serif; */
+    font-size: 6vw;
+
+    text-align: center;
+
+    z-index: -1;
+}
+
+.moto {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3vw;
+}
+
+#navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 15pt;
+    text-align: center;
+    /* overflow: hidden; */
+
+    transition: background-image 0.25s ease-out;
+    transition: background-color 0.25s ease-out;
+}
+
+.unscrolled {
+    background-image: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,0));
+}
+
+.scrolled {
+    background-color: #66369D;
+}
+
+#navbar li {
+    display: inline-block;
+    position: relative;
+}
+
+#navbar li a {
+    display: inline-block;
+    padding: 10pt;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.25s ease-out;
+}
+
+.unscrolled .hover-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    transform: scaleX(0);
+    background-color: white;
+    transform-origin: bottom center;
+    transition: transform 0.25s ease-out;
+}
+
+.unscrolled .hover-link:hover::after {
+    transform: scaleX(1);
+}
+
+.scrolled .hover-link:hover {
+    background-color: #997dcf;
+}
+
+#navbar li .drop-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    background-color: rgba(0,0,0,.8);
+    min-width: 160pt;
+    max-width: 260pt;
+    z-index: 10;
+}
+
+#navbar.scrolled li .drop-content {
+    background-color: #66369D;
+}
+
+#navbar li .drop-content a {
+    font-size: 13pt;
+    color: white;
+    padding: 5pt 10pt 5pt 10pt;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+#navbar li .drop-content a:hover {
+    background-color: rgba(116, 116, 116, 0.5);
+}
+
+#navbar.scrolled li .drop-content a:hover {
+    background-color: #997dcf;
+}
+
+#navbar li:hover .drop-content {
+    display: block;
+}
+
+#more {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    margin: auto;
+    font-size: 20pt;
+
+    padding: 5pt 0 5pt 0;
+
+    /* border-radius: 2vh 2vh 0 0; */
+
+    background-color: rgba(0,0,0,.6);
+
+    text-align: center;
+
+    z-index: -1;
+}
+
+#more a {
+    color: white;
+    text-decoration: none;
+}
+
+#more img {
+    height: 10pt;
+    filter: invert(1);
+}
+
+#content {
+    max-width: 100%;
+    margin: auto;
+    margin-top: 100vh;
+    font-size: 20pt;
+    text-align: center;
+}
+
+#content section {
+    padding: 30pt;
+    background-color: #522888;
+    color: white;
+}
+
+#content p {
+    max-width: 50%;
+    margin: auto;
+}
+
+#content h1 {
+    margin: 0;
+    font-size: 40pt;
+    padding: 15pt;
+    color: #ff9d00;
+}
+
+#content hr {
+    border: none;
+    background-color: white;
+    height: 1px;
+    width: 80%;
+}
+
+#content a {
+    color: white;
+}
+
+#content button {
+    width: 20%;
+    min-width: 250pt;
+    padding: 15pt;
+    margin: 20pt;
+    font-size: 25pt;
+    color: white;
+    background-color: rgba(150,150,150,.5);
+    border: 2px solid white;
+    cursor: pointer;
+    transition: all 0.25s ease-out;
+}
+
+#content button:hover {
+    background-color: rgba(150,150,150,.7);
+    transform: scale(1.05);
+}
+
+#content .inverted {
+    background-color: white;
+    color: #522888;
+}
+
+#content .inverted hr {
+    border: none;
+    background-color: #522888;
+}
+
+#content .inverted a {
+    color: #522888;
+}
+
+#content .inverted button {
+    color: #522888;
+    background-color: rgba(150, 150, 150, 0.5);
+    border: 2px solid #522888;
+}
+
+#content .picture {
+    background-color: rgb(59, 59, 59);
+    background-blend-mode: multiply;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.arts {background-image: url("background_imgs/img2.jpg");}
+.sports {background-image: url("background_imgs/img3.jpg");}
+
+.media {
+    margin: auto;
+    list-style-type: none;
+}
+
+.media li {
+    display: inline-block;
+}
+
+.media img {
+    height: 30pt;
+    /* filter: grayscale(1); */
+}
+
+footer {
+    max-width: 100%;
+
+    padding: 10pt;
+
+    background-color: #997dcf;
+
+    text-align: center;
+}
