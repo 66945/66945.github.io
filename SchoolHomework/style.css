@@ -1,0 +1,186 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: rgb(34, 34, 34);
+}
+
+.images {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    place-items: center;
+}
+
+.images img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+
+    color: lightgray;
+    font-family: 'Courier New', Courier, monospace;
+
+    line-height: 50%;
+    text-align: center;
+}
+
+.button {
+    position: fixed;
+    top: 50%;
+
+    width: 1.5em;
+    height: 1.5em;
+
+    font-size: 2em;
+    color: white;
+    background-color: rgba(34, 34, 34, 0.5);
+
+    border-radius: 50%;
+
+    display: grid;
+    place-items: center;
+
+    transition: .1s;
+}
+
+.button:hover {
+    background-color: rgba(100, 100, 100, 0.6);
+    cursor: pointer;
+}
+
+.button img {
+    width: 1em;
+    height: 1em;
+
+    filter: invert(1);
+}
+
+#lBtn {
+    left: 5%;
+}
+
+#lBtn img {
+    transform: rotate(90deg);
+}
+
+#rBtn {
+    right: 5%;
+}
+
+#rBtn img {
+    transform: rotate(-90deg);
+}
+
+#info {
+    top: 2%;
+    right: 2%;;
+}
+
+.infoBack {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.521);
+
+    display: grid;
+    place-items: center;
+}
+
+.infoPane {
+    width: 30%;
+    padding: 10pt;
+
+    font-size: 1.5em;
+    color: white;
+
+    background-color: rgba(0, 0, 0, 0.795);
+}
+
+.infoPane ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.infoPane li {
+    border-bottom: 1px solid white;
+}
+
+.desc {
+    font-size: .6em;
+    font-style: italic;
+    color: rgb(92, 92, 92);
+}
+
+.loadingPane {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    text-align: center;
+    background-color: #0067b8;
+    color: white;
+
+    display: grid;
+    place-items: center;
+}
+
+.loadingPane img {
+    width: 8%;
+    margin: 0;
+    filter: grayscale(100%) brightness(2);
+}
+
+#logo {
+    font-size: 5em;
+}
+
+.error {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    padding: 10pt;
+
+    color: white;
+    background-color: red;
+
+    text-align: center;
+}
+
+.loader {
+    display: inline-block;
+    width: 3em;
+    height: 3em;
+
+    border: 3px solid rgba(255, 255, 255, 0.356);
+    border-top: 3px solid white;
+    border-radius: 50%;
+
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { -webkit-transform: rotate(360deg) };
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    color: white;
+    font-size: .75em;
+    text-align: center;
+}
