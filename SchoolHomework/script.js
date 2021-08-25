@@ -4,7 +4,7 @@ let images;
 let activeImage = 0;
 let loaded = [];
 
-let error = true;
+let error = false;
 
 $(document).ready(function() {
     if(!error) {
@@ -35,7 +35,7 @@ function finishLoading() {
 function showError() {
     let d = new Date();
     let date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + (d.getYear() + 1900);
-    $('.error').html('<b>Sorry!</b> Unfortunately OneDrive ImageView is down for maintanence between <b>12:00 AM ' + date + '</b> and <b>12:00 AM ' + date + '</b>. Thank you for understanding!');
+    $('.error').html('<b>Sorry!</b> Unfortunately OneDrive ImageView is down for maintanence between <b>12:00 AM ' + date + '</b> and <b>11:59 PM ' + date + '</b>. Thank you for understanding!');
     $('.loadingPane .loader').hide();
     $('.error').show();
 }
