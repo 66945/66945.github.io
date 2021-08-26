@@ -4,7 +4,7 @@ let images;
 let activeImage = 0;
 let loaded = [];
 
-let error = true;
+let error = false;
 
 $(document).ready(function() {
     if(!error) {
