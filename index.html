@@ -1,24 +1,69 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <link href='Moocss.css' rel="stylesheet" type="text/css">
-        <title>66945 Web</title>
-        <h1>66945 Web</h1>
-    </head>
-    
-    <ul>
-        <li><a class="current">HOME</a></li>
-        <li><a href="Admin.html">Admin</a></li>
-        <li class="right"><a href="info.html">Info</a></li>
-    </ul>
-    <center>
-        <canvas id="canvas"></canvas>
-    </center>
-    <br>
-    <div class="par">
-        <p id="projects"></p>
-    </div>
+        <title>66945 | Under Updates</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bonheur+Royale&family=Cinzel&display=swap');
+            /* @import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch&display=swap'); */
+            @import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@300&display=swap');
 
-    <script src="projectLoad.js"></script>
-    <script src="myjs.js"></script>
-    <script src="render.js"></script>
+            body {
+                background-image: url('background2.jpg');
+                text-align: center;
+
+                font-family: 'Cinzel', serif;
+                font-size: 15pt;
+            }
+
+            .updates {
+                width: 30%;
+                margin: auto;
+                margin-top: 5%;
+
+                background-color: rgb(240, 236, 231);
+                padding: 5%;
+            }
+
+            h1 {
+                font-family: 'Grenze Gotisch', cursive;
+            }
+
+            hr {
+                background-color: black;
+                border: none;
+                height: 2px;
+            }
+
+            hr::after {
+                content: "§";
+                display: inline-block;
+                position: relative;
+
+                color: black;
+                background-color: rgb(240, 236, 231);
+
+                font-size: 1.4em;
+                top: -.7em;
+            }
+
+            .signature {
+                font-size: 20pt;
+            }
+            
+            u {
+                font-family: 'Bonheur Royale', cursive;
+                font-size: 30pt;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="updates">
+            <h1>THIS SITE IS BEING UPDATED</h1>
+            <hr>
+            This site is currently undergoing updates to improve and fix a bunch of problems I used to have.
+            <br>
+            <br>
+            <span class="signature">Thanks, <u>Daniel McGrath</u></span>
+        </div>
+    </body>
 </html>
