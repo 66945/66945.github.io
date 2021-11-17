@@ -2,21 +2,23 @@
 
 const CNN   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Frss.cnn.com%2Frss%2Fcnn_allpolitics.rss";
 const FOX   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Ffeeds.foxnews.com%2Ffoxnews%2Fpolitics";
-const TIMES = "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml";
 const ONION = "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fpolitics.theonion.com%2Frss";
 
-const TIMES_RE  = /title>(.*)</g;
+const TIMES_RE  = /title>(.*)</g; // For legacy NYT
 
 const MAX_PER_ORG = 4;
 
 const JOKES = [
-    "Oof.",
-    "Hard to tell parady from real life, right?",
-    "Not bad. Just goes to show how weird the news is.",
-    "Great job, but next time you can do better.",
-    "Hmph. Lucky guess."
+    "Nice job Colton",
+    "You guessed. Or you clicked the onion every single time. Very funny",
+    "Not awful. Actually it is awful. In fact its the worst thing since 9/11. Great job!",
+    "For once in your life you didn't fail",
+    "Perfection"
 ];
 
+const BUTTON_IDS = ["cnn", "fox", "onion"];
+
+let headlinesRaw = {};
 let headlines = [];
 let loaded = 0;
 
@@ -36,10 +38,6 @@ $(document).ready(function() {
         submitResponse(1);
     });
 
-    // $("#times").click(function() {
-    //     submitResponse(3);
-    // });
-
     $("#onion").click(function() {
         submitResponse(2);
     });
@@ -53,18 +51,66 @@ $(document).ready(function() {
     });
 });
 
-function submitResponse(response) {
-    console.log(response);
+function easyMode() {
+    $("body").addClass("serious");
+    $("#cnn").hide();
+    $("#fox").html("fOX Nuws");
+    $("#onion").html("Onoin");
+    
+    delete headlinesRaw[0];
 
+    startGame();
+}
+
+function sovietMode() {
+    $("body").addClass("soviet");
+}
+
+function startGame() {
+    if(currentNum > 0) {
+        correct = 0;
+
+        $("#false").hide();
+        $("#check").hide();
+        $("#end").hide();
+
+        $("#headline").show();
+    } else {
+        $(".loading").removeClass("loading");
+    }
+
+    currentNum = 0;
+    shuffleHeadlines();
+
+    current = headlines[currentNum];
+    $("#headline").html(capitalizeWords(current[0]));
+    
+    $(".banner").html("0 / " + headlines.length);
+}
+
+function submitResponse(response) {
     if(current != null) {
-        if(response == current[1]) {
+        let correctID = current[1];
+
+        if(response == correctID) {
             correct++;
             $("#check").show();
         } else {
             $("#false").show();
+
+            setTimeout(flash, 600, BUTTON_IDS[correctID]);
         }
 
         setTimeout(clearQuestion, 2000);
+    }
+}
+
+function flash(ID, bright=true) {
+    if(bright) {
+        $("#" + ID).addClass("flash");
+        setTimeout(flash, 800, ID, false);
+    } else {
+        $("#" + ID).removeClass("flash");
     }
 }
 
@@ -73,7 +119,7 @@ function clearQuestion() {
     $("#false").hide();
     $("#check").hide();
 
-    setTimeout(nextQuestion, 50);
+    setTimeout(nextQuestion, 500);
 }
 
 function nextQuestion() {
@@ -99,11 +145,4 @@ function end(percent) {
     $("#joke").html(JOKES[i]);
 
     $("#end").show();
-}
-
-function capitalizeWords(str)
-{
-    return str.replace(/\w\S*/g, function(txt) {
-        return txt.charAt(0).toUpperCase() + txt.substr(1);
-    });
 }

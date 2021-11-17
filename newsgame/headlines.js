@@ -1,26 +1,12 @@
 function collectHeadlines() {
     $.get(CNN, function(response) {
-        let items = response["items"];
-        console.log(response["items"]);
-
-        for(let i = 0; i < items.length && i < MAX_PER_ORG; i++) {
-            headlines.push([items[i]["title"], 0]);
-            // console.log(items[i]["title"]);
-        }
-
-        setupGame();
+        processResponse(response, 0)
     });
-
     $.get(FOX, function(response) {
-        let items = response["items"];
-        console.log(response["items"]);
-
-        for(let i = 0; i < items.length && i < MAX_PER_ORG; i++) {
-            headlines.push([items[i]["title"], 1]);
-            // console.log(items[i]["title"]);
-        }
-
-        setupGame();
+        processResponse(response, 1)
+    });
+    $.get(ONION, function(response) {
+        processResponse(response, 2)
     });
 
     // $.get(TIMES, function(response) {
@@ -36,48 +22,71 @@ function collectHeadlines() {
 
     //     setupGame();
     // });
+}
 
-    $.get(ONION, function(response) {
-        let items = response["items"];
-        console.log(response["items"]);
+function processResponse(response, num) {
+    let items = response["items"];
+    console.log(response["items"]);
 
-        for(let i = 0; i < items.length && i < MAX_PER_ORG; i++) {
-            headlines.push([items[i]["title"], 2]);
-            // console.log(items[i]["title"]);
-        }
+    headlinesRaw[num] = [];
 
-        setupGame();
-    });
+    for(let item of items) {
+        headlinesRaw[num].push(item["title"]);
+        // console.log(items[i]["title"]);
+    }
+
+    setupGame();
 }
 
 function collectHeadlinesTest() {
-    headlines = [
-        ["Trump cancels Republican convention activities in Jacksonville", 0],
-        ["Trump says he could send as many as 75,000 federal agents to US cities", 0],
-        ["Fact check: Trump continues to dishonestly downplay the pandemic", 0],
-        ["Colorado 2020 Senate race: What to know about the Gardner-Hickenlooper contest", 1],
-        ["Nancy Pelosi Calls Jamaal Bowman To Scold Him For Winning Primary", 2],
+    headlinesRaw = {
+        0: [
+            "Trump cancels Republican convention activities in Jacksonville",
+            "Trump says he could send as many as 75,000 federal agents to US cities",
+            "Fact check: Trump continues to dishonestly downplay the pandemic"
+        ],
+        1: [
+            "Colorado 2020 Senate race: What to know about the Gardner-Hickenlooper contest",
         // ["Barack Obama and Joe Biden Join Forces in Video Targeting Trump", 3],
-        ["CDC rolls out tools for schools to reopen safely during coronavirus outbreak: 'Critically important'", 1],
+            "CDC rolls out tools for schools to reopen safely during coronavirus outbreak: 'Critically important'",
         // ["A.O.C. Unleashes a Viral Condemnation of Sexism in Congress", 3],
-        ["Kansas City mayor: 'Doxing' of police, officials should be criminalized", 1],
-        ["Self-Loathing GOP Congressman Can’t Believe He’s Been Reduced To Defending Necessity Of Public Schools", 2],
-        ["Timeline Of Presidential Polling", 2]
+            "Kansas City mayor: 'Doxing' of police, officials should be criminalized"
+        ],
+        2: [
+            "Nancy Pelosi Calls Jamaal Bowman To Scold Him For Winning Primary",
+            "Self-Loathing GOP Congressman Can’t Believe He’s Been Reduced To Defending Necessity Of Public Schools",
+            "Timeline Of Presidential Polling"
+        ]
         // ["Bloomberg's Everytown for Gun Safety Pours $15 Million Into Races in 8 States", 3]
-    ];
+    };
 
-    loaded = 3;
+    loaded = 2;
     setupGame();
 }
 
 function shuffleHeadlines() {
-    for(let i = headlines.length - 1; i > 0; i--) {
-        let rand = Math.floor(Math.random() * (i + 1));
+    headlines = [];
 
-        let t = headlines[i];
-        headlines[i] = headlines[rand];
-        headlines[rand] = t;
+    for(let key of Object.keys(headlinesRaw)) {
+        let shuffled = shuffleArray(headlinesRaw[key]);
+        for(let i = 0; i < MAX_PER_ORG && i < shuffled.length; i++) {
+            headlines.push([shuffled[i], key]);
+        }
     }
+
+    headlines = shuffleArray(headlines);
+}
+
+function shuffleArray(array) {
+    let shuffled = [...array];
+
+    for(let i = shuffled.length - 1; i > 0; i--) {
+        let index = Math.floor(Math.random() * i);
+        
+        [shuffled[i], shuffled[index]] = [shuffled[index], shuffled[i]];
+    }
+
+    return shuffled;
 }
 
 function setupGame() {
@@ -88,22 +97,9 @@ function setupGame() {
     }
 }
 
-function startGame() {
-    if(currentNum > 0) {
-        correct = 0;
-
-        $("#false").hide();
-        $("#check").hide();
-        $("#end").hide();
-
-        $("#headline").show();
-    }
-
-    currentNum = 0;
-    shuffleHeadlines();
-
-    current = headlines[currentNum];
-    $("#headline").html(capitalizeWords(current[0]));
-    
-    $(".banner").html("0 / " + headlines.length);
+function capitalizeWords(str)
+{
+    return str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1);
+    });
 }

@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Flow+Circular&display=swap');
+@font-face {
+    font-family: "soviet";
+    src: url("Nyet.otf");
+}
 
 html, body {
     height: 100%;
@@ -7,7 +12,19 @@ html, body {
 
 body {
     background-color: #1b1336;
+    color: white;
     font-family: 'Abril Fatface', cursive;
+}
+
+.serious {
+    background-color: #ff7300;
+    font-family: cursive;
+}
+
+.soviet {
+    background-color: #cd0000;
+    color: #ffd900;
+    font-family: "soviet";
 }
 
 .banner {
@@ -19,10 +36,15 @@ body {
 
     text-align: center;
 
-    background-color: #0000005d;
+    background-color: #110b22de;
 
     font-size: 2em;
-    color: white;
+    /* color: white; */
+}
+
+.soviet .banner {
+    background-color: #ffd900;
+    color: #cd0000;
 }
 
 #headlineDiv {
@@ -32,7 +54,7 @@ body {
     place-items: center;
 
     text-align: center;
-    color: white;
+    /* color: white; */
 }
 
 #headline {
@@ -46,6 +68,14 @@ body {
     border: 2px solid white;
 
     animation: grow 1s;
+}
+
+.soviet #headline {
+    border: 2px solid #ffd900;
+}
+
+.loading {
+    font-family: 'Flow Circular', cursive;
 }
 
 @keyframes grow {
@@ -74,6 +104,16 @@ body {
     place-items: center;
 
     transition: all 100ms ease-in-out;
+
+    color: white;
+    font-size: 2em;
+}
+
+.flash {
+    filter: brightness(1.5);
+
+    transform: translateY(-10pt);
+    height: calc(100% + 10pt);
 }
 
 .button:hover {
@@ -105,24 +145,8 @@ body {
     background-color: #088f53;
 }
 
-#false span {
-    color: red;
-
-    font-size: 200pt;
-
-    border: 10px solid red;
-
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    transform: translate(200pt, 150pt) rotate(30deg);
-
-    animation: drop 0.5s;
-}
-
-@keyframes drop {
-    from {opacity: 0; transform: translate(250pt, 100pt) rotate(25deg) scale(2);}
+.soviet .button {
+    background-color: #ffd900 !important;
 }
 
 .overlay {
@@ -154,11 +178,38 @@ body {
 #check img {
     height: 50%;
 
+    /* filter: grayscale() brightness(2.0); */
+
     animation: check 0.5s;
 }
 
 @keyframes check {
     from {opacity: 0; transform: scale(0.5);}
+}
+
+#false span {
+    color: red;
+
+    font-size: 10em;
+
+    border: 8px solid red;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    transform: translate(45vw, 50%) rotate(20deg);
+
+    animation: drop 0.5s;
+}
+
+@keyframes drop {
+    from {opacity: 0; transform: translate(80vw, 30%) rotate(0deg) scale(2);}
+}
+
+.soviet #false span {
+    color: #770000;
+    border: 8px solid #770000;
 }
 
 .popup {
@@ -186,7 +237,7 @@ body {
 }
 
 #percent {
-    font-size: 4em;
+    font-size: 3.5em;
     /* font-weight: bold; */
 
     -webkit-text-fill-color: white; /* Will override color (regardless of order) */
@@ -208,6 +259,12 @@ body {
 }
 
 .popup button:hover {
-    background-color: #ded4ff;
+    background-color: #f5f2ff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.popup a {
+    text-decoration: underline;
     cursor: pointer;
 }
