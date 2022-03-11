@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="contact.css">
+        <script src="script.js" defer></script>
+        <title>Contact</title>
+    </head>
+    <body>
+        <header>
+            <div class="scroll-progress">
+                <span class="progress-bar"></span>
+            </div>
+            <a href="projects.html">Projects</a>
+            <a>Contact</a>
+            <a href="index.html#main">About</a>
+
+            <svg width="40px" height="40px" fill="white" onclick="toggleSideBar()">
+                <rect width="50px" height="5px" y="4px"/>
+                <rect width="50px" height="5px" y="17px"/>
+                <rect width="50px" height="5px" y="30px"/>
+            </svg>
+        </header>
+
+        <div class="sidebar" id="sidebar">
+            <a href="projects.html" onclick="toggleSideBar()">Projects</a>
+            <a href="contact.html" onclick="toggleSideBar()">Contact</a>
+            <a href="index.html#main" onclick="toggleSideBar()">About</a>
+        </div>
+
+        <div class="main">
+            <div class="page-head" id="top">
+                <span class="highlight">Contact</span> me
+            </div>
+
+            <section>
+                <div class="contact-form">
+                    <h3>Contact Form</h3>
+                    <input type="text" placeholder="First Lastname">
+                    <br>
+                    <textarea></textarea>
+
+                    <a class="send">
+                        <svg>
+                            <polygon points="15,12.5 42,25 15,37.5 18,27.5 35,25 18,22.5"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="left-bar">
+                    <h2>Find Me Online</h2>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </div>
+            </section>
+
+            <a href="#top">
+                <svg id="toplink" class="toplink">
+                    <polygon points="12.5,32.5 25,15 37.5,32.5"/>
+                </svg>
+            </a>
+        </div>
+
+        <footer>
+            Find me on: <a href="">LinkedIn</a>, <a href="">Github</a>, or <a href="">Gmail</a>
+        </footer>
+    </body>
+</html>

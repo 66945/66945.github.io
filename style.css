@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&family=Poppins:wght@600&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    /* font-family: Open; */
+    /* font-family: 'Open Sans', sans-serif; */
+    font-family: 'Poppins', sans-serif;
+    font-size: 15pt;
+    /* word-spacing: .15pt; */
+
+    background-color: var(--background);
+    color: var(--text);
+
+    margin: 0;
+
+    --scroll: 100%;
+    --accent: #ff0000;
+    /* --accent: #00ff55; */
+    /* --accent: #00a2ff; */
+    --background: #1a1a1a;
+    --text: #FFFFFF;
+    --gray: #c7c7c7;
+    --shadow: black;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+
+    background-color: black;
+    color: white;
+
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 15pt;
+
+    border-bottom: 1px solid white;
+
+    text-align: center;
+}
+
+header a {
+    width: 100pt;
+    padding: 0pt;
+    margin: 5pt;
+
+    color: white;
+
+    text-decoration: underline transparent;
+    text-underline-offset: .15em;
+    transition: all 200ms ease-in-out;
+}
+
+header a:hover {
+    text-decoration-color: white;
+    text-underline-offset: .1em;
+    cursor: pointer;
+}
+
+.mobile header a {
+    display: none;
+}
+
+header svg {
+    display: none;
+    fill: var(--accent);
+}
+
+header svg:hover {
+    cursor: pointer;
+    filter: brightness(1.2);
+}
+
+.mobile header svg {
+    display: block;
+    margin-left: auto;
+    margin-right: 10pt;
+}
+
+.scroll-progress {
+    width: 100%;
+    height: 2px;
+
+    background-color: rgb(41, 41, 41);
+    margin: none;
+}
+
+.progress-bar {
+    width: calc(var(--scroll) * 100%);
+    height: 100%;
+    float: left;
+
+    background-color: var(--accent);
+}
+
+.sidebar {
+    position: fixed;
+    top: 30pt;
+    right: 0;
+
+    z-index: 1;
+
+    width: 80vw;
+    height: 100vh;
+
+    display: flex;
+    flex-flow: column nowrap;
+
+    background-color: white;
+    box-shadow: var(--shadow) -2pt 0pt 5pt;
+
+    transform: translateX(110%);
+    transition: all ease-in-out .4s;
+}
+
+@keyframes slide-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.sidebar a {
+    width: 100%;
+    padding: 5pt;
+    text-align: center;
+
+    color: black;
+    text-decoration: none;
+
+    border-bottom: 1px solid var(--accent);
+}
+
+.main {
+    min-height: 95vh;
+}
+
+.page-head {
+    font-size: 45pt;
+    background-color: black;
+    color: white;
+
+    padding: 60pt 0 30pt 15%;
+}
+
+.mobile .page-head {
+    padding: 60pt 0 30pt 0;
+    text-align: center;
+}
+
+.highlight {
+    background-color: var(--accent);
+    color: black;
+}
+
+section {
+    width: 70%;
+    margin: auto;
+
+    padding-bottom: 25pt;
+}
+
+.laptop section {
+    width: 80%;
+}
+
+.mobile section {
+    width: 90%;
+}
+
+h1 {
+    font-size: 50pt;
+    color: var(--accent);
+    margin: 0;
+}
+
+h2 {
+    font-size: 30pt;
+    color: var(--accent);
+    margin: 0;
+}
+
+h3 {
+    font-size: 30pt;
+    /* color: var(--accent); */
+    margin: 0;
+}
+
+a {
+    color: #2166e7;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1.5pt;
+    text-underline-offset: .2em;
+    transition: all .25s ease-in-out;
+}
+
+a:hover {
+    text-decoration-color: #2166e7;
+    text-underline-offset: .1em;
+}
+
+.toplink {
+    display: none;
+    position: fixed;
+    right: 30pt;
+    bottom: 30pt;
+
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+
+    background-color: var(--accent);
+    fill: white;
+
+    box-shadow: var(--shadow) 2pt 2pt 5pt;
+
+    animation: toplink .5s;
+}
+
+.toplink:hover {
+    filter: brightness(1.2);
+}
+
+@keyframes toplink {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+footer {
+    width: 60%;
+
+    padding: 5pt;
+    margin: auto;
+    text-align: center;
+
+    border-top: 1px solid var(--accent);
+}
