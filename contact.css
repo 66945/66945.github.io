@@ -26,13 +26,17 @@
     font-size: 1.2em;
 
     border: none;
-    border-bottom: 2px solid var(--gray);
+    border-bottom: solid var(--gray);
     transition: all ease-in-out .25s;
+}
+
+.mobile .contact-form input {
+    border-bottom: .5vh;
 }
 
 .contact-form input:focus {
     outline: none;
-    border-bottom: 2px solid var(--accent);
+    border-bottom: solid var(--accent);
 }
 
 .contact-form textarea {
@@ -71,6 +75,11 @@
     transition: none;
 }
 
+.mobile .contact-form .send {
+    width: 4vh;
+    height: 4vh;
+}
+
 .contact-form .send:hover {
     cursor: pointer;
     filter: brightness(1.2);
@@ -79,4 +88,33 @@
 .mobile .contact-form .send {
     margin-top: 0;
     transform: translate(-20%, -120%);
+}
+
+.alert {
+    display: none;
+
+    position: fixed;
+    left: 30vw;
+    right: 30vw;
+    bottom: 5vh;
+
+    padding: 10pt;
+
+    background-color: #000000cc;
+    color: white;
+
+    text-align: center;
+
+    animation: alert .25s;
+    transition: all ease-in-out .5s;
+}
+
+.mobile .alert {
+    left: 5vw;
+    right: 5vw;
+}
+
+@keyframes alert {
+    from { opacity: 0; transform: scale(0); }
+    to { opacity: 1; transform: scale(1); }
 }

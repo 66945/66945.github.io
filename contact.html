@@ -4,6 +4,7 @@
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="contact.css">
         <script src="script.js" defer></script>
+        <script src="contact.js" defer></script>
         <title>Contact</title>
     </head>
     <body>
@@ -15,10 +16,10 @@
             <a>Contact</a>
             <a href="index.html#main">About</a>
 
-            <svg width="40px" height="40px" fill="white" onclick="toggleSideBar()">
-                <rect width="50px" height="5px" y="4px"/>
-                <rect width="50px" height="5px" y="17px"/>
-                <rect width="50px" height="5px" y="30px"/>
+            <svg viewbox="0 0 50 40" preserveAspectRatio="xMidYMid meet" fill="white" onclick="toggleSideBar()">
+                <rect width="50" height="5" y="4"/>
+                <rect width="50" height="5" y="17"/>
+                <rect width="50" height="5" y="30"/>
             </svg>
         </header>
 
@@ -36,12 +37,12 @@
             <section>
                 <div class="contact-form">
                     <h3>Contact Form</h3>
-                    <input type="text" placeholder="First Lastname">
+                    <input type="text" placeholder="Name & Email" id='name'>
                     <br>
-                    <textarea></textarea>
+                    <textarea id='content'></textarea>
 
-                    <a class="send">
-                        <svg>
+                    <a class="send" onclick="sendContact()">
+                        <svg viewbox="0 0 50 50" preserveAspectRatio="xMidYMid meet">
                             <polygon points="15,12.5 42,25 15,37.5 18,27.5 35,25 18,22.5"/>
                         </svg>
                     </a>
@@ -49,19 +50,27 @@
 
                 <div class="left-bar">
                     <h2>Find Me Online</h2>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    For buisiness related purposes use <a href="mailto:dtmcga@gmail.com">my gmail</a>, for school related purposes use my <a href="mailto:66945@psdschools.org">school email</a>
+                    <br>
+                    <a href="https://www.linkedin.com/in/daniel-mcgrath-139600234/">LinkedIn</a><br>
+                    <a href="https://www.github.com/66945">GitHub</a><br>
+                    <a href="resume.html">Download my CV</a>
                 </div>
             </section>
 
             <a href="#top">
-                <svg id="toplink" class="toplink">
+                <svg viewbox="0 0 50 50" preserveAspectRatio="xMidYMid meet" id="toplink" class="toplink">
                     <polygon points="12.5,32.5 25,15 37.5,32.5"/>
                 </svg>
             </a>
         </div>
 
+        <div class="alert" id="alert">
+            Thanks for reaching out! I'll get back soon
+        </div>
+
         <footer>
-            Find me on: <a href="">LinkedIn</a>, <a href="">Github</a>, or <a href="">Gmail</a>
+            Find me on: <a href="https://www.linkedin.com/in/daniel-mcgrath-139600234/">LinkedIn</a>, <a href="https://www.github.com/66945">GitHub</a>, or <a href="mailto:dtmcga@gmail.com">Gmail</a>
         </footer>
     </body>
 </html>

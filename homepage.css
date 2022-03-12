@@ -17,6 +17,10 @@
     /* line-height: 0; */
 }
 
+.mobile .landing {
+    font-size: 15vw;
+}
+
 #description {
     font-size: 20pt;
     /* transform: translateY(3.8em); */

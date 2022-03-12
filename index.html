@@ -1,69 +1,67 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>66945 | Under Updates</title>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bonheur+Royale&family=Cinzel&display=swap');
-            /* @import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch&display=swap'); */
-            @import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@300&display=swap');
-
-            body {
-                background-image: url('https://66945.github.io/background2.jpg');
-                text-align: center;
-
-                font-family: 'Cinzel', serif;
-                font-size: 15pt;
-            }
-
-            .updates {
-                width: 30%;
-                margin: auto;
-                margin-top: 5%;
-
-                background-color: rgb(240, 236, 231);
-                padding: 5%;
-            }
-
-            h1 {
-                font-family: 'Grenze Gotisch', cursive;
-            }
-
-            hr {
-                background-color: black;
-                border: none;
-                height: 2px;
-            }
-
-            hr::after {
-                content: "§";
-                display: inline-block;
-                position: relative;
-
-                color: black;
-                background-color: rgb(240, 236, 231);
-
-                font-size: 1.4em;
-                top: -.7em;
-            }
-
-            .signature {
-                font-size: 20pt;
-            }
-            
-            u {
-                font-family: 'Bonheur Royale', cursive;
-                font-size: 30pt;
-            }
-        </style>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="homepage.css">
+        <link rel="stylesheet" href="projects.css">
+        <script src="script.js" defer></script>
+        <script src="projects.js" defer></script>
+        <title>Portfolio</title>
     </head>
     <body>
-        <div class="updates">
-            <h1>THIS SITE IS BEING UPDATED</h1>
-            <hr>
-            This site is currently undergoing updates to improve and fix a bunch of problems I used to have.
-            <br>
-            <br>
-            <span class="signature">Thanks, <u>Daniel McGrath</u></span>
+        <header>
+            <div class="scroll-progress">
+                <span class="progress-bar"></span>
+            </div>
+            <a href="projects.html">Projects</a>
+            <a href="contact.html">Contact</a>
+            <a href="#main">About</a>
+
+            <svg viewbox="0 0 50 40" preserveAspectRatio="xMidYMid meet" fill="white" onclick="toggleSideBar()">
+                <rect width="50px" height="5px" y="4px"/>
+                <rect width="50px" height="5px" y="17px"/>
+                <rect width="50px" height="5px" y="30px"/>
+            </svg>
+        </header>
+
+        <div class="sidebar" id="sidebar">
+            <a href="projects.html" onclick="toggleSideBar()">Projects</a>
+            <a href="contact.html" onclick="toggleSideBar()">Contact</a>
+            <a href="#main" onclick="toggleSideBar()">About</a>
         </div>
+
+        <div class="main">
+            <div id="top" class="landing">
+                <span>Hi, I'm <span class="highlight">Daniel</span></span>
+                <a href="#main">
+                    <svg width="100px" height="100px">
+                        <polygon points="25,35 50,50 75,35 75,50 50,65, 25,50"/>
+                    </svg>
+                </a>
+            </div>
+
+            <section id="main">
+                <h1 id="about">About</h1>
+                I am a programmer and web developer based in Fort Collins Colorado. I currently attend
+                Fort Collins High School. I mostly work on small web projects, but I am also very interested
+                in robotics and game design. I have been a member of the Ridgebotics FRC team, where I worked
+                on programming the robot.
+            </section>
+
+            <section>
+                <h1 id="projects">GitHub Projects</h1>
+                <div id="project-cards" class="projects"></div>
+            </section>
+
+            <a href="#top">
+                <svg viewbox="0 0 50 50" preserveAspectRatio="xMidYMid meet" id="toplink" class="toplink">
+                    <polygon points="12.5,32.5 25,15 37.5,32.5"/>
+                </svg>
+            </a>
+        </div>
+
+        <footer>
+            Find me on: <a href="https://www.linkedin.com/in/daniel-mcgrath-139600234/">LinkedIn</a>, <a href="https://www.github.com/66945">GitHub</a>, or <a href="mailto:dtmcga@gmail.com">Gmail</a>
+        </footer>
     </body>
 </html>

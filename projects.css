@@ -74,6 +74,10 @@
     text-align: center;
 }
 
+.mobile .projects h1 {
+    font-size: 3vh;
+}
+
 .tech {
     color: var(--accent);
 }

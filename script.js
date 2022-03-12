@@ -16,16 +16,28 @@ let sideBar = false;
 
 setDarkMode(darkMode);
 
+let scrollChange = false;
+
 window.addEventListener('scroll', setScroll, false);
 window.addEventListener('resize', reactResolution, false);
+
+setScroll();
 reactResolution();
 
 function setScroll() {
     let scrollPercent = window.scrollY / (document.body.offsetHeight - window.innerHeight);
     document.body.style.setProperty('--scroll', scrollPercent);
 
-    let state = window.scrollY > 300 ? 'block' : 'none';
-    document.getElementById('toplink').style.display = state;
+    if(scrollChange !== window.scrollY < 300) {
+        if(window.scrollY < 300)
+            document.getElementById('toplink').style.transform = 'scale(0)';
+        else
+            document.getElementById('toplink').style.transform = 'scale(1)';
+        
+        console.log('change');
+    }
+
+    scrollChange = window.scrollY < 300;
 }
 
 function reactResolution() {
