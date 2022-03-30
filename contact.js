@@ -5,6 +5,9 @@ function sendContact() {
     let name = document.getElementById('name').value;
     let content = document.getElementById('content').value;
 
+    if(name == "" || content == "")
+        return;
+
     let reqBody = {
         "to": "66945@psdschools.org",
         "subject": "Contact from " + name,

@@ -26,17 +26,13 @@
     font-size: 1.2em;
 
     border: none;
-    border-bottom: solid var(--gray);
+    border-bottom: 1.5pt solid var(--gray);
     transition: all ease-in-out .25s;
-}
-
-.mobile .contact-form input {
-    border-bottom: .5vh;
 }
 
 .contact-form input:focus {
     outline: none;
-    border-bottom: solid var(--accent);
+    border-bottom: 1.5pt solid var(--accent);
 }
 
 .contact-form textarea {
@@ -49,13 +45,13 @@
 
     font-family: inherit;
 
-    border: 1px solid var(--gray);
+    border: 1.5pt solid var(--gray);
     transition: all ease-in-out .25s;
 }
 
 .contact-form textarea:focus {
     outline: none;
-    border: 1px solid var(--accent);
+    border: 1.5pt solid var(--accent);
 }
 
 .contact-form .send {
@@ -72,7 +68,7 @@
     background-color: var(--accent);
     fill: white;
 
-    transition: none;
+    transition: all .2s ease-in-out;
 }
 
 .mobile .contact-form .send {
@@ -82,7 +78,7 @@
 
 .contact-form .send:hover {
     cursor: pointer;
-    filter: brightness(1.2);
+    box-shadow: var(--shadow) 1pt 1pt 3pt;
 }
 
 .mobile .contact-form .send {

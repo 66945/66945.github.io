@@ -18,6 +18,7 @@ body {
 
     --scroll: 100%;
     --accent: #ff0000;
+    --light-accent: #ff4040;
     /* --accent: #00ff55; */
     /* --accent: #00a2ff; */
     --background: #1a1a1a;
@@ -43,7 +44,7 @@ header {
     background-color: black;
     color: white;
 
-    font-family: 'Times New Roman', Times, serif;
+    /* font-family: 'Times New Roman', Times, serif; */
     font-size: 15pt;
 
     border-bottom: 1px solid white;
@@ -124,7 +125,7 @@ header svg:hover {
     display: flex;
     flex-flow: column nowrap;
 
-    background-color: white;
+    background-color: var(--background);
     box-shadow: var(--shadow) -2pt 0pt 5pt;
 
     transform: translateX(110%);
@@ -141,10 +142,34 @@ header svg:hover {
     padding: 1vh;
     text-align: center;
 
-    color: black;
+    color: var(--text);
     text-decoration: none;
 
     border-bottom: 1pt solid var(--accent);
+}
+
+.loadwheel {
+    width: 100%;
+}
+
+.loadwheel div {
+    width: 3em;
+    height: 3em;
+    margin: auto;
+    margin-top: 2em;
+
+    border: .15em solid var(--background);
+    border-top: .15em solid var(--accent);
+    border-bottom: .15em solid var(--accent);
+
+    border-radius: 50%;
+
+    animation: infinite 1s wheel;
+}
+
+@keyframes wheel {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .main {

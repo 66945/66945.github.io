@@ -71,7 +71,7 @@ function toggleSideBar() {
     sideBar = !sideBar;
     
     if(sideBar)
-        document.getElementById('sidebar').style.transform = 'translateX(110%)';
-    else
         document.getElementById('sidebar').style.transform = 'translateX(0)';
+    else
+        document.getElementById('sidebar').style.transform = 'translateX(110%)';
 }
