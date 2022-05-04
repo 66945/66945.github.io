@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+body {
+    --dark-purple: #2c0050;
+    --light-purple: #22003d;
+    --off-white: #e4e4e4;
+    --gold: #d3c6df;
+
+    background-color: var(--off-white);
+    font-family: 'Poppins';
+
+    margin: 0;
+}
+
+header {
+    position: fixed;
+    top: 0;
+
+    z-index: 1;
+
+    width: 100%;
+    
+    /* overflow: hidden; */
+
+    background-color: var(--light-purple);
+    box-shadow: 0pt 2pt 5pt black;
+}
+
+header a {
+    float: left;
+    color: white;
+    text-align: center;
+    padding: 10pt 20pt 10pt 20pt;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+header a:hover {
+    background-color: white;
+    color: var(--light-purple);
+}
+
+.top {
+    background: var(--dark-purple);
+    color: white;
+
+    padding-top: 30pt;
+
+    text-align: center;
+}
+
+.top h1 {
+    font-family: 'Oswald';
+    font-size: 3em;
+
+    margin: 3pt;
+}
+
+h2 {
+    text-align: center;
+}
+
+table {
+    width: 60%;
+    margin: auto;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+th {
+    font-size: 1.3em;
+}
+
+td {
+    padding: 10pt;
+}
+
+td a {
+    color: inherit;
+    text-decoration: none;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+tr hr {
+    background-color: var(--light-purple);
+
+    height: 1px;
+    border: none;
+    padding: 0pt;
+}
+
+tr:nth-child(2n) {
+    border: 1px solid var(--gold);
+    /* background-color: var(--gold); */
+}
+
+.new::after {
+    background-color: #00f150;
+    color: white;
+
+    font-size: .8em;
+    
+    padding: 2pt 5pt 2pt 5pt;
+    margin: 5pt;
+    border-radius: 3pt;
+
+    content: "new";
+
+    display: inline-block;
+}
+
+.unrated::after {
+    background-color: #0099f1;
+    color: white;
+
+    font-size: .8em;
+    
+    padding: 2pt 5pt 2pt 5pt;
+    margin: 5pt;
+    border-radius: 3pt;
+
+    content: "unrated";
+
+    display: inline-block;
+}
+
+.loading-wheel {
+    width: 50px;
+    height: 50px;
+
+    margin: auto;
+
+    border: 2px solid var(--gold);
+    border-top: 2px solid var(--dark-purple);
+
+    border-radius: 50%;
+
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}

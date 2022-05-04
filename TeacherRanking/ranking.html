@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <title>FCHS Teacher Ranking</title>
+</head>
+<body>
+    <header>
+        <a href="index.html">Home</a>
+        <a href="reviews.html">Written Reviews</a>
+        <a href="" style="float: right;">All Rankings</a>
+    </header>
+
+    <div class="top">
+        <h1>All Teacher Rankings</h1>
+    </div>
+
+    <div class="rankings">
+        <h2>2022 Rankings</h2>
+        <table id="rankings">
+            <tr>
+                <th>Rank</th>
+                <th>Teacher</th>
+                <th>Score</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        let table = document.getElementById('rankings');
+
+        function onTeacherDataLoad() {
+            let rank = 1;
+            for(let teacher of teachers) {
+                addRow(table, teacher, rank);
+                rank += 1;
+            }
+        }
+
+        loadTeacherData();
+    </script>
+</body>
+</html>

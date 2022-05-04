@@ -1,0 +1,156 @@
+#mug {
+    width: 150pt;
+    height: 200pt;
+
+    box-shadow: 2pt 2pt 10pt black;
+
+    margin: 10pt;
+}
+
+#score {
+    font-size: 2.8em;
+}
+
+.graph {
+    width: 40%;
+    padding: 20pt;
+    margin: auto;
+}
+
+.graph div {
+    background-color: var(--gold);
+
+    width: 95%;
+    height: 1em;
+
+    border-radius: 1.5em;
+
+    margin: auto;
+    margin-bottom: 10pt;
+}
+
+.stars {
+    float: left;
+    font-size: 1em;
+    margin-top: -.05em;
+}
+
+.bar {
+    background-color: var(--light-purple);
+
+    height: 100%;
+
+    border-radius: .5em;
+
+    display: inline-block;
+}
+
+.review-form {
+    margin-top: 10pt;
+    font-size: 1.2em;
+    text-align: center;
+
+    cursor: default;
+}
+
+.star-form {
+    width: 125pt;
+    margin: auto;
+}
+
+.star-form img {
+    width: 25pt;
+    filter: brightness(0) opacity(.2);
+
+    float: left;
+}
+
+.star-form .dark {
+    filter: brightness(0) opacity(.8);
+}
+
+.review-form a {
+    text-decoration: underline;
+}
+
+.review-form a:hover {
+    color: var(--gold);
+    cursor: pointer;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: #00000088;
+    z-index: 2;
+
+    display: grid;
+    place-items: center;
+}
+
+.write-review {
+    width: 50%;
+    height: 80%;
+
+    text-align: center;
+    background-color: white;
+
+    display: grid;
+    grid-template-rows: [head] 10% [stars] 10% [form] 60%;
+}
+
+.write-review h1 {
+    grid-row: head;
+}
+
+.star-submit-form {
+    grid-row: stars;
+    grid-column: 1;
+}
+
+.star-submit-form img:hover {
+    cursor: pointer;
+}
+
+.write-review textarea {
+    grid-row: form;
+    grid-column: 1;
+
+    margin: 0 5% 0 5%;
+    resize: none;
+
+    outline: none;
+    border: 1px solid var(--gold);
+    font-family: 'Poppins';
+}
+
+.write-review textarea:focus {
+    border: 1px solid var(--dark-purple);
+}
+
+.write-review button {
+    width: 80%;
+    height: 100%;
+
+    margin: auto;
+    margin-top: 10pt;
+    margin-top: 10pt;
+    grid-row: 4;
+
+    border: none;
+    background-color: var(--light-purple);
+
+    font-family: 'Poppins';
+    font-size: 1.5em;
+    color: white;
+}
+
+.write-review button:hover {
+    background-color: var(--dark-purple);
+    cursor: pointer;
+}

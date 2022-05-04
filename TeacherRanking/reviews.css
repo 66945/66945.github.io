@@ -1,0 +1,25 @@
+#reviews {
+    width: 50%;
+    margin: auto;
+}
+
+.review {
+    width: 100%;
+    margin-bottom: 30pt;
+    padding: 10pt;
+
+    border: 1px solid var(--gold);
+    /* background-color: white; */
+
+    /* border-radius: 5pt; */
+    /* box-shadow: 2pt 2pt 10pt #3b3b3b; */
+}
+
+.review span {
+    font-size: 1.5em;
+}
+
+.review .body {
+    padding-left: 10%;
+    padding-right: 5%;
+}

@@ -1,0 +1,44 @@
+#bestworst {
+    margin: auto;
+    padding: 40pt 20pt 20pt 20pt;
+}
+
+#bestworst img {
+    width: 125pt;
+    height: 150pt;
+
+    margin: 0pt 60pt 20pt 60pt;
+    box-shadow: 2pt 2pt 10pt black;
+}
+
+#best {
+    transform: rotate(-7deg);
+}
+
+#crown {
+    width: 200pt!important;
+    height: 150pt!important;
+    position: absolute;
+    box-shadow: none!important;
+    filter: drop-shadow(2pt 2pt 10pt black);
+
+    transform: translate(-320pt, -85pt) rotate(-30deg) scale(.5);
+}
+
+#horns {
+    width: 200pt!important;
+    height: 150pt!important;
+    position: absolute;
+    box-shadow: none!important;
+    filter: drop-shadow(2pt 2pt 10pt black);
+
+    transform: translate(-250pt, -90pt) rotate(20deg) scale(.5);
+}
+
+#worst {
+    transform: rotate(7deg);
+}
+
+.rankings {
+    text-align: center;
+}

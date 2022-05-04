@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="teacher.css">
+    <link rel="stylesheet" href="reviews.css">
+    <script src="script.js"></script>
+    <script src="reviews.js"></script>
+    <script src="teacher.js" defer></script>
+    <title>FCHS Teacher Ranking</title>
+</head>
+<body>
+    <header>
+        <a href="index.html">Home</a>
+        <a href="reviews.html">Written Reviews</a>
+        <a href="ranking.html" style="float: right;">All Rankings</a>
+    </header>
+
+    <div class="top">
+        <h1 id='name'>Aaron Menzel</h1>
+        <img src="/imgs/menzel.png" id="mug">
+        <br>
+        <span id="score">4.7</span>
+    </div>
+
+    <div class="review-form">
+        <div class="star-form">
+            <img src="/imgs/star.png">
+            <img src="/imgs/star.png">
+            <img src="/imgs/star.png">
+            <img src="/imgs/star.png">
+            <img src="/imgs/star.png">
+        </div>
+        <br>
+        <br>
+        <a onclick="toggleReview(true)">Write review...</a>
+    </div>
+
+    <div class="graph">
+        <span class="stars">5</span>
+        <div>
+            <span class="bar"></span>
+        </div>
+        <span class="stars">4</span>
+        <div>
+            <span class="bar"></span>
+        </div>
+        <span class="stars">3</span>
+        <div>
+            <span class="bar"></span>
+        </div>
+        <span class="stars">2</span>
+        <div>
+            <span class="bar"></span>
+        </div>
+        <span class="stars">1</span>
+        <div>
+            <span class="bar"></span>
+        </div>
+    </div>
+
+    <div id="reviews">
+        <div class="loading-wheel"></div>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="write-review">
+            <h1>Review <i id="popup-name">{Teacher}</i></h1>
+            <div class="star-submit-form star-form">
+                <img src="/imgs/star.png" onclick="setReviewStar(1)">
+                <img src="/imgs/star.png" onclick="setReviewStar(2)">
+                <img src="/imgs/star.png" onclick="setReviewStar(3)">
+                <img src="/imgs/star.png" onclick="setReviewStar(4)">
+                <img src="/imgs/star.png" onclick="setReviewStar(5)">
+            </div>
+            <br>
+            <br>
+            <textarea placeholder="Write Review" id="review"></textarea>
+            <br>
+            <button onclick="submitReview()">Submit</button>
+        </div>
+    </div>
+</body>
+</html>
