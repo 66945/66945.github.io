@@ -101,6 +101,11 @@ function setReviewStar(starNum) {
  * Updates teacher score and submits text review
  */
 function submitReview() {
+    if(reviewStars === 0) {
+        alert('Review must contain 1 to 5 stars');
+        return;
+    }
+    
     let reviewBody = document.getElementById('review').value;
 
     let http = new XMLHttpRequest();
