@@ -3,7 +3,7 @@ const DESC_LENGTH = 10;
 let http = new XMLHttpRequest();
 http.onload = loadProjects;
 http.open('GET', 'https://api.github.com/users/66945/repos');
-http.setRequestHeader('Authorization', 'token ghp_2iA' + 'SjvPBWFz9kP' + 'bdthnMn3KAXf' + 'Cxlh4MxHIP');
+http.setRequestHeader('Authorization', 'token ghp_P8RIeI' + '73YNJIlCVc' + 'CNaGVW1DzhT' + 'lEo2N6M6I');
 http.send();
 
 let slide = 0;
