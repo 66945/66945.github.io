@@ -9,7 +9,7 @@ function sendContact() {
         return;
 
     let reqBody = {
-        "to": "66945@psdschools.org",
+        "to": "dtmcgra@gmail.com",
         "subject": "Contact from " + name,
         "html": '<p>' + content + '</p>',
         "company": "McGrath inc.",
