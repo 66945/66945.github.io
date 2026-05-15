@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debug Replay v3</title>
+<style>
+  /* ── DARK (default) ───────────────────────────────────────────────────────── */
+  :root {
+    --bg0: #1e1e1e;  --bg1: #252526;  --bg2: #2d2d30;  --bg3: #3c3c3c;
+    --titlebar-bg: #323233;
+    --border: #3f3f46;
+    --text: #d4d4d4;  --text-dim: #858585;  --text-bright: #ffffff;
+    --accent: #007acc;  --accent-hover: #1a8ad4;
+    --hl-line: #782626;  --hl-border: #cc0000;
+    --yellow: #dcdcaa;  --blue: #9cdcfe;  --string: #ce9178;  --number: #b5cea8;
+    --builtin: #4ec9b0;  --keyword: #569cd6;  --comment: #6a9955;
+    --red: #f44747;  --green: #4caf50;  --orange: #d7ba7d;  --bp: #e51400;
+    /* status bar */
+    --sb-bg: #007acc;  --sb-text: rgba(255,255,255,0.92);  --sb-sep: rgba(255,255,255,0.35);
+    /* subtle overlays */
+    --row-border: rgba(255,255,255,0.04);
+    --code-hover: rgba(255,255,255,0.03);
+    --changed-bg: rgba(255,200,0,0.07);
+    --active-frame-bg: rgba(0,122,204,0.15);
+    --ct-range-bg: rgba(0,122,204,0.10);
+    --hist-cur-bg: rgba(0,122,204,0.15);
+    --search-match: rgba(255,200,0,0.10);
+    --search-cur: rgba(255,200,0,0.22);
+    --search-cur-out: rgba(255,200,0,0.55);
+    --out-new-bg: rgba(76,175,80,0.12);
+    --exc-bg: rgba(244,71,71,0.15);
+    /* scrollbar */
+    --scrollbar: #404040;  --scrollbar-h: #555;
+    /* arrow / direction button colours */
+    --fwd-color: #4fc1ff;  --rev-color: #f9a825;
+    /* syntax modifiers — override per theme */
+    --kw-weight: normal;  --kw-style: normal;
+    --str-weight: normal;  --str-style: normal;
+    --bi-weight: normal;   --bi-style: normal;
+    --fn-weight: normal;   --fn-style: normal;
+    --num-weight: normal;  --num-style: normal;
+    /* timeline rgb for canvas */
+    --tl-rgb: 0,122,204;
+  }
+
+  /* ── LIGHT ────────────────────────────────────────────────────────────────── */
+  [data-theme="light"] {
+    --bg0: #ffffff;  --bg1: #f8f8f8;  --bg2: #ececec;  --bg3: #e0e0e0;
+    --titlebar-bg: #e0e0e0;
+    --border: #c8c8c8;
+    --text: #1e1e1e;  --text-dim: #717171;  --text-bright: #000000;
+    --accent: #0078d4;  --accent-hover: #106ebe;
+    --hl-line: #ffe7e7;  --hl-border: #d40000;
+    --yellow: #795e26;  --blue: #001080;  --string: #a31515;  --number: #098658;
+    --builtin: #267f99;  --keyword: #0000ff;  --comment: #57a64a;
+    --red: #cd3131;  --green: #388a34;  --orange: #875000;  --bp: #cd3131;
+    --sb-bg: #0078d4;  --sb-text: rgba(255,255,255,0.96);  --sb-sep: rgba(255,255,255,0.4);
+    --row-border: rgba(0,0,0,0.05);
+    --code-hover: rgba(0,0,0,0.03);
+    --changed-bg: rgba(200,150,0,0.11);
+    --active-frame-bg: rgba(0,120,212,0.08);
+    --ct-range-bg: rgba(0,120,212,0.06);
+    --hist-cur-bg: rgba(0,120,212,0.08);
+    --search-match: rgba(210,170,0,0.18);
+    --search-cur: rgba(210,170,0,0.38);
+    --search-cur-out: rgba(210,170,0,0.75);
+    --out-new-bg: rgba(56,138,52,0.12);
+    --exc-bg: rgba(205,49,49,0.08);
+    --scrollbar: #c0c0c0;  --scrollbar-h: #a0a0a0;
+    --fwd-color: #0060aa;  --rev-color: #a06000;
+    --tl-rgb: 0,120,212;
+  }
+
+  /* ── NOIR BLAZE ───────────────────────────────────────────────────────────── */
+  [data-theme="noir-blaze"] {
+    --bg0: #000000;  --bg1: #080808;  --bg2: #111111;  --bg3: #1a1a1a;
+    --titlebar-bg: #000000;
+    --border: #202020;
+    --text: #c8c8c8;  --text-dim: #4a4a4a;  --text-bright: #ffffff;
+    --accent: #ff0088;  --accent-hover: #ff3399;
+    --hl-line: #380000;  --hl-border: #ff0000;
+    /* syntax — monochromatic grays + pink keywords */
+    --yellow: #e0e0e0;   /* fn-calls  */
+    --blue: #b0b0b0;
+    --string: #999999;   /* strings: mid-gray */
+    --number: #5a5a5a;   /* numbers: dark gray */
+    --builtin: #d8d8d8;  /* builtins: light gray */
+    --keyword: #ff0088;  /* THE pink */
+    --comment: #2e2e2e;
+    --red: #ff0055;  --green: #42e880;  --orange: #ff0088;  --bp: #ff0055;
+    --sb-bg: #000000;  --sb-text: #ff0088;  --sb-sep: rgba(255,0,136,0.25);
+    --row-border: rgba(255,255,255,0.025);
+    --code-hover: rgba(255,255,255,0.015);
+    --changed-bg: rgba(255,0,136,0.07);
+    --active-frame-bg: rgba(255,0,136,0.09);
+    --ct-range-bg: rgba(255,0,136,0.05);
+    --hist-cur-bg: rgba(255,0,136,0.09);
+    --search-match: rgba(255,0,136,0.09);
+    --search-cur: rgba(255,0,136,0.22);
+    --search-cur-out: rgba(255,0,136,0.52);
+    --out-new-bg: rgba(255,0,136,0.07);
+    --exc-bg: rgba(255,0,85,0.15);
+    --scrollbar: #181818;  --scrollbar-h: #252525;
+    --fwd-color: #ff0088;  --rev-color: #777777;
+    --tl-rgb: 255,0,136;
+    --kw-weight: bold;
+    --str-style: italic;
+    --bi-weight: bold;
+    --fn-weight: bold;
+    --num-style: normal;
+  }
+
+  /* ── RESET ───────────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: var(--bg0); color: var(--text);
+    height: 100vh; display: flex; flex-direction: column;
+    overflow: hidden; font-size: 13px;
+  }
+
+  /* ── TITLEBAR ───────────────────────────────────────────────────────────── */
+  #titlebar {
+    background: var(--titlebar-bg); border-bottom: 1px solid var(--border);
+    padding: 0 12px; height: 36px; display: flex; align-items: center;
+    gap: 10px; flex-shrink: 0;
+  }
+  .logo { color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+  .filename { color: var(--text-dim); font-size: 12px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tb-btn {
+    background: var(--accent); color: #fff; border: none;
+    padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; flex-shrink: 0;
+  }
+  .tb-btn:hover { background: var(--accent-hover); }
+  #file-input { display: none; }
+
+  /* theme switcher */
+  #theme-switcher { display: flex; gap: 2px; flex-shrink: 0; }
+  .tm-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+    padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 10px;
+    font-weight: 600; letter-spacing: 0.3px; transition: all 0.12s; white-space: nowrap;
+  }
+  .tm-btn:hover { color: var(--text); background: var(--bg2); }
+  .tm-btn.active { border-color: var(--accent); color: var(--accent); }
+
+  /* ── TOOLBAR ────────────────────────────────────────────────────────────── */
+  #toolbar {
+    background: var(--bg1); border-bottom: 1px solid var(--border);
+    padding: 4px 12px; display: flex; align-items: center;
+    gap: 2px; flex-shrink: 0; flex-wrap: wrap;
+  }
+  .tool-sep { width: 1px; height: 20px; background: var(--border); margin: 0 3px; }
+  .dbg-btn {
+    background: transparent; color: var(--text); border: 1px solid transparent;
+    border-radius: 3px; padding: 3px 7px; cursor: pointer; font-size: 11px;
+    display: flex; align-items: center; gap: 4px; transition: all 0.1s; white-space: nowrap;
+  }
+  .dbg-btn:hover:not(:disabled) { background: var(--bg3); border-color: var(--border); }
+  .dbg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .dbg-btn.active { background: var(--bg3); border-color: var(--accent); color: var(--accent); }
+  .dbg-btn .icon { font-size: 13px; }
+  .dbg-btn.fwd  { color: var(--fwd-color); }
+  .dbg-btn.rev  { color: var(--rev-color); }
+  .dbg-btn.danger { color: var(--red); }
+  .dbg-btn.play { color: var(--green); }
+  .dbg-btn.play.playing { color: var(--bg0); background: var(--green); border-color: var(--green); }
+  #speed-select {
+    background: var(--bg2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 3px; padding: 2px 5px; font-size: 11px; cursor: pointer; outline: none;
+  }
+  .step-counter { margin-left: auto; font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+  .step-counter b { color: var(--text); }
+
+  /* ── MAIN SPLIT ─────────────────────────────────────────────────────────── */
+  #main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+  .resize-handle {
+    width: 5px; flex-shrink: 0; cursor: col-resize;
+    background: var(--border); position: relative; z-index: 10; transition: background 0.15s;
+  }
+  .resize-handle:hover, .resize-handle.dragging { background: var(--accent); }
+  .resize-handle::after { content: ''; position: absolute; inset: 0 -3px; }
+
+  /* ── SOURCE PANEL ───────────────────────────────────────────────────────── */
+  #source-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 200px; }
+  #source-header {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 3px 10px; font-size: 11px; color: var(--text-dim);
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+  }
+  #source-header .fn { color: var(--yellow); font-weight: 600; font-family: 'Iosevka', monospace; font-size: 12px; }
+  .badge { background: var(--accent); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 10px; }
+  .badge.exc { background: var(--red); }
+
+  #search-bar {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 4px 8px; display: none; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+  #search-bar.visible { display: flex; }
+  #search-input {
+    flex: 1; background: var(--bg0); border: 1px solid var(--border); color: var(--text);
+    border-radius: 3px; padding: 3px 8px; font-size: 12px; outline: none;
+    font-family: 'Iosevka', monospace;
+  }
+  #search-input:focus { border-color: var(--accent); }
+  #search-count { font-size: 11px; color: var(--text-dim); white-space: nowrap; min-width: 75px; }
+  .snav { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 3px; padding: 2px 6px; cursor: pointer; font-size: 11px; }
+  .snav:hover { background: var(--bg3); }
+  .sclose { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 15px; padding: 0 3px; }
+  .sclose:hover { color: var(--text); }
+
+  #exc-banner {
+    background: var(--exc-bg); border-bottom: 1px solid var(--red);
+    padding: 5px 12px; display: none; align-items: center; gap: 8px;
+    font-size: 11px; flex-shrink: 0; font-family: 'Iosevka', monospace;
+  }
+  #exc-banner.visible { display: flex; }
+  #exc-banner .exc-type { color: var(--red); font-weight: 700; }
+  #exc-banner .exc-msg  { color: var(--text); flex: 1; }
+
+  /* ── FUNCTION TABS ─────────────────────────────────────────────────────────── */
+  #fn-tabs {
+    display: flex; overflow-x: auto; background: var(--bg1);
+    border-bottom: 1px solid var(--border); flex-shrink: 0; scrollbar-width: none;
+  }
+  #fn-tabs::-webkit-scrollbar { height: 0; }
+  .fn-tab {
+    padding: 6px 16px; font-family: 'Iosevka', monospace; font-size: 12px;
+    color: var(--text-dim); cursor: pointer; border: none; outline: none;
+    border-right: 1px solid var(--border); border-bottom: 2px solid transparent;
+    background: transparent; white-space: nowrap; flex-shrink: 0;
+    transition: color 0.1s, background 0.1s;
+  }
+  .fn-tab:hover { color: var(--text); background: var(--bg2); }
+  .fn-tab.active { color: var(--yellow); border-bottom-color: var(--accent); background: var(--bg0); }
+
+  /* code area */
+  #source-code {
+    flex: 1; overflow-y: auto; background: var(--bg0);
+    font-family: 'Iosevka', monospace; font-size: 15px; line-height: 20px;
+  }
+  .code-line { display: flex; min-height: 20px; }
+  .code-line:hover { background: var(--code-hover); }
+  .code-line.active { background: var(--hl-line); border-left: 2px solid var(--hl-border); }
+  .code-line.ghost-line { background: var(--bg2); border-left: 2px solid var(--text-dim); }
+  .code-line.ghost-line .ln { color: var(--text); }
+  .code-line.search-match   { background: var(--search-match); }
+  .code-line.search-current { background: var(--search-cur); outline: 1px solid var(--search-cur-out); }
+
+  /* gutter */
+  .bp-col { width: 16px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; }
+  .bp-glyph { width: 9px; height: 9px; border-radius: 50%; }
+  .bp-col.has-bp   .bp-glyph { background: var(--bp); }
+  .bp-col.no-bp:hover .bp-glyph { border: 1px solid var(--bp); opacity: 0.5; }
+  .ln {
+    min-width: 40px; text-align: right; padding-right: 10px; color: var(--text-dim);
+    font-size: 15px; user-select: none; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .code-line.active .ln { color: var(--text-bright); }
+  .arr { min-width: 16px; display: flex; align-items: center; justify-content: center; color: var(--fwd-color); flex-shrink: 0; }
+  .src { flex: 1; padding-right: 16px; white-space: pre; }
+  .inline-hint { color: var(--text-dim); opacity: 0.6; margin-left: 10px; font-style: italic; }
+
+  /* ── SYNTAX ─────────────────────────────────────────────────────────────── */
+  .kw  { color: var(--keyword);  font-weight: var(--kw-weight);  font-style: var(--kw-style); }
+  .str { color: var(--string);   font-style: var(--str-style);   font-weight: var(--str-weight); }
+  .num { color: var(--number);   font-weight: var(--num-weight);  font-style: var(--num-style); }
+  .cmt { color: var(--comment);  font-style: italic; }
+  .bi  { color: var(--builtin);  font-weight: var(--bi-weight);  font-style: var(--bi-style); }
+  .fn-call { color: var(--yellow); font-weight: var(--fn-weight); font-style: var(--fn-style); }
+  .ident { border-radius: 2px; }
+  .ident.in-scope { border-bottom: 1px dotted var(--blue); cursor: help; }
+
+  /* ── RIGHT PANEL ────────────────────────────────────────────────────────── */
+  #right { width: 330px; min-width: 270px; display: flex; flex-direction: column; overflow: hidden; background: var(--bg1); }
+  #right-tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
+  .rt-tab {
+    padding: 6px 9px; background: transparent; border: none; color: var(--text-dim);
+    cursor: pointer; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; white-space: nowrap; border-bottom: 2px solid transparent;
+    transition: color 0.1s; flex-shrink: 0;
+  }
+  .rt-tab:hover { color: var(--text); }
+  .rt-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .panel-view { display: none; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+  .panel-view.active { display: flex; }
+
+  /* call stack */
+  #cs-panel { flex: 0 0 auto; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; max-height: 200px; }
+  .ph {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 4px 12px; font-size: 10px; font-weight: 700; color: var(--text-dim);
+    letter-spacing: 0.8px; text-transform: uppercase; flex-shrink: 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ph-extra { margin-left: auto; font-size: 10px; color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  #cs-list { overflow-y: auto; flex: 1; }
+  .sf { display: flex; align-items: center; padding: 4px 12px; border-bottom: 1px solid var(--row-border); gap: 7px; }
+  .sf:hover { background: var(--bg3); }
+  .sf.top { background: var(--active-frame-bg); }
+  .sf-d  { font-size: 10px; color: var(--accent); font-weight: 700; min-width: 16px; }
+  .sf-fn { font-family: 'Iosevka', monospace; color: var(--yellow); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sf-ln { color: var(--text-dim); }
+  .sf-ret { font-size: 10px; color: var(--green); font-family: 'Iosevka', monospace; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .evt-badge { font-size: 9px; padding: 1px 4px; border-radius: 2px; font-weight: 700; }
+  .evt-call      { background: var(--ct-range-bg);          color: var(--fwd-color); }
+  .evt-return    { background: rgba(76,175,80,0.2);          color: var(--green); }
+  .evt-exception { background: rgba(244,71,71,0.2);          color: var(--red); }
+
+  /* variables */
+  #var-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #var-list { overflow-y: auto; flex: 1; }
+  .vr {
+    display: flex; align-items: baseline; padding: 3px 12px;
+    border-bottom: 1px solid var(--row-border);
+    gap: 6px; font-family: 'Iosevka', monospace; font-size: 12px;
+  }
+  .vr:hover { background: var(--bg3); }
+  .vr.changed { background: var(--changed-bg); border-left: 2px solid var(--orange); padding-left: 10px; }
+  .vn { color: var(--blue); min-width: 80px; max-width: 110px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+  .vn:hover { text-decoration: underline; }
+  .ve { color: var(--text-dim); }
+  .vv { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--text); }
+  .vv.s { color: var(--string); } .vv.n { color: var(--number); } .vv.o { color: var(--builtin); } .vv.b { color: var(--keyword); }
+  .empty-msg { padding: 12px; color: var(--text-dim); font-size: 11px; text-align: center; }
+
+  /* watch */
+  #watch-add-row { display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  #watch-input {
+    flex: 1; background: var(--bg0); border: 1px solid var(--border); color: var(--text);
+    border-radius: 3px; padding: 3px 8px; font-size: 12px; outline: none;
+    font-family: 'Iosevka', monospace;
+  }
+  #watch-input:focus { border-color: var(--accent); }
+  #watch-add { background: var(--accent); color: #fff; border: none; border-radius: 3px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
+  #watch-list { overflow-y: auto; flex: 1; }
+  .wr { display: flex; align-items: baseline; padding: 3px 8px 3px 12px; border-bottom: 1px solid var(--row-border); gap: 6px; font-family: 'Iosevka', monospace; font-size: 12px; }
+  .wr:hover { background: var(--bg3); }
+  .wr.changed { background: var(--changed-bg); }
+  .we { color: var(--yellow); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 60px; }
+  .wv { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+  .wv.s { color: var(--string); } .wv.n { color: var(--number); } .wv.b { color: var(--keyword); }
+  .wv.err { color: var(--text-dim); font-style: italic; }
+  .wr-del { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 0 2px; flex-shrink: 0; line-height: 1; }
+  .wr-del:hover { color: var(--red); }
+
+  /* output */
+  #output-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #output-text {
+    flex: 1; overflow-y: auto; padding: 8px 12px;
+    font-family: 'Iosevka', monospace; font-size: 12px; line-height: 1.6;
+    white-space: pre-wrap; word-break: break-all; color: var(--text);
+  }
+  .out-new { background: var(--out-new-bg); border-radius: 2px; }
+  .data-hint {
+    margin: 10px; padding: 10px 12px; background: var(--bg2); border-radius: 4px;
+    border-left: 3px solid var(--accent); font-size: 11px; color: var(--text-dim); line-height: 1.8;
+  }
+  .data-hint b { color: var(--yellow); display: block; margin-bottom: 4px; font-size: 12px; }
+  .data-hint code { color: var(--string); font-family: 'Iosevka', monospace; font-size: 11px; display: block; margin-top: 2px; }
+
+  /* profile */
+  #profile-wrap { flex: 1; overflow-y: auto; }
+  .prof-section { padding: 8px 12px 4px; }
+  .prof-title { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .prof-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; font-family: 'Iosevka', monospace; font-size: 11px; }
+  .prof-fn { color: var(--yellow); min-width: 90px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
+  .prof-fn.current { color: var(--text-bright); }
+  .prof-bar-wrap { flex: 1; height: 7px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .prof-bar { height: 100%; border-radius: 3px; background: var(--accent); }
+  .prof-bar.hot { background: var(--orange); }
+  .prof-bar.hottest { background: var(--red); }
+  .prof-val { color: var(--text-dim); font-size: 10px; white-space: nowrap; min-width: 55px; text-align: right; }
+
+  /* call tree */
+  #ct-list { overflow-y: auto; flex: 1; font-family: 'Iosevka', monospace; font-size: 12px; line-height: 18px; }
+  .ct-head { display: flex; align-items: center; gap: 5px; padding: 3px 6px 3px 0; cursor: pointer; border-bottom: 1px solid var(--row-border); transition: background 0.08s; user-select: none; }
+  .ct-head:hover { background: var(--bg3); }
+  .ct-head.ct-in-range { background: var(--ct-range-bg); }
+  .ct-head.ct-current  { background: var(--hl-line) !important; border-left: 2px solid var(--accent); }
+  .ct-bullet { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-left: 4px; }
+  .ct-fn { color: var(--yellow); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+  .ct-range { font-size: 10px; color: var(--text-dim); white-space: nowrap; margin-right: 6px; font-variant-numeric: tabular-nums; }
+  .ct-line { display: flex; align-items: baseline; gap: 5px; cursor: pointer; border-bottom: 1px solid var(--row-border); transition: background 0.08s; }
+  .ct-line:hover { background: var(--bg3); }
+  .ct-line.ct-current { background: var(--hl-line); }
+  .ct-ln  { font-size: 10px; color: var(--text-dim); text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .ct-src { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--text); padding-right: 6px; }
+  .ct-ret { font-size: 10px; color: var(--text-dim); font-style: italic; padding: 1px 0 2px; border-bottom: 1px solid var(--row-border); user-select: none; }
+
+  /* ── TIMELINE ───────────────────────────────────────────────────────────── */
+  #timeline { background: var(--bg1); border-top: 1px solid var(--border); padding: 5px 12px 6px; flex-shrink: 0; }
+  #tl-lbl { font-size: 10px; color: var(--text-dim); display: flex; justify-content: space-between; margin-bottom: 3px; }
+  #tl-track { position: relative; height: 32px; background: var(--bg2); border-radius: 3px; border: 1px solid var(--border); }
+  #tl-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border-radius: 3px; }
+  #tl-events { position: absolute; inset: 0; pointer-events: none; }
+  .tl-marker { position: absolute; top: 0; height: 100%; width: 2px; opacity: 0.6; }
+  .tl-marker.m-call      { background: var(--accent); }
+  .tl-marker.m-return    { background: var(--green); }
+  .tl-marker.m-exception { background: var(--red); width: 3px; opacity: 0.9; }
+  .tl-bp { position: absolute; top: 0; height: 100%; width: 2px; background: var(--bp); opacity: 0.75; pointer-events: none; }
+  #tl-thumb { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--accent); pointer-events: none; box-shadow: 0 0 5px var(--accent); z-index: 5; }
+  #tl-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; z-index: 6; }
+
+  /* ── VARIABLE HISTORY MODAL ─────────────────────────────────────────────── */
+  #hist-modal { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.65); }
+  #hist-modal.open { display: flex; }
+  #hist-box { background: var(--bg1); border: 1px solid var(--border); border-radius: 6px; width: 540px; max-width: 92vw; display: flex; flex-direction: column; box-shadow: 0 8px 36px rgba(0,0,0,0.7); overflow: hidden; }
+  #hist-hdr { background: var(--bg2); padding: 9px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+  #hist-title { color: var(--blue); font-family: 'Iosevka', monospace; font-size: 13px; font-weight: 600; flex: 1; }
+  #hist-sub { color: var(--text-dim); font-size: 11px; }
+  #hist-close { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; }
+  #hist-close:hover { color: var(--text); }
+  #hist-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--bg1); }
+  #hist-canvas { width: 100%; height: 110px; display: block; background: var(--bg0); border-radius: 3px; border: 1px solid var(--border); }
+  #hist-list { max-height: 200px; overflow-y: auto; font-family: 'Iosevka', monospace; font-size: 11px; }
+  .vh-row { display: flex; gap: 8px; padding: 2px 6px; border-bottom: 1px solid var(--row-border); align-items: baseline; cursor: pointer; }
+  .vh-row:hover { background: var(--bg3); }
+  .vh-row.vh-cur { background: var(--hist-cur-bg); }
+  .vh-step { color: var(--text-dim); min-width: 55px; font-size: 10px; flex-shrink: 0; }
+  .vh-old  { color: var(--text-dim); text-decoration: line-through; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
+  .vh-arr  { color: var(--text-dim); flex-shrink: 0; }
+  .vh-new  { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vh-new.n { color: var(--number); } .vh-new.s { color: var(--string); } .vh-new.b { color: var(--keyword); }
+
+  /* ── STATUS BAR ─────────────────────────────────────────────────────────── */
+  #statusbar { background: var(--sb-bg); height: 22px; display: flex; align-items: center; padding: 0 12px; gap: 10px; flex-shrink: 0; }
+  .si { font-size: 11px; color: var(--sb-text); }
+  .ss { color: var(--sb-sep); }
+  #sb-evt { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 2px; color: var(--sb-text); }
+  #sb-evt.ev-call      { background: rgba(255,255,255,0.15); }
+  #sb-evt.ev-return    { background: rgba(76,175,80,0.35); }
+  #sb-evt.ev-exception { background: rgba(244,71,71,0.35); }
+
+  /* ── TOOLTIP ────────────────────────────────────────────────────────────── */
+  #var-tooltip {
+    position: fixed; z-index: 200; pointer-events: none; display: none;
+    background: var(--bg2); border: 1px solid var(--accent); border-radius: 4px;
+    padding: 5px 10px; font-family: 'Iosevka', monospace; font-size: 12px;
+    color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    max-width: 360px; word-break: break-all; white-space: pre-wrap;
+  }
+  #var-tooltip .tt-name { color: var(--blue); }
+  #var-tooltip .tt-eq   { color: var(--text-dim); margin: 0 4px; }
+
+  /* ── DROP OVERLAY ───────────────────────────────────────────────────────── */
+  #drop-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 100; border: 3px dashed var(--accent); }
+  #drop-overlay.active { display: flex; }
+  .drop-msg { text-align: center; color: #fff; font-size: 20px; }
+  .drop-icon { font-size: 56px; display: block; margin-bottom: 12px; }
+
+  /* ── WELCOME ────────────────────────────────────────────────────────────── */
+  #welcome { padding: 48px 24px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; color: var(--text-dim); height: 100%; }
+  #welcome .wi { font-size: 56px; opacity: 0.2; }
+  #welcome h2 { color: var(--text); font-size: 20px; font-weight: 400; }
+  #welcome p  { font-size: 12px; max-width: 340px; text-align: center; line-height: 1.7; }
+  kbd { background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: monospace; font-size: 10px; color: var(--text); }
+
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-h); }
+</style>
+</head>
+<body>
+
+<div id="var-tooltip"></div>
+
+<div id="hist-modal">
+  <div id="hist-box">
+    <div id="hist-hdr">
+      <span id="hist-title"></span>
+      <span id="hist-sub"></span>
+      <button id="hist-close" onclick="closeHistory()">✕</button>
+    </div>
+    <div id="hist-body">
+      <canvas id="hist-canvas"></canvas>
+      <div id="hist-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="drop-overlay">
+  <div class="drop-msg"><span class="drop-icon">📂</span>Drop trace JSON or ZIP to load</div>
+</div>
+
+<div id="titlebar">
+  <span class="logo">▶ DEBUG REPLAY v3</span>
+  <span class="filename" id="file-label">No file loaded</span>
+  <div id="theme-switcher">
+    <button class="tm-btn active" data-theme="dark"       onclick="setTheme('dark')">Dark</button>
+    <button class="tm-btn"        data-theme="light"      onclick="setTheme('light')">Light</button>
+    <button class="tm-btn"        data-theme="noir-blaze" onclick="setTheme('noir-blaze')">Noir Blaze</button>
+  </div>
+  <button class="tb-btn" onclick="document.getElementById('file-input').click()">Open File</button>
+  <input type="file" id="file-input" accept=".json,.zip">
+</div>
+
+<div id="toolbar">
+  <button class="dbg-btn danger" id="btn-restart"   title="Restart (Home)"                   disabled onclick="restart()"><span class="icon">⏮</span>Restart</button>
+  <div class="tool-sep"></div>
+  <button class="dbg-btn rev"   id="btn-rev-bp"     title="Run Back to Breakpoint (Shift+F5)" disabled onclick="runToBreakpoint(-1)"><span class="icon">⏪</span>Rev BP</button>
+  <button class="dbg-btn rev"   id="btn-rev-out"    title="Reverse Step Out (Shift+F12)"      disabled onclick="reverseStepOut()"><span class="icon">⬆</span>Rev Out</button>
+  <button class="dbg-btn rev"   id="btn-rev-over"   title="Reverse Step Over (Shift+F10)"     disabled onclick="reverseStepOver()"><span class="icon">⬅</span>Rev Over</button>
+  <button class="dbg-btn rev"   id="btn-step-back"  title="Step Back (←)"                    disabled onclick="stepBack()"><span class="icon">◀</span>Back</button>
+  <div class="tool-sep"></div>
+  <button class="dbg-btn fwd"   id="btn-step-into"  title="Step Into (F11 / →)"               disabled onclick="stepInto()"><span class="icon">⬇</span>Into</button>
+  <button class="dbg-btn fwd"   id="btn-step-over"  title="Step Over (F10)"                   disabled onclick="stepOver()"><span class="icon">➡</span>Over</button>
+  <button class="dbg-btn fwd"   id="btn-step-out"   title="Step Out (F12)"                    disabled onclick="stepOut()"><span class="icon">⬆</span>Out</button>
+  <div class="tool-sep"></div>
+  <button class="dbg-btn fwd"   id="btn-continue"   title="Continue to Breakpoint (F5)"       disabled onclick="runToBreakpoint(1)"><span class="icon">▶</span>Continue</button>
+  <button class="dbg-btn"       id="btn-end"         title="Jump to End"                       disabled onclick="jumpEnd()"><span class="icon">⏭</span>End</button>
+  <div class="tool-sep"></div>
+  <button class="dbg-btn play"  id="btn-play"        title="Replay (Space)"                    disabled onclick="toggleReplay()"><span class="icon" id="play-icon">▶</span><span id="play-label">Replay</span></button>
+  <select id="speed-select" title="Playback speed" onchange="if(replayTimer){stopReplay();startReplay();}">
+    <option value="500">0.5×</option>
+    <option value="200" selected>1×</option>
+    <option value="100">2×</option>
+    <option value="50">5×</option>
+    <option value="20">10×</option>
+  </select>
+  <div class="tool-sep"></div>
+  <button class="dbg-btn" id="btn-hints" title="Inline value hints (I)" onclick="toggleHints()"><span class="icon">💡</span>Hints</button>
+  <button class="dbg-btn" id="btn-search" title="Search (Ctrl+F)" onclick="openSearch()"><span class="icon">🔍</span>Find</button>
+  <span class="step-counter" id="step-counter"></span>
+</div>
+
+<div id="main">
+  <div id="source-panel">
+    <div id="source-header">
+      <span>SOURCE</span>
+      <span class="fn" id="fn-label">—</span>
+      <span class="badge" id="depth-badge" style="display:none">depth 1</span>
+      <span class="badge exc" id="exc-badge" style="display:none">EXCEPTION</span>
+    </div>
+    <div id="fn-tabs"></div>
+    <div id="search-bar">
+      <input type="text" id="search-input" placeholder="Search source…" oninput="runSearch(this.value)" onkeydown="searchKey(event)">
+      <span id="search-count">—</span>
+      <button class="snav" onclick="searchNav(-1)">▲</button>
+      <button class="snav" onclick="searchNav(1)">▼</button>
+      <button class="sclose" onclick="closeSearch()">✕</button>
+    </div>
+    <div id="exc-banner"><span class="exc-type" id="exc-type"></span><span class="exc-msg" id="exc-msg"></span></div>
+    <div id="source-code">
+      <div id="welcome">
+        <span class="wi">🔍</span>
+        <h2>Debug Replay v3</h2>
+        <p>Open or drag &amp; drop a trace JSON or ZIP file.<br><br>
+          <kbd>F11</kbd> into &nbsp; <kbd>F10</kbd> over &nbsp; <kbd>F12</kbd> out<br>
+          <kbd>Shift+F11/10/12</kbd> reverse &nbsp; <kbd>F5</kbd> continue to breakpoint<br>
+          <kbd>←/→</kbd> back/forward &nbsp; <kbd>Home/End</kbd> restart/end<br>
+          <kbd>Ctrl+F</kbd> search &nbsp; <kbd>I</kbd> inline hints<br>
+          Click gutter to set breakpoints &nbsp; Click variable name for history
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="resize-handle" id="resize-handle"></div>
+
+  <div id="right">
+    <div id="right-tabs">
+      <button class="rt-tab active" id="tab-vars"    onclick="switchTab('vars')">Stack/Vars</button>
+      <button class="rt-tab"        id="tab-watch"   onclick="switchTab('watch')">Watch</button>
+      <button class="rt-tab"        id="tab-output"  onclick="switchTab('output')">Output</button>
+      <button class="rt-tab"        id="tab-profile" onclick="switchTab('profile')">Profile</button>
+      <button class="rt-tab"        id="tab-ct"      onclick="switchTab('ct')">Call Tree</button>
+    </div>
+
+    <div class="panel-view active" id="view-vars">
+      <div id="cs-panel">
+        <div class="ph">Call Stack</div>
+        <div id="cs-list"><div class="empty-msg">No trace loaded</div></div>
+      </div>
+      <div id="var-panel">
+        <div class="ph">Variables — Locals<span class="ph-extra" id="changed-count"></span></div>
+        <div id="var-list"><div class="empty-msg">No trace loaded</div></div>
+      </div>
+    </div>
+
+    <div class="panel-view" id="view-watch">
+      <div id="watch-add-row">
+        <input type="text" id="watch-input" placeholder="Expression… (e.g. x, len(items))" onkeydown="if(event.key==='Enter')addWatch()">
+        <button id="watch-add" onclick="addWatch()">+</button>
+      </div>
+      <div id="watch-list"><div class="empty-msg">No watch expressions.<br>Type an expression above.</div></div>
+    </div>
+
+    <div class="panel-view" id="view-output">
+      <div id="output-wrap">
+        <div class="ph">Stdout Output</div>
+        <div id="output-text"></div>
+      </div>
+    </div>
+
+    <div class="panel-view" id="view-profile">
+      <div id="profile-wrap"></div>
+    </div>
+
+    <div class="panel-view" id="view-ct">
+      <div class="ph" id="ct-header">Call Tree</div>
+      <div id="ct-list"><div class="empty-msg">No trace loaded</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="timeline">
+  <div id="tl-lbl"><span>Execution Timeline (call depth)</span><span id="tl-info">—</span></div>
+  <div id="tl-track">
+    <canvas id="tl-canvas"></canvas>
+    <div id="tl-events"></div>
+    <div id="tl-thumb" style="left:0%"></div>
+    <input type="range" id="tl-input" min="0" value="0" step="1">
+  </div>
+</div>
+
+<div id="statusbar">
+  <span class="si" id="sb-fn">Debug Replay v3</span>
+  <span class="ss">|</span>
+  <span class="si" id="sb-line">—</span>
+  <span class="ss">|</span>
+  <span class="si" id="sb-depth">—</span>
+  <span class="ss">|</span>
+  <span class="si" id="sb-total">—</span>
+  <span id="sb-evt" style="display:none"></span>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let data = null, step = 0, prevLocals = {};
+let activeFnTab = null;
+let currentTab = 'vars';
+let callTreeRendered = false;
+let replayTimer = null;
+const breakpoints = new Set();
+let watchExprs = [];
+let heatmap = {};
+let showInlineHints = false;
+let searchQuery = '', searchLines = [], searchIdx = 0;
+
+// ── THEME ─────────────────────────────────────────────────────────────────────
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.tm-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === t));
+  try { localStorage.setItem('dbg-theme', t); } catch {}
+  if (data) buildTimeline(); // redraw canvas with new theme colour
+}
+(function () {
+  let saved = 'dark';
+  try { saved = localStorage.getItem('dbg-theme') || 'dark'; } catch {}
+  setTheme(saved);
+})();
+
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+// ── TRACE ACCESSORS ───────────────────────────────────────────────────────────
+const tFunc   = i => data.trace[i][0];
+const tLine   = i => data.trace[i][1];
+const tLocals = i => data.trace[i][2];
+const tDepth  = i => data.trace[i][3];
+const tEvent  = i => data.trace[i][4] || 'line';
+const tReturn = i => data.trace[i][5];
+const tExcept = i => data.trace[i][6];
+const tStdout = i => data.trace[i][7];
+const tTime   = i => data.trace[i][8];
+const hasEventData  = () => data && data.trace.some(t => t[4] !== undefined);
+const hasStdout     = () => data && data.trace.some(t => t[7] !== undefined && t[7] !== '');
+const hasTimestamps = () => data && data.trace.some(t => t[8] !== undefined);
+
+// ── FILE LOADING ──────────────────────────────────────────────────────────────
+document.getElementById('file-input').addEventListener('change', e => {
+  const f = e.target.files[0]; if (f) loadFile(f); e.target.value = '';
+});
+document.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('drop-overlay').classList.add('active'); });
+document.addEventListener('dragleave', e => { if (!e.relatedTarget) document.getElementById('drop-overlay').classList.remove('active'); });
+document.addEventListener('drop', e => {
+  e.preventDefault(); document.getElementById('drop-overlay').classList.remove('active');
+  const f = e.dataTransfer.files[0]; if (f) loadFile(f);
+});
+
+async function loadFile(file) {
+  try {
+    let jsonText;
+    if (file.name.toLowerCase().endsWith('.zip')) {
+      jsonText = await extractJsonFromZip(await file.arrayBuffer());
+    } else {
+      jsonText = await file.text();
+    }
+    const parsed = JSON.parse(jsonText);
+    if (!parsed.sources || !parsed.trace) throw new Error('Missing sources or trace keys');
+    data = parsed; step = 0; prevLocals = {}; activeFnTab = null;
+    callTreeRendered = false;
+    document.getElementById('file-label').textContent = file.name;
+    computeHeatmap();
+    buildFnTabs();
+    buildTimeline();
+    if (currentTab === 'ct') renderCallTree();
+    render();
+    setButtonsEnabled(true);
+    closeSearch();
+  } catch (err) { alert('Failed to load: ' + err.message); }
+}
+
+async function extractJsonFromZip(buf) {
+  const view = new DataView(buf), bytes = new Uint8Array(buf);
+  let eocd = -1;
+  for (let i = bytes.length - 22; i >= Math.max(0, bytes.length - 65558); i--) {
+    if (view.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd === -1) throw new Error('Not a valid ZIP file');
+  const cdOff = view.getUint32(eocd + 16, true);
+  const cdNum = view.getUint16(eocd + 10, true);
+  let pos = cdOff;
+  for (let e = 0; e < cdNum; e++) {
+    if (view.getUint32(pos, true) !== 0x02014b50) throw new Error('Bad central directory');
+    const method = view.getUint16(pos + 10, true);
+    const fnLen  = view.getUint16(pos + 28, true);
+    const exLen  = view.getUint16(pos + 30, true);
+    const cmLen  = view.getUint16(pos + 32, true);
+    const lhOff  = view.getUint32(pos + 42, true);
+    const fname  = new TextDecoder().decode(bytes.subarray(pos + 46, pos + 46 + fnLen));
+    pos += 46 + fnLen + exLen + cmLen;
+    if (fname === 'data.json' || fname.endsWith('/data.json')) {
+      if (view.getUint32(lhOff, true) !== 0x04034b50) throw new Error('Bad local file header');
+      const lfn = view.getUint16(lhOff + 26, true);
+      const lex = view.getUint16(lhOff + 28, true);
+      const sz  = view.getUint32(lhOff + 18, true);
+      const off = lhOff + 30 + lfn + lex;
+      const comp = bytes.subarray(off, off + sz);
+      if (method === 0) return new TextDecoder().decode(comp);
+      if (method === 8) {
+        const ds = new DecompressionStream('deflate-raw');
+        const w = ds.writable.getWriter(), r = ds.readable.getReader();
+        w.write(comp); w.close();
+        const chunks = [];
+        while (true) { const { done, value } = await r.read(); if (done) break; chunks.push(value); }
+        const total = chunks.reduce((a, c) => a + c.length, 0);
+        const out = new Uint8Array(total); let p = 0;
+        for (const c of chunks) { out.set(c, p); p += c.length; }
+        return new TextDecoder().decode(out);
+      }
+      throw new Error(`Unsupported ZIP compression method ${method}`);
+    }
+  }
+  throw new Error('data.json not found in ZIP');
+}
+
+// ── HEATMAP ───────────────────────────────────────────────────────────────────
+function computeHeatmap() {
+  heatmap = {};
+  for (const t of data.trace) {
+    if (!heatmap[t[0]]) heatmap[t[0]] = {};
+    heatmap[t[0]][t[1]] = (heatmap[t[0]][t[1]] || 0) + 1;
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goto(s) {
+  const prev = step;
+  step = Math.max(0, Math.min(s, data.trace.length - 1));
+  prevLocals = tLocals(prev);
+  render();
+}
+function stepInto()       { goto(step + 1); }
+function stepBack()       { goto(step - 1); }
+function restart()        { prevLocals = {}; step = 0; render(); }
+function jumpEnd()        { goto(data.trace.length - 1); }
+function stepOver() {
+  const d = tDepth(step); let i = step + 1;
+  while (i < data.trace.length && tDepth(i) > d) {
+    if (breakpoints.has(tFunc(i) + ':' + tLine(i))) break;
+    i++;
+  }
+  goto(Math.min(i, data.trace.length - 1));
+}
+function stepOut() {
+  const d = tDepth(step); let i = step + 1;
+  while (i < data.trace.length && tDepth(i) >= d) i++;
+  goto(Math.min(i, data.trace.length - 1));
+}
+function reverseStepOver() {
+  const d = tDepth(step); let i = step - 1;
+  while (i > 0 && tDepth(i) > d) {
+    if (breakpoints.has(tFunc(i) + ':' + tLine(i))) break;
+    i--;
+  }
+  goto(Math.max(0, i));
+}
+function reverseStepOut() {
+  const d = tDepth(step); let i = step - 1;
+  while (i > 0 && tDepth(i) >= d) i--;
+  goto(Math.max(0, i));
+}
+function runToBreakpoint(dir) {
+  if (breakpoints.size === 0) { goto(dir > 0 ? data.trace.length - 1 : 0); return; }
+  let i = step + dir;
+  while (i >= 0 && i < data.trace.length) {
+    if (breakpoints.has(tFunc(i) + ':' + tLine(i))) { goto(i); return; }
+    i += dir;
+  }
+  goto(dir > 0 ? data.trace.length - 1 : 0);
+}
+
+// ── BREAKPOINTS ───────────────────────────────────────────────────────────────
+function toggleBreakpoint(func, lineno) {
+  const key = func + ':' + lineno;
+  if (breakpoints.has(key)) breakpoints.delete(key);
+  else breakpoints.add(key);
+  if (data) {
+    const lineEl = document.getElementById('cl' + lineno);
+    if (lineEl) {
+      const bpCol = lineEl.querySelector('.bp-col');
+      if (bpCol) bpCol.className = 'bp-col ' + (breakpoints.has(key) ? 'has-bp' : 'no-bp');
+    }
+    renderTimelineBP();
+  }
+}
+
+function renderTimelineBP() {
+  const container = document.getElementById('tl-events');
+  container.querySelectorAll('.tl-bp').forEach(el => el.remove());
+  if (!data) return;
+  const n = data.trace.length;
+  for (let i = 0; i < n; i++) {
+    if (breakpoints.has(tFunc(i) + ':' + tLine(i))) {
+      const el = document.createElement('div');
+      el.className = 'tl-bp';
+      el.style.left = (n > 1 ? (i / (n - 1)) * 100 : 0) + '%';
+      container.appendChild(el);
+    }
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  if (!data) return;
+  const [func, lineno, locals, depth] = data.trace[step];
+  activeFnTab = func;
+  updateFnTabsActive();
+  renderSource(func, lineno, data.sources[func] || [], depth, locals);
+  renderCallStack(depth);
+  renderVars(locals);
+  updateStatus(func, lineno, depth);
+  updateTimelinePos();
+  updateCallTreeHighlight();
+  renderExceptionBanner();
+  if (currentTab === 'watch')   renderWatch(locals);
+  if (currentTab === 'output')  renderOutput();
+  if (currentTab === 'profile') renderProfile();
+}
+
+// ── FUNCTION TABS ─────────────────────────────────────────────────────────────
+function buildFnTabs() {
+  const container = document.getElementById('fn-tabs');
+  if (!data) { container.innerHTML = ''; return; }
+  container.innerHTML = Object.keys(data.sources).map(fn =>
+    `<button class="fn-tab" data-fn="${esc(fn)}" onclick="switchFnTab(${esc(JSON.stringify(fn))})">${esc(fn)}()</button>`
+  ).join('');
+}
+
+function updateFnTabsActive() {
+  const container = document.getElementById('fn-tabs');
+  container.querySelectorAll('.fn-tab').forEach(btn => {
+    const isAct = btn.dataset.fn === activeFnTab;
+    btn.classList.toggle('active', isAct);
+    if (isAct) {
+      const cl = btn.offsetLeft, cw = btn.offsetWidth, tw = container.offsetWidth, sl = container.scrollLeft;
+      if (cl < sl) container.scrollLeft = cl;
+      else if (cl + cw > sl + tw) container.scrollLeft = cl + cw - tw;
+    }
+  });
+}
+
+function switchFnTab(fn) {
+  activeFnTab = fn;
+  updateFnTabsActive();
+  const source = data.sources[fn] || [];
+  if (fn === tFunc(step)) {
+    renderSource(fn, tLine(step), source, tDepth(step), tLocals(step));
+  } else {
+    let lastI = -1;
+    for (let i = step; i >= 0; i--) { if (tFunc(i) === fn) { lastI = i; break; } }
+    const lineno = lastI >= 0 ? tLine(lastI) : 0;
+    const locals = lastI >= 0 ? tLocals(lastI) : {};
+    renderSource(fn, lineno, source, 0, locals, false);
+  }
+}
+
+// ── SOURCE ────────────────────────────────────────────────────────────────────
+function renderSource(func, lineno, source, depth, locals, isCurrent = true) {
+  const container = document.getElementById('source-code');
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  document.getElementById('fn-label').textContent = func + '()';
+  const badge = document.getElementById('depth-badge');
+  if (isCurrent) {
+    badge.style.display = 'inline';
+    badge.textContent = 'depth ' + depth;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  const ql = searchQuery.toLowerCase();
+  let html = '';
+  for (let i = 0; i < source.length; i++) {
+    const isActive = isCurrent  && (i === lineno);
+    const isGhost  = !isCurrent && (i === lineno);
+    const hasBP    = breakpoints.has(func + ':' + i);
+    let cls = 'code-line' + (isActive ? ' active' : isGhost ? ' ghost-line' : '');
+    if (ql && source[i].toLowerCase().includes(ql)) {
+      const isCur = searchLines.length > 0 && searchLines[searchIdx] === i;
+      cls += isCur ? ' search-current' : ' search-match';
+    }
+    html += `<div class="${cls}" id="cl${i}">`;
+    html += `<div class="bp-col ${hasBP ? 'has-bp' : 'no-bp'}" onclick="toggleBreakpoint(${esc(JSON.stringify(func))},${i})"><div class="bp-glyph"></div></div>`;
+    html += `<div class="ln">${i + 1}</div>`;
+    html += `<div class="arr">${isActive ? '▶' : isGhost ? '◎' : ''}</div>`;
+    let srcHtml = highlightPython(esc(source[i]), locals);
+    if (showInlineHints && isActive) srcHtml += buildInlineHint(source[i], locals);
+    html += `<div class="src">${srcHtml}</div>`;
+    html += `</div>`;
+  }
+  container.innerHTML = html;
+
+  requestAnimationFrame(() => {
+    const el = document.getElementById('cl' + lineno);
+    if (el) el.scrollIntoView({ block: 'center' });
+  });
+}
+
+function buildInlineHint(rawLine, locals) {
+  if (!locals) return '';
+  const idents = new Set((rawLine.match(/\b[a-zA-Z_][a-zA-Z0-9_]*\b/g) || []));
+  const parts = [];
+  for (const id of idents) {
+    if (id in locals && !KEYWORDS.has(id) && !BUILTINS.has(id))
+      parts.push(`${id} = ${String(locals[id])}`);
+  }
+  return parts.length ? `<span class="inline-hint">  ⟵ ${esc(parts.join(', '))}</span>` : '';
+}
+
+// ── CALL STACK ────────────────────────────────────────────────────────────────
+function renderCallStack(currentDepth) {
+  const list = document.getElementById('cs-list');
+  const stack = [];
+  for (let d = 1; d <= currentDepth; d++) {
+    for (let i = step; i >= 0; i--) {
+      if (tDepth(i) === d) { stack.push({ func: tFunc(i), line: tLine(i), depth: d }); break; }
+    }
+  }
+  stack.reverse();
+  let html = '';
+  for (let i = 0; i < stack.length; i++) {
+    const f = stack[i];
+    const evt = i === 0 ? tEvent(step) : 'line';
+    const ret = i === 0 ? tReturn(step) : undefined;
+    const evtBadge = (evt === 'call' || evt === 'return' || evt === 'exception')
+      ? `<span class="evt-badge evt-${evt}">${evt.toUpperCase()}</span>` : '';
+    const retBadge = ret !== undefined
+      ? `<span class="sf-ret" title="${esc(String(ret))}">↩ ${esc(String(ret))}</span>` : '';
+    html += `<div class="sf ${i === 0 ? 'top' : ''}">`;
+    html += `<span class="sf-d">${f.depth}</span>`;
+    html += `<span class="sf-fn">${esc(f.func)}()</span>`;
+    html += `<span class="sf-ln">:${f.line + 1}</span>`;
+    html += evtBadge + retBadge;
+    html += `</div>`;
+  }
+  list.innerHTML = html || '<div class="empty-msg">—</div>';
+}
+
+// ── VARIABLES ─────────────────────────────────────────────────────────────────
+function renderVars(locals) {
+  const list = document.getElementById('var-list');
+  const keys = Object.keys(locals || {});
+  if (keys.length === 0) { list.innerHTML = '<div class="empty-msg">No locals</div>'; return; }
+  let changed = 0, html = '';
+  for (const k of keys) {
+    const v = String(locals[k]);
+    const ch = prevLocals && k in prevLocals && String(prevLocals[k]) !== v;
+    if (ch) changed++;
+    html += `<div class="vr ${ch ? 'changed' : ''}">`;
+    html += `<span class="vn" title="${esc(k)}" onclick="showHistory('${esc(k)}')">${esc(k)}</span>`;
+    html += `<span class="ve">=</span>`;
+    html += `<span class="vv ${valClass(v)}" title="${esc(v)}">${esc(v)}</span>`;
+    html += `</div>`;
+  }
+  list.innerHTML = html;
+  document.getElementById('changed-count').textContent = changed > 0 ? `${changed} changed` : '';
+}
+
+// ── WATCH ─────────────────────────────────────────────────────────────────────
+function addWatch() {
+  const input = document.getElementById('watch-input');
+  const expr = input.value.trim();
+  if (!expr) return;
+  watchExprs.push({ expr, prevVal: undefined });
+  input.value = '';
+  renderWatch(data ? tLocals(step) : {});
+}
+function removeWatch(idx) {
+  watchExprs.splice(idx, 1);
+  renderWatch(data ? tLocals(step) : {});
+}
+function evalWatch(expr, locals) {
+  if (!locals) return { val: '—', vc: '' };
+  try {
+    const keys = Object.keys(locals);
+    const vals = keys.map(k => {
+      const s = locals[k];
+      if (s === 'True') return true; if (s === 'False') return false; if (s === 'None') return null;
+      if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+      return s;
+    });
+    // eslint-disable-next-line no-new-func
+    const result = new Function(...keys, `"use strict"; return (${expr});`)(...vals);
+    return { val: String(result), vc: valClass(String(result)) };
+  } catch { return { val: '<error>', vc: 'err' }; }
+}
+function renderWatch(locals) {
+  const list = document.getElementById('watch-list');
+  if (watchExprs.length === 0) {
+    list.innerHTML = '<div class="empty-msg">No watch expressions.<br>Type an expression above.</div>';
+    return;
+  }
+  let html = '';
+  for (let i = 0; i < watchExprs.length; i++) {
+    const { expr } = watchExprs[i];
+    const { val, vc } = evalWatch(expr, locals);
+    const ch = watchExprs[i].prevVal !== undefined && watchExprs[i].prevVal !== val;
+    watchExprs[i].prevVal = val;
+    html += `<div class="wr ${ch ? 'changed' : ''}">`;
+    html += `<span class="we">${esc(expr)}</span><span class="ve">=</span>`;
+    html += `<span class="wv ${vc}">${esc(val)}</span>`;
+    html += `<button class="wr-del" onclick="removeWatch(${i})">✕</button>`;
+    html += `</div>`;
+  }
+  list.innerHTML = html;
+}
+
+// ── OUTPUT ────────────────────────────────────────────────────────────────────
+function renderOutput() {
+  const el = document.getElementById('output-text');
+  if (!data) { el.innerHTML = ''; return; }
+  if (!hasStdout()) {
+    el.innerHTML = `<div class="data-hint">
+      <b>📋 Stdout capture not available</b>
+      Add stdout capture to your tracer and include it as element [7] of each trace entry.
+      <code>import sys, io; _buf = io.StringIO(); sys.stdout = _buf</code>
+      <code># then: trace[i][7] = _buf.getvalue(); _buf.truncate(0); _buf.seek(0)</code>
+    </div>`; return;
+  }
+  let accum = '', newStart = -1;
+  for (let i = 0; i <= step; i++) {
+    const d = tStdout(i);
+    if (d) { if (i === step) newStart = accum.length; accum += d; }
+  }
+  if (!accum) { el.textContent = '(no output yet)'; return; }
+  if (newStart >= 0 && tStdout(step)) {
+    el.innerHTML = esc(accum.slice(0, newStart)) + `<span class="out-new">${esc(accum.slice(newStart))}</span>`;
+  } else { el.textContent = accum; }
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+function renderProfile() {
+  const wrap = document.getElementById('profile-wrap');
+  if (!data) { wrap.innerHTML = ''; return; }
+  const currentFunc = tFunc(step);
+  const callCounts = {}, stepCounts = {};
+  for (const t of data.trace) stepCounts[t[0]] = (stepCounts[t[0]] || 0) + 1;
+  if (hasEventData()) {
+    for (const t of data.trace) if (t[4] === 'call') callCounts[t[0]] = (callCounts[t[0]] || 0) + 1;
+  } else {
+    let prev = null;
+    for (const t of data.trace) { if (t[0] !== prev) { callCounts[t[0]] = (callCounts[t[0]] || 0) + 1; prev = t[0]; } }
+  }
+  const maxSteps = Math.max(...Object.values(stepCounts), 1);
+  const funcs = Object.keys(stepCounts).sort((a, b) => stepCounts[b] - stepCounts[a]);
+
+  let html = `<div class="prof-section"><div class="prof-title">Function Step Counts</div>`;
+  for (const fn of funcs) {
+    const cnt = stepCounts[fn], calls = callCounts[fn] || 0;
+    const pct = Math.round((cnt / maxSteps) * 100);
+    const hc = pct > 70 ? 'hottest' : pct > 40 ? 'hot' : '';
+    html += `<div class="prof-row ${fn === currentFunc ? 'current' : ''}">`;
+    html += `<span class="prof-fn ${fn === currentFunc ? 'current' : ''}" title="${esc(fn)}">${esc(fn)}()</span>`;
+    html += `<div class="prof-bar-wrap"><div class="prof-bar ${hc}" style="width:${pct}%"></div></div>`;
+    html += `<span class="prof-val">${cnt} steps${calls ? ', ' + calls + ' call' + (calls>1?'s':'') : ''}</span>`;
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  const fm = heatmap[currentFunc] || {};
+  const source = data.sources[currentFunc] || [];
+  const hotLines = Object.keys(fm).map(Number).sort((a, b) => fm[b] - fm[a]).slice(0, 10);
+  if (hotLines.length) {
+    const maxC = fm[hotLines[0]];
+    html += `<div class="prof-section" style="margin-top:8px"><div class="prof-title">Hot Lines — ${esc(currentFunc)}()</div>`;
+    for (const ln of hotLines) {
+      const pct = Math.round((fm[ln] / maxC) * 100);
+      const hc = pct > 70 ? 'hottest' : pct > 40 ? 'hot' : '';
+      html += `<div class="prof-row ${ln === tLine(step) ? 'current' : ''}">`;
+      html += `<span class="prof-fn" style="font-size:10px;color:var(--text-dim)">:${ln+1}</span>`;
+      html += `<div class="prof-bar-wrap"><div class="prof-bar ${hc}" style="width:${pct}%"></div></div>`;
+      html += `<span class="prof-val">${fm[ln]}×</span></div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (hasTimestamps()) {
+    const timings = {};
+    for (let i = 1; i < data.trace.length; i++) {
+      const fn = tFunc(i - 1);
+      const d = Math.max(0, (tTime(i) || tTime(i-1)) - (tTime(i-1) || 0));
+      timings[fn] = (timings[fn] || 0) + d;
+    }
+    const total = Math.max(Object.values(timings).reduce((a,b)=>a+b,0), 1);
+    const sorted = Object.keys(timings).sort((a,b)=>timings[b]-timings[a]);
+    html += `<div class="prof-section" style="margin-top:8px"><div class="prof-title">Time per Function</div>`;
+    for (const fn of sorted) {
+      const pct = Math.round((timings[fn]/total)*100);
+      const hc = pct>70?'hottest':pct>40?'hot':'';
+      html += `<div class="prof-row ${fn===currentFunc?'current':''}">`;
+      html += `<span class="prof-fn ${fn===currentFunc?'current':''}">${esc(fn)}()</span>`;
+      html += `<div class="prof-bar-wrap"><div class="prof-bar ${hc}" style="width:${pct}%"></div></div>`;
+      html += `<span class="prof-val">${timings[fn].toFixed(1)}ms</span></div>`;
+    }
+    html += `</div>`;
+  } else {
+    html += `<div class="data-hint" style="margin-top:8px"><b>⏱ Timing not available</b>Include <code>(time.perf_counter()-t0)*1000</code> as element [8] of each trace entry.</div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+// ── EXCEPTION BANNER ──────────────────────────────────────────────────────────
+function renderExceptionBanner() {
+  const exc = tExcept(step);
+  const banner = document.getElementById('exc-banner');
+  const badge  = document.getElementById('exc-badge');
+  if (exc) {
+    document.getElementById('exc-type').textContent = exc.type + ':';
+    document.getElementById('exc-msg').textContent  = exc.message || '';
+    banner.classList.add('visible'); badge.style.display = 'inline';
+  } else {
+    banner.classList.remove('visible'); badge.style.display = 'none';
+  }
+}
+
+// ── STATUS BAR ────────────────────────────────────────────────────────────────
+function updateStatus(func, lineno, depth) {
+  document.getElementById('sb-fn').textContent    = func + '()';
+  document.getElementById('sb-line').textContent  = 'Line ' + (lineno + 1);
+  document.getElementById('sb-depth').textContent = 'Depth ' + depth;
+  document.getElementById('sb-total').textContent = `Step ${step + 1} / ${data.trace.length}`;
+  document.getElementById('step-counter').innerHTML = `Step <b>${step + 1}</b> / <b>${data.trace.length}</b>`;
+  document.getElementById('tl-info').textContent  = `Step ${step + 1} of ${data.trace.length} — ${func}()`;
+  const evt = tEvent(step);
+  const sbEvt = document.getElementById('sb-evt');
+  if (evt !== 'line') {
+    sbEvt.textContent = evt.toUpperCase(); sbEvt.className = `ev-${evt}`; sbEvt.style.display = 'inline';
+  } else { sbEvt.style.display = 'none'; }
+}
+
+// ── VARIABLE HISTORY ──────────────────────────────────────────────────────────
+function showHistory(varName) {
+  if (!data) return;
+  const func = tFunc(step);
+  const entries = [];
+  for (let i = 0; i < data.trace.length; i++) {
+    if (tFunc(i) !== func) continue;
+    const loc = tLocals(i);
+    if (varName in loc) entries.push({ s: i, v: String(loc[varName]) });
+  }
+  if (!entries.length) return;
+  const changes = [];
+  let last = null;
+  for (const e of entries) { if (e.v !== last) { changes.push({ ...e, prev: last }); last = e.v; } }
+
+  document.getElementById('hist-title').textContent = varName;
+  document.getElementById('hist-sub').textContent = `${changes.length} change${changes.length!==1?'s':''} across ${entries.length} steps`;
+
+  let html = '';
+  for (let ci = 0; ci < changes.length; ci++) {
+    const ch = changes[ci];
+    const isCur = step >= ch.s && (ci === changes.length - 1 || step < changes[ci + 1].s);
+    html += `<div class="vh-row ${isCur ? 'vh-cur' : ''}" onclick="closeHistory();goto(${ch.s})">`;
+    html += `<span class="vh-step">Step ${ch.s + 1}</span>`;
+    if (ch.prev !== null) { html += `<span class="vh-old">${esc(String(ch.prev))}</span><span class="vh-arr">→</span>`; }
+    html += `<span class="vh-new ${valClass(ch.v)}">${esc(ch.v)}</span>`;
+    html += `</div>`;
+  }
+  document.getElementById('hist-list').innerHTML = html || '<div class="empty-msg">No changes</div>';
+
+  drawHistoryChart(varName, entries);
+  document.getElementById('hist-modal').classList.add('open');
+}
+
+function drawHistoryChart(varName, entries) {
+  const canvas = document.getElementById('hist-canvas');
+  const W = canvas.offsetWidth || 500, H = 110;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const accentColor = cssVar('--accent');
+  const dimColor    = cssVar('--text-dim');
+  const textColor   = cssVar('--text');
+
+  const numeric = entries.every(e => /^-?\d+(\.\d+)?$/.test(e.v));
+  if (numeric) {
+    const vals = entries.map(e => parseFloat(e.v));
+    const minV = Math.min(...vals), maxV = Math.max(...vals);
+    const range = maxV - minV || 1;
+    const pad = 18;
+    ctx.strokeStyle = accentColor; ctx.lineWidth = 1.5; ctx.beginPath();
+    for (let i = 0; i < entries.length; i++) {
+      const x = pad + (entries[i].s / Math.max(data.trace.length - 1, 1)) * (W - pad * 2);
+      const y = H - pad - ((vals[i] - minV) / range) * (H - pad * 2);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    const cx = pad + (step / Math.max(data.trace.length - 1, 1)) * (W - pad * 2);
+    ctx.strokeStyle = dimColor; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = dimColor; ctx.font = `10px Iosevka, monospace`;
+    ctx.textAlign = 'left';  ctx.fillText(maxV.toString(), 2, pad + 4);
+    ctx.fillText(minV.toString(), 2, H - pad + 12);
+    ctx.fillStyle = accentColor;
+    let lastV = null;
+    for (let i = 0; i < entries.length; i++) {
+      if (entries[i].v !== lastV) {
+        const x = pad + (entries[i].s / Math.max(data.trace.length - 1, 1)) * (W - pad * 2);
+        const y = H - pad - ((vals[i] - minV) / range) * (H - pad * 2);
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+        lastV = entries[i].v;
+      }
+    }
+  } else {
+    const changes = [];
+    let last = null;
+    for (const e of entries) { if (e.v !== last) { changes.push(e); last = e.v; } }
+    const n = Math.max(data.trace.length - 1, 1);
+    const palette = [accentColor, cssVar('--green'), cssVar('--yellow'), cssVar('--string'), cssVar('--number'), cssVar('--red')];
+    for (let i = 0; i < changes.length; i++) {
+      const x0 = (changes[i].s / n) * W;
+      const x1 = i + 1 < changes.length ? (changes[i + 1].s / n) * W : W;
+      ctx.fillStyle = palette[i % palette.length] + '55';
+      ctx.fillRect(x0, 4, x1 - x0, H - 8);
+      if (x1 - x0 > 28) {
+        ctx.fillStyle = textColor; ctx.font = `10px Iosevka, monospace`; ctx.textAlign = 'left';
+        ctx.fillText(changes[i].v.slice(0, Math.floor((x1 - x0) / 7)), x0 + 4, H / 2 + 4);
+      }
+    }
+    const cx = (step / n) * W;
+    ctx.strokeStyle = textColor; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke(); ctx.setLineDash([]);
+  }
+}
+
+function closeHistory() { document.getElementById('hist-modal').classList.remove('open'); }
+document.getElementById('hist-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('hist-modal')) closeHistory();
+});
+
+// ── CALL TREE ─────────────────────────────────────────────────────────────────
+const DEPTH_COLORS = ['#007acc','#4ec9b0','#ce9178','#c586c0','#dcdcaa'];
+function depthColor(d) { return DEPTH_COLORS[(d - 1) % DEPTH_COLORS.length]; }
+
+function buildCallTree() {
+  const roots = [], stack = [];
+  for (let i = 0; i < data.trace.length; i++) {
+    const [func, lineno,, depth] = data.trace[i];
+    while (stack.length && stack[stack.length-1].depth > depth) stack.pop().endStep = i - 1;
+    const top = stack.length ? stack[stack.length-1] : null;
+    if (top && top.depth === depth && top.func !== func) { top.endStep = i - 1; stack.pop(); }
+    const newTop = stack.length ? stack[stack.length-1] : null;
+    if (!newTop || newTop.depth < depth) {
+      const node = { func, depth, startStep: i, endStep: i, events: [] };
+      if (newTop) newTop.events.push({ type: 'child', node, stepIndex: i }); else roots.push(node);
+      stack.push(node);
+    }
+    const cur = stack[stack.length-1]; cur.endStep = i;
+    let lastLn = -1;
+    for (let k = cur.events.length-1; k >= 0; k--) { if (cur.events[k].type === 'line') { lastLn = cur.events[k].lineno; break; } }
+    if (lastLn !== lineno) cur.events.push({ type: 'line', lineno, stepIndex: i });
+  }
+  for (const f of stack) f.endStep = data.trace.length - 1;
+  return roots;
+}
+
+const CONTROL_STMTS = new Set([
+  'if','elif','else','for','while','with','try','except','finally',
+  'match','case','return','raise','break','continue','yield','assert',
+  'async',
+]);
+function isControlLine(src) {
+  const m = src.trim().match(/^([a-zA-Z_]+)/);
+  return m && CONTROL_STMTS.has(m[1]);
+}
+
+function renderTreeNodes(nodes) {
+  let html = '';
+  for (const node of nodes) {
+    const bi = (node.depth - 1) * 14 + 6, li = bi + 18;
+    const source = data.sources[node.func] || [];
+    const baseIndent = source.reduce((min, l) =>
+      l.trim().length ? Math.min(min, l.match(/^ */)[0].length) : min, Infinity) || 0;
+    html += `<div class="ct-node" data-start="${node.startStep}" data-end="${node.endStep}">`;
+    html += `<div class="ct-head" data-step="${node.startStep}" onclick="goto(${node.startStep})">`;
+    html += `<span class="ct-bullet" style="background:${depthColor(node.depth)};margin-left:${bi}px"></span>`;
+    html += `<span class="ct-fn">${esc(node.func)}()</span>`;
+    html += `<span class="ct-range">${node.startStep+1}–${node.endStep+1}</span></div>`;
+    for (const ev of node.events) {
+      if (ev.type === 'line') {
+        const rawLine = source[ev.lineno] || '';
+        if (!isControlLine(rawLine)) continue;
+        const relIndent = Math.max(0, rawLine.match(/^ */)[0].length - baseIndent);
+        const pad = li + Math.floor(relIndent / 4) * 10;
+        html += `<div class="ct-line" data-step="${ev.stepIndex}" onclick="goto(${ev.stepIndex})" style="padding-left:${pad}px">`;
+        html += `<span class="ct-ln" style="min-width:28px">${ev.lineno+1}</span>`;
+        html += `<span class="ct-src">${highlightPython(esc(rawLine.trim()))}</span></div>`;
+      } else if (ev.type === 'child') { html += renderTreeNodes([ev.node]); }
+    }
+    html += `<div class="ct-ret" style="padding-left:${bi+10}px">↩ ${esc(node.func)}</div></div>`;
+  }
+  return html;
+}
+
+function renderCallTree() {
+  if (!data) return;
+  const roots = buildCallTree();
+  const n = countNodes(roots);
+  document.getElementById('ct-header').textContent = `Call Tree — ${n} frame${n!==1?'s':''}, ${data.trace.length} steps`;
+  document.getElementById('ct-list').innerHTML = renderTreeNodes(roots);
+  callTreeRendered = true;
+  updateCallTreeHighlight();
+}
+
+function countNodes(nodes) {
+  let n = nodes.length;
+  for (const node of nodes) for (const ev of node.events) if (ev.type==='child') n += countNodes([ev.node]);
+  return n;
+}
+
+function updateCallTreeHighlight() {
+  if (!callTreeRendered) return;
+  const ct = document.getElementById('ct-list');
+  ct.querySelectorAll('.ct-in-range,.ct-current').forEach(el => el.classList.remove('ct-in-range','ct-current'));
+  ct.querySelectorAll('.ct-node').forEach(el => {
+    if (step >= parseInt(el.dataset.start) && step <= parseInt(el.dataset.end)) {
+      const h = el.querySelector(':scope > .ct-head');
+      if (h) h.classList.add('ct-in-range');
+    }
+  });
+  const exact = ct.querySelector(`[data-step="${step}"]`);
+  if (exact) {
+    exact.classList.add('ct-current');
+    if (currentTab === 'ct') exact.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+// ── TIMELINE ──────────────────────────────────────────────────────────────────
+function buildTimeline() {
+  const input = document.getElementById('tl-input');
+  input.max = data.trace.length - 1; input.value = 0;
+  input.oninput = e => goto(parseInt(e.target.value));
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('tl-canvas');
+    const track  = document.getElementById('tl-track');
+    const W = track.clientWidth || 600, H = 32;
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    const n = data.trace.length;
+    const maxD = Math.max(...data.trace.map(t => t[3]));
+    const rgb = cssVar('--tl-rgb') || '0,122,204';
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < n; i++) {
+      const d = tDepth(i);
+      ctx.fillStyle = `rgba(${rgb},${0.2 + (d/maxD)*0.55})`;
+      const barH = Math.max(2, (d/maxD)*(H-2));
+      ctx.fillRect((i/n)*W, H-barH, Math.max(1, W/n+0.5), barH);
+    }
+    if (hasEventData()) {
+      const evContainer = document.getElementById('tl-events');
+      evContainer.innerHTML = '';
+      for (let i = 0; i < n; i++) {
+        const evt = tEvent(i);
+        if (evt === 'call' || evt === 'return' || evt === 'exception') {
+          const el = document.createElement('div');
+          el.className = `tl-marker m-${evt}`;
+          el.style.left = (n > 1 ? (i/(n-1))*100 : 0) + '%';
+          el.title = `${evt} ${tFunc(i)}() step ${i+1}`;
+          el.onclick = () => goto(i);
+          evContainer.appendChild(el);
+        }
+      }
+    }
+    renderTimelineBP();
+  });
+}
+
+function updateTimelinePos() {
+  const n = data.trace.length;
+  const pct = n > 1 ? (step/(n-1))*100 : 0;
+  document.getElementById('tl-thumb').style.left = pct + '%';
+  document.getElementById('tl-input').value = step;
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function openSearch() { document.getElementById('search-bar').classList.add('visible'); document.getElementById('search-input').focus(); }
+function closeSearch() {
+  document.getElementById('search-bar').classList.remove('visible');
+  searchQuery = ''; searchLines = []; searchIdx = 0;
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-count').textContent = '—';
+  if (data) { const [fn,ln,loc,d] = data.trace[step]; renderSource(fn,ln,data.sources[fn]||[],d,loc); }
+}
+function runSearch(q) {
+  searchQuery = q.trim();
+  if (!data || !searchQuery) { searchLines = []; document.getElementById('search-count').textContent = searchQuery ? '0 results' : '—'; return; }
+  const fn = tFunc(step), src = data.sources[fn] || [], ql = searchQuery.toLowerCase();
+  searchLines = src.map((l,i) => l.toLowerCase().includes(ql) ? i : -1).filter(i => i >= 0);
+  searchIdx = 0;
+  document.getElementById('search-count').textContent = searchLines.length > 0 ? `1 of ${searchLines.length}` : '0 results';
+  const [,ln,loc,d] = data.trace[step];
+  renderSource(fn, ln, src, d, loc);
+  if (searchLines.length) { const el = document.getElementById('cl' + searchLines[0]); if (el) el.scrollIntoView({ block: 'center' }); }
+}
+function searchNav(dir) {
+  if (!searchLines.length) return;
+  searchIdx = (searchIdx + dir + searchLines.length) % searchLines.length;
+  document.getElementById('search-count').textContent = `${searchIdx+1} of ${searchLines.length}`;
+  const [fn,ln,loc,d] = data.trace[step];
+  renderSource(fn, ln, data.sources[fn]||[], d, loc);
+  const el = document.getElementById('cl' + searchLines[searchIdx]);
+  if (el) el.scrollIntoView({ block: 'center' });
+}
+function searchKey(e) {
+  if (e.key === 'Enter') searchNav(e.shiftKey ? -1 : 1);
+  if (e.key === 'Escape') closeSearch();
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.panel-view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.rt-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'ct'      && !callTreeRendered && data) renderCallTree();
+  if (tab === 'watch'   && data) renderWatch(tLocals(step));
+  if (tab === 'output'  && data) renderOutput();
+  if (tab === 'profile' && data) renderProfile();
+}
+
+// ── BUTTONS / HINTS ───────────────────────────────────────────────────────────
+function setButtonsEnabled(on) {
+  ['btn-restart','btn-rev-bp','btn-rev-out','btn-rev-over','btn-step-back',
+   'btn-step-into','btn-step-over','btn-step-out','btn-continue','btn-end','btn-play']
+    .forEach(id => document.getElementById(id).disabled = !on);
+}
+function toggleHints() {
+  showInlineHints = !showInlineHints;
+  document.getElementById('btn-hints').classList.toggle('active', showInlineHints);
+  if (data) { const [fn,ln,loc,d] = data.trace[step]; renderSource(fn,ln,data.sources[fn]||[],d,loc); }
+}
+
+// ── REPLAY ────────────────────────────────────────────────────────────────────
+function toggleReplay() { if (replayTimer) stopReplay(); else startReplay(); }
+function startReplay() {
+  if (!data) return;
+  if (step >= data.trace.length - 1) { prevLocals = {}; step = 0; render(); }
+  const ms = parseInt(document.getElementById('speed-select').value);
+  replayTimer = setInterval(() => {
+    if (step >= data.trace.length - 1) { stopReplay(); return; }
+    stepInto();
+    if (breakpoints.has(tFunc(step) + ':' + tLine(step))) stopReplay();
+  }, ms);
+  document.getElementById('btn-play').classList.add('playing');
+  document.getElementById('play-icon').textContent  = '⏸';
+  document.getElementById('play-label').textContent = 'Pause';
+}
+function stopReplay() {
+  clearInterval(replayTimer); replayTimer = null;
+  document.getElementById('btn-play').classList.remove('playing');
+  document.getElementById('play-icon').textContent  = '▶';
+  document.getElementById('play-label').textContent = 'Replay';
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); openSearch(); return; }
+  if (!data) return;
+  if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  const handled = ['F5','F10','F11','F12','ArrowLeft','ArrowRight','Home','End',' ','i','I'];
+  if (handled.includes(e.key)) e.preventDefault();
+  if      (e.key === ' ')                 toggleReplay();
+  else if (e.key === 'i' || e.key === 'I') toggleHints();
+  else if (e.key === 'F5'  && e.shiftKey) runToBreakpoint(-1);
+  else if (e.key === 'F12' && e.shiftKey) reverseStepOut();
+  else if (e.key === 'F11' && e.shiftKey) stepBack();
+  else if (e.key === 'F10' && e.shiftKey) reverseStepOver();
+  else if (e.key === 'F5')                runToBreakpoint(1);
+  else if (e.key === 'l')                 stepInto();
+  else if (e.key === 'j')                 stepOver();
+  else if (e.key === 'F12')               stepOut();
+  else if (e.key === 'ArrowRight')        stepInto();
+  else if (e.key === 'ArrowLeft')         stepBack();
+  else if (e.key === 'k')                 reverseStepOver();
+  else if (e.key === 'h')                 reverseStepOut();
+  else if (e.key === 'Home')              restart();
+  else if (e.key === 'End')               jumpEnd();
+  else if (e.key === 'Enter')             runToBreakpoint(1);
+});
+
+// ── HOVER TOOLTIP ─────────────────────────────────────────────────────────────
+const _tt = document.getElementById('var-tooltip');
+document.getElementById('source-code').addEventListener('mouseover', e => {
+  const el = e.target.closest('.ident.in-scope');
+  if (!el || !data) { _tt.style.display = 'none'; return; }
+  const name = el.dataset.var, locals = tLocals(step);
+  if (!(name in locals)) { _tt.style.display = 'none'; return; }
+  const v = String(locals[name]);
+  _tt.innerHTML = `<span class="tt-name">${esc(name)}</span><span class="tt-eq">=</span><span class="tt-val ${valClass(v)}">${esc(v)}</span>`;
+  _tt.style.display = 'block';
+});
+document.getElementById('source-code').addEventListener('mousemove', e => {
+  if (_tt.style.display === 'none') return;
+  _tt.style.left = Math.min(e.clientX + 14, window.innerWidth  - _tt.offsetWidth  - 8) + 'px';
+  _tt.style.top  = Math.min(e.clientY + 18, window.innerHeight - _tt.offsetHeight - 8) + 'px';
+});
+document.getElementById('source-code').addEventListener('mouseleave', () => { _tt.style.display = 'none'; });
+
+// ── PANEL RESIZE ──────────────────────────────────────────────────────────────
+(function () {
+  const handle = document.getElementById('resize-handle');
+  const right  = document.getElementById('right');
+  const main   = document.getElementById('main');
+  let dragging = false, startX = 0, startW = 0;
+  handle.addEventListener('mousedown', e => {
+    dragging = true; startX = e.clientX; startW = right.getBoundingClientRect().width;
+    handle.classList.add('dragging'); document.body.style.cssText += 'cursor:col-resize;user-select:none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const newW = Math.min(Math.max(startW + (startX - e.clientX), 220), main.getBoundingClientRect().width - 240);
+    right.style.width = right.style.minWidth = newW + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return; dragging = false;
+    handle.classList.remove('dragging'); document.body.style.cursor = document.body.style.userSelect = '';
+    if (data) buildTimeline();
+  });
+})();
+window.addEventListener('resize', () => { if (data) buildTimeline(); });
+
+// ── SYNTAX HIGHLIGHTING ───────────────────────────────────────────────────────
+const KEYWORDS = new Set([
+  'def','class','if','else','elif','while','for','in','return','import','from',
+  'as','try','except','finally','with','raise','True','False','None','and','or',
+  'not','is','lambda','yield','break','continue','pass','del','global','nonlocal',
+  'assert','match','case','self','type','async','await'
+]);
+const BUILTINS = new Set([
+  'print','len','range','list','dict','set','tuple','str','int','float','bool',
+  'type','isinstance','hasattr','getattr','setattr','super','object','Exception',
+  'ValueError','TypeError','KeyError','IndexError','NotImplementedError','AttributeError',
+  'enumerate','zip','map','filter','sorted','reversed','min','max','sum','abs',
+  'open','input','format','repr','id','hex','oct','bin','chr','ord',
+  'iter','next','callable','any','all','vars','dir','eval','exec','property'
+]);
+
+function highlightPython(code, locals) {
+  let out = '', i = 0;
+  while (i < code.length) {
+    const c = code[i];
+    if (c === '#') { out += `<span class="cmt">${code.slice(i)}</span>`; break; }
+    if (c === "'" || c === '"') {
+      let q = c, j = i + 1, s = '';
+      if (code.slice(i, i+3) === q+q+q) {
+        s = q+q+q; j = i+3;
+        while (j < code.length) { if (code.slice(j,j+3)===q+q+q) { s+=q+q+q; j+=3; break; } s+=code[j++]; }
+      } else {
+        while (j < code.length && code[j] !== q) { if (code[j]==='\\') j+=2; else j++; }
+        s = code.slice(i, j+1); j++;
+      }
+      out += `<span class="str">${s}</span>`; i = j; continue;
+    }
+    if (/[0-9]/.test(c)) {
+      let num = '';
+      while (i < code.length && /[0-9._xXbBoOeEjJ]/.test(code[i])) num += code[i++];
+      out += `<span class="num">${num}</span>`; continue;
+    }
+    if (/[a-zA-Z_]/.test(c)) {
+      let w = '';
+      while (i < code.length && /[a-zA-Z0-9_]/.test(code[i])) w += code[i++];
+      const after = code.slice(i).trimStart();
+      if (KEYWORDS.has(w))            out += `<span class="kw">${w}</span>`;
+      else if (BUILTINS.has(w))       out += `<span class="bi">${w}</span>`;
+      else if (after.startsWith('(')) out += `<span class="fn-call">${w}</span>`;
+      else if (locals && w in locals) out += `<span class="ident in-scope" data-var="${w}">${w}</span>`;
+      else                            out += `<span class="ident" data-var="${w}">${w}</span>`;
+      continue;
+    }
+    out += c; i++;
+  }
+  return out;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function valClass(v) {
+  if (v==='None'||v==='True'||v==='False') return 'b';
+  if (/^['"]/.test(v)) return 's';
+  if (/^-?\d/.test(v)) return 'n';
+  if (/^</.test(v)) return 'o';
+  return '';
+}
+</script>
+</body>
+</html>
