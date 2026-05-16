@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Replay Debugger</title>
+    <meta charset="UTF-8">
+    <style>
+:root {
+    --background: #000000;
+    --accent:     #ff0088;
+
+    --breakpoint: #ff0000;
+
+    --text-dark:   #454545;
+    --text:        #797979;
+    --text-bright: #bbbbbb;
+}
+
+html, body {
+    height: 100vh; 
+    max-height: 100vh;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    font-family: 'Iosevka', monospace;
+
+    background-color: var(--background);
+    color:            var(--text);
+
+    width: 100%;
+    max-width: 100%;
+
+    /* overflow: hidden; */
+    display: flex;
+    flex-flow: column nowrap;
+
+    height: 100vh;
+    max-height: 100vh;
+    box-sizing: border-box;
+}
+
+header {
+    display:       flex;
+    border-bottom: 1px solid var(--accent);
+}
+
+header input[type="file"]::file-selector-button {
+    font-family: 'Iosevka', monospace;
+    align-self: flex-end;
+    border: none;
+    background-color: var(--accent);
+    color: white;
+    cursor: pointer;
+}
+
+header span.tab {
+    margin-left:  5pt;
+    margin-right: 5pt;
+    padding-left:  3pt;
+    padding-right: 3pt;
+    cursor:       pointer;
+}
+
+.tab.selected {
+    background-color: var(--accent);
+    color: white;
+    font-style: bold;
+}
+
+main {
+    display: flex;
+    max-width: 100%;
+    max-height: 100%;
+
+    flex-grow: 1;
+
+    overflow: hidden;
+}
+
+#step-buttons {
+    position: sticky;
+    top: 0;
+    padding: 10pt;
+
+    width: 100%;
+    text-align: center;
+
+    background-color: var(--background);
+}
+
+#step-buttons button {
+    background-color: var(--background);
+    border: 1px solid var(--text);
+    color: var(--text);
+    padding-left: 10pt;
+    padding-right: 10pt;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 20pt;
+}
+
+.code {
+    height: 100%;
+
+    overflow-x: auto;
+    overflow-y: auto;
+
+    flex-grow: 1;
+    position:  relative;
+
+    /* For Firefox */
+    scrollbar-width: none;
+    /* For Internet Explorer and older Edge */
+    -ms-overflow-style: none;
+}
+
+.code::-webkit-scrollbar {
+    display: none;
+}
+
+.code table {
+    white-space: pre;
+}
+
+.breakpoint {
+    color: var(--breakpoint);
+    cursor: pointer;
+    min-width: 20pt; 
+    text-align: right;
+    color: #000000;
+
+    text-shadow: 0 0 10px;
+}
+
+.breakpoint:hover {
+    color: #770000;
+}
+
+.python {
+    padding-left: 20pt;
+    color: var(--text-dark);
+    border-left: 5px solid var(--background);
+}
+
+.active-line {
+    border-left: 5px solid var(--breakpoint);
+    background-color: #bb0000 !important;
+    color:            white      !important;
+    font-weight:      bold;
+}
+
+.active-line * {
+    color: white !important;
+}
+
+.line-number {
+    float: right;
+}
+
+/* syntax highlighting */
+
+.keyword {
+    color: var(--text)
+}
+
+.function {
+    color:       white;
+    font-weight: bold;
+}
+
+.ident {
+    color: var(--text-bright);
+}
+
+.constant, .numeric, .string {
+    color: var(--accent);
+}
+
+.comment {
+    color: var(--text-dark);
+    font-style: italic;
+}
+
+.whitespace {
+    color: #212121 !important;
+}
+
+#resize {
+    width: 3px;
+    min-width: 3px;
+
+    border-left: 1px solid var(--accent);
+    border-right: 1px solid var(--accent);
+
+    background-color: var(--background);
+    cursor:           col-resize;
+}
+
+#resize:hover {
+    background-color: var(--accent);
+}
+
+#inspector {
+    flex-grow:   0;
+    flex-shrink: 0;
+    flex-basis:  300px;
+    overflow-x:  hidden;
+    overflow-y:  auto;
+}
+
+#inspector details {
+    margin-bottom: 10pt;
+}
+
+#inspector summary {
+    border-top:    1px solid var(--text-dark);
+    border-bottom: 1px solid var(--text-dark);
+
+    padding:      5pt;
+    padding-left: 10pt;
+
+    list-style: none;
+    cursor:     pointer;
+}
+
+#inspector ul {
+    list-style: none;
+}
+
+#foot-resize {
+    background-color: var(--background);
+    border-top: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent);
+    height: 3px;
+
+    cursor: row-resize;
+}
+
+#foot-resize:hover {
+    background-color: var(--accent);
+}
+
+footer {
+    flex-basis:  0px;
+    flex-shrink: 0;
+    flex-grow:   0;
+    width:       100%;
+
+    background-color: var(--background);
+
+    overflow: hidden;
+}
+    </style>
+</head>
+<body>
+    <header id="header">
+        <input type="file" id="json_file_upload">
+    </header>
+    <main>
+        <div class="code">
+            <div id="step-buttons">
+                <button onclick="jump_start()">◀</button>
+                <button onclick="step_out(-1)">◀</button>
+                <button onclick="step_into(-1)">◀</button>
+                <button onclick="step_forward(-1)">◀</button>
+
+                <button onclick="step_forward()">▶</button>
+                <button onclick="step_into()">▶</button>
+                <button onclick="step_out()">▶</button>
+                <button onclick="jump_end()">▶</button>
+                <button onclick="setInterval(() => step_into(), 250)">▶</button>
+            </div>
+            <table id="code"></table>
+        </div>
+        <div id="resize"></div>
+        <div id="inspector">
+            <details>
+                <summary>call stack</summary>
+                <ul id="call-stack"></ul>
+            </details>
+            <details>
+                <summary>variables</summary>
+                <ul id="variables"></ul>
+            </details>
+            <details>
+                <summary>outline</summary>
+            </details>
+        </div>
+    </main>
+
+    <div id="foot-resize"></div>
+    <footer id="footer">
+        <div id="console">
+            [INFO]: getting requests
+        </div>
+        <canvas id="flame-graph"></canvas>
+    </footer>
+    <script>
+const header        = document.getElementById('header')
+const code          = document.getElementById('code')
+const inspector     = document.getElementById('inspector')
+const call_stack_el = document.getElementById('call-stack')
+const variables     = document.getElementById('variables')
+const footer        = document.getElementById('footer')
+const resize_handle = document.getElementById('resize')
+const foot_resize   = document.getElementById('foot-resize')
+const upload        = document.getElementById('json_file_upload')
+
+let debug_trace      = null
+let current_line     = null
+// let current_function = null
+
+let call_stack = []
+
+// TODO: conditional breakpoints, etc.
+let breakpoints = []
+
+
+resize_handle.onmousedown = e => {
+    e.preventDefault()
+    document.body.onmousemove = event => {
+        let w = window.innerWidth - event.pageX
+        if (w < 100) w = 0
+        inspector.style.flexBasis = `${w}px`
+    }
+    document.body.onmouseup = e => {
+        document.body.onmousemove  = null
+    }
+}
+
+foot_resize.onmousedown = e => {
+    e.preventDefault()
+    document.body.onmousemove = event => {
+        let h = window.innerHeight - event.pageY
+        if (h < 100) h = 0
+        footer.style.flexBasis = `${h}px`
+    }
+    document.body.onmouseup = e => {
+        document.body.onmousemove  = null
+    }
+}
+
+
+upload.onchange = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        debug_trace  = JSON.parse(e.target.result)
+        for (const key of Object.keys(debug_trace.sources)) {
+            let tab = document.createElement('span')
+            tab.innerText = key
+            tab.onclick = () => set_source(key, -1)
+            tab.classList.add('tab')
+
+            header.appendChild(tab)
+        }
+
+        current_line = 1
+        jump_start()
+    }
+
+    reader.readAsText(file)
+}
+
+const scan_code = (dir, cond) => {
+    let [source_name, lineno, locals, depth] = debug_trace.trace[current_line]
+
+    do
+    {
+        current_line += dir
+        current_line = Math.max(0, current_line)
+        current_line = Math.min(debug_trace.trace.length - 1, current_line)
+
+        const [new_source_name, new_lineno, new_locals, new_depth] = debug_trace.trace[current_line]
+
+        if (new_depth > depth) {
+            call_stack.push({name: new_source_name, lineno: lineno})
+        }
+        else if (new_depth < depth) {
+            call_stack.pop()
+        }
+
+        [source_name, lineno, locals, depth] = [new_source_name, new_lineno, new_locals, new_depth]
+    }
+    while (current_line < debug_trace.trace.length - 1
+        && current_line > 0
+        && !breakpoints.includes(`${source_name}:${lineno}`)
+        && cond())
+}
+
+
+const jump_start = () => {
+    scan_code(-1, () => true)
+    set_position()
+}
+
+const jump_end = () => {
+    scan_code(1, () => true)
+    set_position()
+}
+
+const step_forward = (dir=1) => {
+    depth = debug_trace.trace[current_line][3] 
+    scan_code(dir, () => debug_trace.trace[current_line][3] > depth)
+    set_position()
+}
+
+const step_into = (dir=1) => {
+    scan_code(dir, () => false)
+    set_position()
+}
+
+const step_out = (dir=1) => {
+    depth = debug_trace.trace[current_line][3] 
+    scan_code(dir, () => debug_trace.trace[current_line][3] >= depth)
+    set_position()
+}
+
+const set_position = () => {
+    let [source_name, lineno, locals, depth] = debug_trace.trace[current_line]
+    set_source(source_name, lineno)
+
+    // TODO: temp code
+    call_stack_el.innerHTML = ''
+    for (const f of call_stack.toReversed()) {
+        let funchint = document.createElement('li')
+        funchint.innerHTML = `${f.lineno}: <span class="function">${f.name}</span>(...)`
+
+        call_stack_el.appendChild(funchint)
+    }
+
+    variables.innerHTML = ''
+    for (const [varname, value] of Object.entries(locals)) {
+        let varhint = document.createElement('li')
+        varhint.innerText = `${varname}: ${value}`
+
+        variables.appendChild(varhint)
+    }
+}
+
+
+// =========================== //
+// === Syntax Highlighting === //
+// =========================== //
+
+const tokenize_line = (line) => {
+    let tokens = []
+    let re_matches = []
+
+    while (line.length > 0) {
+        if (re_matches = line.match(/^(def|if|elif|else|while|for|self|is|not|and|or|return|break|try|except)\b(.*)/)) {
+            tokens.push({type: 'keyword', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^([a-zA-Z_][a-zA-Z_0-9]+)(\(.*)/)) {
+            tokens.push({type: 'function', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^([A-Z_][A-Z_0-9]+\b)(.*)/)) {
+            tokens.push({type: 'constant', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^([a-zA-Z_][a-zA-Z_0-9]+\b)(.*)/)) {
+            tokens.push({type: 'ident', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^("[^"]*")(.*)/)) {
+            tokens.push({type: 'string', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^('[^']*')(.*)/)) {
+            tokens.push({type: 'string', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^([0-9][0-9_.]*)(.*)/)) {
+            tokens.push({type: 'numeric', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^(#.*)/)) {
+            tokens.push({type: 'comment', content: re_matches[1]})
+            return tokens
+        }
+        else if (re_matches = line.match(/^(\s+)(.*)/)) {
+            tokens.push({type: 'whitespace', content: re_matches[1].replaceAll(' ', '‧')})
+            line = re_matches[2]
+        }
+        else {
+            tokens.push({type: 'other', content: line[0]})
+            line = line.slice(1)
+        }
+    }
+
+    return tokens
+}
+
+
+const set_source = (source_name, bpoint) => {
+    let tabs = document.getElementsByClassName('tab')
+    for (const tab of tabs) {
+        tab.classList.add('selected')
+        if (tab.innerText === source_name) {
+            tab.classList.add('selected')
+        }
+        else {
+            tab.classList.remove('selected')
+        }
+    }
+
+    code.innerHTML = ''
+
+    let line_number = 0
+    let source      = debug_trace.sources[source_name]
+
+    for (const line of source) {
+        let row        = document.createElement('tr')
+        let breakpoint = document.createElement('td')
+        let number     = document.createElement('td')
+        let python     = document.createElement('td')
+
+        breakpoint.innerText = '●'
+        number.innerText     = line_number + 1
+
+        if (line_number === bpoint) {
+            python.classList.add('active-line')
+            setTimeout(() => {
+                python.scrollIntoView()
+            }, 10)
+        }
+
+        // why am I rerendering the whole thing for 1 breakpoint?
+        const breakpoint_number = `${source_name}:${line_number}`
+        if (breakpoints.includes(breakpoint_number)) {
+            breakpoint.style.color = 'red'
+            breakpoint.onclick = e => {
+                breakpoints = breakpoints.filter(i => i !== breakpoint_number)
+                set_source(source_name, bpoint)
+            }
+        }
+        else {
+            breakpoint.onclick = e => {
+                breakpoints.push(breakpoint_number)
+                set_source(source_name, bpoint)
+            }
+        }
+
+        breakpoint.classList.add('breakpoint')
+        number.classList.add('line-number')
+        python.classList.add('python')
+
+        for (let token of tokenize_line(line)) {
+            let token_element       = document.createElement('span')
+            token_element.innerText = token.content
+            token_element.classList.add(token.type)
+
+            python.appendChild(token_element)
+        }
+
+        row.appendChild(breakpoint)
+        row.appendChild(number)
+        row.appendChild(python)
+
+        code.appendChild(row)
+        line_number++
+    }
+}
+    </script>
+</body>
+</html>
