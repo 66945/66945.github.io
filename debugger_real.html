@@ -4,6 +4,7 @@
     <title>Replay Debugger</title>
     <meta charset="UTF-8">
     <style>
+
 :root {
     --background: #000000;
     --accent:     #ff0088;
@@ -23,7 +24,7 @@ html, body {
 }
 
 body {
-    font-family: 'Iosevka', monospace;
+    font-family: 'Iosevka Nerd Font', monospace;
 
     background-color: var(--background);
     color:            var(--text);
@@ -46,12 +47,13 @@ header {
 }
 
 header input[type="file"]::file-selector-button {
-    font-family: 'Iosevka', monospace;
-    align-self: flex-end;
-    border: none;
+    font-family:      'Iosevka', monospace;
+    align-self:       flex-end;
+    border:           none;
     background-color: var(--accent);
-    color: white;
-    cursor: pointer;
+    color:            black;
+	font-weight:      bold;
+    cursor:           pointer;
 }
 
 header span.tab {
@@ -64,8 +66,8 @@ header span.tab {
 
 .tab.selected {
     background-color: var(--accent);
-    color: white;
-    font-style: bold;
+    color:            black;
+    font-weight:      bold;
 }
 
 main {
@@ -81,23 +83,30 @@ main {
 #step-buttons {
     position: sticky;
     top: 0;
-    padding: 10pt;
+    /* padding: 10pt; */
 
-    width: 100%;
-    text-align: center;
+    text-align:    right;
+	padding-right: 15pt;
+	margin:        0;
 
     background-color: var(--background);
 }
 
 #step-buttons button {
     background-color: var(--background);
-    border: 1px solid var(--text);
-    color: var(--text);
-    padding-left: 10pt;
-    padding-right: 10pt;
-    font-size: 1em;
-    cursor: pointer;
-    border-radius: 20pt;
+    border:           0px;
+    color:            var(--text-dark);
+	padding:          0;
+	margin:           0;
+	margin-left:  2pt;
+	margin-right: 2pt;
+    font-size:        1.2em;
+	font-family:      'Iosevka Nerd Font', monospace;
+    cursor:           pointer;
+}
+
+#step-buttons button:hover {
+	color: var(--accent);
 }
 
 .code {
@@ -144,14 +153,18 @@ main {
 }
 
 .active-line {
-    border-left: 5px solid var(--breakpoint);
-    background-color: #bb0000 !important;
-    color:            white      !important;
+    border-left:      5px solid var(--breakpoint);
+    background-color: #660000 !important;
+    color:            white   !important;
     font-weight:      bold;
 }
 
 .active-line * {
     color: white !important;
+}
+
+.active-line .whitespace {
+	color: black !important;
 }
 
 .line-number {
@@ -187,7 +200,7 @@ main {
 }
 
 #resize {
-    width: 3px;
+    width:     3px;
     min-width: 3px;
 
     border-left: 1px solid var(--accent);
@@ -207,6 +220,8 @@ main {
     flex-basis:  300px;
     overflow-x:  hidden;
     overflow-y:  auto;
+
+	white-space: nowrap;
 }
 
 #inspector details {
@@ -224,15 +239,38 @@ main {
     cursor:     pointer;
 }
 
+#inspector details[open] summary {
+    border-bottom: 1px dashed var(--text-dark);
+}
+
 #inspector ul {
-    list-style: none;
+    list-style:   none;
+	margin-left:  10pt;
+	padding-left: 0;
+}
+
+#inspector table {
+	white-space: pre;
+	margin-left: 5pt;
+}
+
+#flame-graph {
+	width:      100%;
+	height:     50px;
+	border-top: 1px solid var(--accent);
+
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+
+	display: none;
 }
 
 #foot-resize {
     background-color: var(--background);
-    border-top: 1px solid var(--accent);
-    border-bottom: 1px solid var(--accent);
-    height: 3px;
+    border-top:       1px solid var(--accent);
+    border-bottom:    1px solid var(--accent);
+    height:     3px;
+    min-height: 3px;
 
     cursor: row-resize;
 }
@@ -242,7 +280,7 @@ main {
 }
 
 footer {
-    flex-basis:  0px;
+    flex-basis:  10px;
     flex-shrink: 0;
     flex-grow:   0;
     width:       100%;
@@ -260,58 +298,79 @@ footer {
     <main>
         <div class="code">
             <div id="step-buttons">
-                <button onclick="jump_start()">◀</button>
-                <button onclick="step_out(-1)">◀</button>
-                <button onclick="step_into(-1)">◀</button>
-                <button onclick="step_forward(-1)">◀</button>
+				<button></button>
+                <button onclick="jump_start()"></button>
+                <button onclick="step_out(-1)"></button>
+                <button onclick="step_into(-1)"></button>
+                <button onclick="step_forward(-1)"></button>
 
-                <button onclick="step_forward()">▶</button>
-                <button onclick="step_into()">▶</button>
-                <button onclick="step_out()">▶</button>
-                <button onclick="jump_end()">▶</button>
-                <button onclick="setInterval(() => step_into(), 250)">▶</button>
+                <button onclick="play()" id="playbtn"></button>
+
+                <button onclick="step_forward()"></button>
+                <button onclick="step_into()"></button>
+                <button onclick="step_out()"></button>
+                <button onclick="jump_end()"></button>
             </div>
             <table id="code"></table>
         </div>
         <div id="resize"></div>
         <div id="inspector">
             <details>
-                <summary>call stack</summary>
+                <summary> call stack</summary>
                 <ul id="call-stack"></ul>
             </details>
             <details>
-                <summary>variables</summary>
-                <ul id="variables"></ul>
+                <summary> variables</summary>
+                <table id="variables"></table>
             </details>
             <details>
-                <summary>outline</summary>
+                <summary> watch</summary>
+                <ul id="watch"></ul>
             </details>
+            <details>
+                <summary> breakpoints</summary>
+                <ul id="breakpoints"></ul>
+            </details>
+            <details>
+                <summary> outline</summary>
+				<ul id="outline"></ul>
+            </details>
+            <details>
+                <summary> exceptions</summary>
+            </details>
+			<details>
+				<summary> ai analysis</summary>
+				IDK, I just thought the unicode symbol was cool and wanted to include it
+			</details>
         </div>
     </main>
 
+	<canvas id="flame-graph"></canvas>
     <div id="foot-resize"></div>
     <footer id="footer">
-        <div id="console">
-            [INFO]: getting requests
-        </div>
-        <canvas id="flame-graph"></canvas>
+        <div id="console"> </div>
     </footer>
     <script>
-const header        = document.getElementById('header')
-const code          = document.getElementById('code')
-const inspector     = document.getElementById('inspector')
-const call_stack_el = document.getElementById('call-stack')
-const variables     = document.getElementById('variables')
-const footer        = document.getElementById('footer')
-const resize_handle = document.getElementById('resize')
-const foot_resize   = document.getElementById('foot-resize')
-const upload        = document.getElementById('json_file_upload')
+const header         = document.getElementById('header')
+const code           = document.getElementById('code')
+const inspector      = document.getElementById('inspector')
+const call_stack_el  = document.getElementById('call-stack')
+const variables      = document.getElementById('variables')
+const breakpoints_el = document.getElementById('breakpoints')
+const outline        = document.getElementById('outline')
+const flame_graph    = document.getElementById('flame-graph')
+const footer         = document.getElementById('footer')
+const resize_handle  = document.getElementById('resize')
+const foot_resize    = document.getElementById('foot-resize')
+const upload         = document.getElementById('json_file_upload')
 
-let debug_trace      = null
-let current_line     = null
+const play_btn = document.getElementById('playbtn')
+
+let debug_trace  = null
+let current_line = null // follow the appropriate format? or have the tabs actually work like tabs?
 // let current_function = null
 
-let call_stack = []
+let call_tree = null
 
 // TODO: conditional breakpoints, etc.
 let breakpoints = []
@@ -321,7 +380,7 @@ resize_handle.onmousedown = e => {
     e.preventDefault()
     document.body.onmousemove = event => {
         let w = window.innerWidth - event.pageX
-        if (w < 100) w = 0
+        if (w < 100) w = 10
         inspector.style.flexBasis = `${w}px`
     }
     document.body.onmouseup = e => {
@@ -333,12 +392,34 @@ foot_resize.onmousedown = e => {
     e.preventDefault()
     document.body.onmousemove = event => {
         let h = window.innerHeight - event.pageY
-        if (h < 100) h = 0
+        if (h < 100) h = 10
         footer.style.flexBasis = `${h}px`
     }
     document.body.onmouseup = e => {
         document.body.onmousemove  = null
     }
+}
+
+flame_graph.onmousedown = (e) => {
+	document.body.onmousemove = (event) => {
+		const total_steps = debug_trace.trace.length
+		const step_width  = flame_graph.width / total_steps
+
+		const next_step = Math.floor(event.pageX / step_width)
+
+		if (next_step > current_line)
+			scan_code(1, () => current_line !== next_step)
+		else if (next_step < current_line)
+			scan_code(-1, () => current_line !== next_step)
+
+		set_position()
+	}
+	document.body.onmouseup = (e) => {
+		document.body.onmousemove = null
+		document.body.onmouseup   = null
+	}
+
+	document.body.onmousemove(e)
 }
 
 
@@ -349,14 +430,70 @@ upload.onchange = (e) => {
     const reader = new FileReader()
     reader.onload = (e) => {
         debug_trace  = JSON.parse(e.target.result)
+
+		call_tree = {
+			name:  'entry',
+			start: 0,
+			end:   debug_trace.trace.length,
+			calls: [],
+		}
+
+		let call_stack = [call_tree]
+
+		// build outline
+		let prev_fn = {fn: '', depth: 0}
+		for (const [i, line] of debug_trace.trace.entries()) {
+			const [fn, lineno, _, depth] = line
+
+			if (fn !== prev_fn.fn || depth !== prev_fn.depth) {
+				const indent = '  '.repeat(depth - 1)
+				const fn_li  = document.createElement('li')
+				fn_li.style.whiteSpace = 'pre'
+				fn_li.style.cursor     = 'pointer'
+
+				if (depth > prev_fn.depth) {
+					fn_li.innerHTML = `${indent}<span class="function">${fn}</span>(...)`
+					const next_call = {
+						name:  fn,
+						start: i,
+						end:   debug_trace.trace.length,
+						calls: [],
+					}
+
+					call_stack.at(-1).calls.push(next_call)
+					call_stack.push(next_call)
+				}
+				else {
+					for (let j = 0; j < prev_fn.depth - depth; j++) {
+						fn_li.innerHTML = `${indent}<i>${fn}</i> `
+
+						call_stack.at(-1).end = i - 1
+						call_stack.pop()
+					}
+				}
+
+				fn_li.onclick = (e) => {
+					current_line = i
+					set_position()
+				}
+
+				prev_fn = {fn: fn, depth: depth}
+				outline.appendChild(fn_li)
+			}
+		}
+
+		// build tabs
         for (const key of Object.keys(debug_trace.sources)) {
             let tab = document.createElement('span')
-            tab.innerText = key
-            tab.onclick = () => set_source(key, -1)
+			tab.innerText = key
+            tab.onclick = () => set_source(key)
             tab.classList.add('tab')
 
             header.appendChild(tab)
         }
+
+		// show flame graph
+		flame_graph.style.display = 'block'
 
         current_line = 1
         jump_start()
@@ -374,14 +511,9 @@ const scan_code = (dir, cond) => {
         current_line = Math.max(0, current_line)
         current_line = Math.min(debug_trace.trace.length - 1, current_line)
 
-        const [new_source_name, new_lineno, new_locals, new_depth] = debug_trace.trace[current_line]
+        const [new_source_name, new_lineno, new_locals, new_depth] = debug_trace.trace[current_line]; // WARN: load bearing semicolon
 
-        if (new_depth > depth) {
-            call_stack.push({name: new_source_name, lineno: lineno})
-        }
-        else if (new_depth < depth) {
-            call_stack.pop()
-        }
+		// ...
 
         [source_name, lineno, locals, depth] = [new_source_name, new_lineno, new_locals, new_depth]
     }
@@ -419,24 +551,57 @@ const step_out = (dir=1) => {
     set_position()
 }
 
+
+let play_interval = null
+const play = () => {
+	if (play_interval) {
+		clearInterval(play_interval)
+		play_interval = null
+		play_btn.innerText = ''
+	}
+	else {
+		play_interval = setInterval(() => step_into(1), 100)
+		play_btn.innerText = ''
+	}
+}
+
 const set_position = () => {
     let [source_name, lineno, locals, depth] = debug_trace.trace[current_line]
-    set_source(source_name, lineno)
+    set_source(source_name)
 
     // TODO: temp code
     call_stack_el.innerHTML = ''
-    for (const f of call_stack.toReversed()) {
+	let stack_top = call_tree
+	while (stack_top) {
         let funchint = document.createElement('li')
-        funchint.innerHTML = `${f.lineno}: <span class="function">${f.name}</span>(...)`
+        funchint.innerHTML = `<span class="function">${stack_top.name}</span>(...)`
 
-        call_stack_el.appendChild(funchint)
-    }
+        call_stack_el.prepend(funchint)
+		let calls = stack_top.calls
+		stack_top = null
+
+		for (const call of calls) {
+			if (call.start <= current_line && call.end >= current_line) {
+				stack_top = call
+				break
+			}
+		}
+	}
 
     variables.innerHTML = ''
     for (const [varname, value] of Object.entries(locals)) {
-        let varhint = document.createElement('li')
-        varhint.innerText = `${varname}: ${value}`
+        let varhint  = document.createElement('tr')
+		let name     = document.createElement('td')
+		let equals   = document.createElement('td')
+		let value_el = document.createElement('td')
 
+        name.innerText     = varname
+		equals.innerText   = ' :: '
+		value_el.innerHTML = `<span class="string">${value}</span>`
+
+        varhint.appendChild(name)
+        varhint.appendChild(equals)
+        varhint.appendChild(value_el)
         variables.appendChild(varhint)
     }
 }
@@ -497,7 +662,7 @@ const tokenize_line = (line) => {
 }
 
 
-const set_source = (source_name, bpoint) => {
+const set_source = (source_name) => {
     let tabs = document.getElementsByClassName('tab')
     for (const tab of tabs) {
         tab.classList.add('selected')
@@ -511,6 +676,8 @@ const set_source = (source_name, bpoint) => {
 
     code.innerHTML = ''
 
+	const [fn, lineno, _, depth] = debug_trace.trace[current_line]
+
     let line_number = 0
     let source      = debug_trace.sources[source_name]
 
@@ -520,29 +687,43 @@ const set_source = (source_name, bpoint) => {
         let number     = document.createElement('td')
         let python     = document.createElement('td')
 
-        breakpoint.innerText = '●'
+        breakpoint.innerText = ''
         number.innerText     = line_number + 1
 
-        if (line_number === bpoint) {
+		let is_current = fn === source_name && line_number === lineno
+
+        if (is_current) {
+			breakpoint.innerText = ''
+            breakpoint.style.color = 'red'
+
             python.classList.add('active-line')
             setTimeout(() => {
-                python.scrollIntoView()
-            }, 10)
+				// scroll to breakpoint instead to left align
+				breakpoint.scrollIntoView({
+					behavior: 'smooth',
+					block:    'center',
+					inline:   'start',
+				})
+            }, 5)
         }
 
         // why am I rerendering the whole thing for 1 breakpoint?
         const breakpoint_number = `${source_name}:${line_number}`
         if (breakpoints.includes(breakpoint_number)) {
+			if (is_current) {
+				breakpoint.innerText = ''
+			}
+
             breakpoint.style.color = 'red'
             breakpoint.onclick = e => {
                 breakpoints = breakpoints.filter(i => i !== breakpoint_number)
-                set_source(source_name, bpoint)
+                set_source(source_name)
             }
         }
         else {
             breakpoint.onclick = e => {
                 breakpoints.push(breakpoint_number)
-                set_source(source_name, bpoint)
+                set_source(source_name)
             }
         }
 
@@ -565,6 +746,84 @@ const set_source = (source_name, bpoint) => {
         code.appendChild(row)
         line_number++
     }
+
+	update_breakpoints()
+	render_flame_graph()
+}
+
+
+const update_breakpoints = () => {
+	breakpoints_el.innerHTML = ''
+
+	const [fn, lineno, _l, _d] = debug_trace.trace[current_line]
+
+	for (const bp of breakpoints) {
+		let li = document.createElement('li')
+		li.innerText = bp
+
+		if (bp === `${fn}:${lineno}`) {
+			li.style.color = 'red'
+		}
+
+		breakpoints_el.appendChild(li)
+	}
+}
+
+
+const render_flame_graph = () => {
+	flame_graph.width  = window.innerWidth
+	flame_graph.height = 50
+
+	const total_steps  = debug_trace.trace.length
+	const step_width   = flame_graph.width / total_steps
+
+	const ctx = flame_graph.getContext('2d')
+
+	ctx.fillStyle   = 'black'
+	ctx.strokeStyle = 'none'
+	ctx.lineWidth   = 0
+
+	ctx.fillRect(0, 0, flame_graph.width, flame_graph.height)
+
+	ctx.beginPath()
+	ctx.strokeStyle = '#343434'
+	ctx.lineWidth   = 2
+
+	ctx.moveTo(0, 50)
+	for (let i = 0; i < total_steps; i++) {
+		const [fn, lineno, _, depth] = debug_trace.trace[i]
+
+		let height = 50 - 10 * depth
+
+		ctx.lineTo(i * step_width, height)
+		ctx.lineTo(i * step_width + step_width, height)
+	}
+	ctx.stroke()
+
+	for (let i = 0; i < total_steps; i++) {
+		const [fn, lineno, _, depth] = debug_trace.trace[i]
+
+		let height = 50 - 10 * depth
+		if (i === current_line) {
+			ctx.shadowBlur  = 10
+			ctx.shadowColor = '#ff0088'
+			ctx.fillStyle   = '#ff0088'
+
+			ctx.beginPath()
+			ctx.ellipse(i * step_width + step_width/2, height, 5, 5, 0, 0, 2 * Math.PI)
+			ctx.fill()
+		}
+		else if (breakpoints.includes(`${fn}:${lineno}`)) {
+			ctx.shadowBlur  = 10
+			ctx.shadowColor = '#ff0000'
+			ctx.strokeStyle  = '#ff0000'
+
+			ctx.beginPath()
+			ctx.ellipse(i * step_width + step_width/2, height, 5, 5, 0, 0, 2 * Math.PI)
+			ctx.stroke()
+		}
+		else continue
+	}
 }
     </script>
 </body>
