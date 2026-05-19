@@ -21,6 +21,8 @@ html, body {
     max-height: 100vh;
     box-sizing: border-box;
     margin: 0;
+
+    overflow: hidden;
 }
 
 body {
@@ -98,8 +100,8 @@ main {
     color:            var(--text-dark);
 	padding:          0;
 	margin:           0;
-	margin-left:  2pt;
-	margin-right: 2pt;
+	padding-left:      2pt;
+	padding-right:     2pt;
     font-size:        1.2em;
 	font-family:      'Iosevka Nerd Font', monospace;
     cursor:           pointer;
@@ -130,6 +132,25 @@ main {
 
 .code table {
     white-space: pre;
+    border-collapse: collapse;
+    border: 0 solid transparent;
+}
+
+.code table tr {
+    /*padding: 0;
+    margin: 0; */
+
+    border: 0 solid transparent;
+}
+
+.code table tr td {
+    padding-top: 0;
+    padding-bottom: 0;
+    /*margin-top: 0; */
+    margin-bottom: 0;
+
+    border-top: 0 solid transparent;
+    border-bottom: 0 solid transparent;
 }
 
 .breakpoint {
@@ -199,6 +220,25 @@ main {
     color: #212121 !important;
 }
 
+.error-msg {
+    border: 1px solid red;
+
+    border-left: 5pt solid red;
+    background-color: #220000;
+    border-radius: 10pt;
+
+    margin: 10pt;
+    margin-left: 50pt;
+
+    color: red;
+    font-weight: bold;
+
+    padding: 5pt;
+    padding-left:  20pt;
+
+    box-shadow: 0 0 7pt red;
+}
+
 #resize {
     width:     3px;
     min-width: 3px;
@@ -237,6 +277,10 @@ main {
 
     list-style: none;
     cursor:     pointer;
+}
+
+#inspector summary:hover .icon {
+    color: var(--accent);
 }
 
 #inspector details[open] summary {
@@ -287,7 +331,56 @@ footer {
 
     background-color: var(--background);
 
-    overflow: hidden;
+    overflow: auto;
+}
+
+footer pre {
+    font-family: 'Iosevka Nerd Font', monospace;
+    font-size:   12pt;
+    margin-left: 15pt;
+    cursor:      pointer;
+    color:       var(--text-dark);
+    font-style: italic;
+}
+
+footer pre.printed {
+    color:      var(--text-bright);
+    font-style: normal;
+}
+
+#drop-file {
+    position: fixed;
+
+    top:  0pt;
+    left: 0pt;
+
+    width:  100%;
+    height: 100%;
+
+    background-color: #000000cc;
+    color: var(--accent);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    align-content: stretch;
+}
+
+#drop-file div {
+    border: 5px dashed var(--accent);
+
+    font-size:     100pt;
+    border-radius: 50pt;
+
+    width:  60%;
+    height: 60%;
+
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+
+    white-space: pre;
 }
     </style>
 </head>
@@ -298,49 +391,49 @@ footer {
     <main>
         <div class="code">
             <div id="step-buttons">
-				<button></button>
-                <button onclick="jump_start()"></button>
-                <button onclick="step_out(-1)"></button>
-                <button onclick="step_into(-1)"></button>
-                <button onclick="step_forward(-1)"></button>
+				<button style="cursor: grab;"></button>
+                <button onclick="jump_start()"> </button>
+                <button onclick="step_out(-1)"> </button>
+                <button onclick="step_into(-1)"> </button>
+                <button onclick="step_forward(-1)"> </button>
 
-                <button onclick="play()" id="playbtn"></button>
+                <button onclick="play()" id="playbtn"> </button>
 
-                <button onclick="step_forward()"></button>
-                <button onclick="step_into()"></button>
-                <button onclick="step_out()"></button>
-                <button onclick="jump_end()"></button>
+                <button onclick="step_forward()"> </button>
+                <button onclick="step_into()"> </button>
+                <button onclick="step_out()"> </button>
+                <button onclick="jump_end()"> </button>
             </div>
             <table id="code"></table>
         </div>
         <div id="resize"></div>
         <div id="inspector">
             <details>
-                <summary> call stack</summary>
+                <summary><span class="icon"> </span> call stack</summary>
                 <ul id="call-stack"></ul>
             </details>
             <details>
-                <summary> variables</summary>
+                <summary><span class="icon">󱒔 </span> variables</summary>
                 <table id="variables"></table>
             </details>
             <details>
-                <summary> watch</summary>
+                <summary><span class="icon">󰈈 </span> watch</summary>
                 <ul id="watch"></ul>
             </details>
             <details>
-                <summary> breakpoints</summary>
+                <summary><span class="icon"> </span> breakpoints</summary>
                 <ul id="breakpoints"></ul>
             </details>
             <details>
-                <summary> outline</summary>
+                <summary><span class="icon"> </span> outline</summary>
 				<ul id="outline"></ul>
             </details>
             <details>
-                <summary> exceptions</summary>
+                <summary><span class="icon"> </span> exceptions</summary>
+                <ul id="exceptions"></ul>
             </details>
 			<details>
-				<summary> ai analysis</summary>
-				IDK, I just thought the unicode symbol was cool and wanted to include it
+				<summary><span class="icon"> </span> explain</summary>
 			</details>
         </div>
     </main>
@@ -350,6 +443,8 @@ footer {
     <footer id="footer">
         <div id="console"> </div>
     </footer>
+
+    <div id="drop-file"><div> </div></div>
     <script>
 const header         = document.getElementById('header')
 const code           = document.getElementById('code')
@@ -357,12 +452,14 @@ const inspector      = document.getElementById('inspector')
 const call_stack_el  = document.getElementById('call-stack')
 const variables      = document.getElementById('variables')
 const breakpoints_el = document.getElementById('breakpoints')
+const exceptions_el  = document.getElementById('exceptions')
 const outline        = document.getElementById('outline')
 const flame_graph    = document.getElementById('flame-graph')
 const footer         = document.getElementById('footer')
 const resize_handle  = document.getElementById('resize')
 const foot_resize    = document.getElementById('foot-resize')
 const upload         = document.getElementById('json_file_upload')
+const drop_file      = document.getElementById('drop-file')
 
 const play_btn = document.getElementById('playbtn')
 
@@ -370,10 +467,23 @@ let debug_trace  = null
 let current_line = null // follow the appropriate format? or have the tabs actually work like tabs?
 // let current_function = null
 
-let call_tree = null
+let call_tree       = null
+let console_content = []
+let exceptions      = []
 
 // TODO: conditional breakpoints, etc.
 let breakpoints = []
+
+
+// key events
+document.body.onkeydown = (e) => {
+    if (e.key === 'j')  step_forward(1)
+    if (e.key === 'k')  step_forward(-1)
+    if (e.key === 'l')  step_into(1)
+    if (e.key === 'h')  step_out(-1)
+    if (e.key === ' ')  play()
+    if (e.key === '\r') jump_end()
+}
 
 
 resize_handle.onmousedown = e => {
@@ -423,24 +533,34 @@ flame_graph.onmousedown = (e) => {
 }
 
 
+document.body.ondragover = (e) => {
+    e.preventDefault()
+    drop_file.style.display = 'flex'
+}
+
+document.body.ondragleave = (e) => {
+    drop_file.style.display = 'none'
+}
+
+document.body.ondrop = (e) => {
+    e.preventDefault()
+    drop_file.style.display = 'none'
+    upload.onchange({target: e.dataTransfer})
+}
+
 upload.onchange = (e) => {
     const file = e.target.files[0]
     if (!file) return
 
     const reader = new FileReader()
     reader.onload = (e) => {
-        debug_trace  = JSON.parse(e.target.result)
+        debug_trace = JSON.parse(e.target.result)
 
-		call_tree = {
-			name:  'entry',
-			start: 0,
-			end:   debug_trace.trace.length,
-			calls: [],
-		}
-
-		let call_stack = [call_tree]
+		let call_stack = null
 
 		// build outline
+        outline.innerHTML = ''
+
 		let prev_fn = {fn: '', depth: 0}
 		for (const [i, line] of debug_trace.trace.entries()) {
 			const [fn, lineno, _, depth] = line
@@ -460,12 +580,19 @@ upload.onchange = (e) => {
 						calls: [],
 					}
 
-					call_stack.at(-1).calls.push(next_call)
-					call_stack.push(next_call)
+                    if (call_tree !== null) {
+                        call_stack.at(-1).calls.push(next_call)
+                        call_stack.push(next_call)
+                    }
+                    else {
+                        call_tree  = next_call
+                        call_stack = [call_tree]
+                    }
 				}
 				else {
 					for (let j = 0; j < prev_fn.depth - depth; j++) {
-						fn_li.innerHTML = `${indent}<i>${fn}</i> `
+						fn_li.innerHTML      = `${indent}<i>${fn}</i> `
+                        fn_li.style.fontSize = '.9em'
 
 						call_stack.at(-1).end = i - 1
 						call_stack.pop()
@@ -482,7 +609,30 @@ upload.onchange = (e) => {
 			}
 		}
 
+
+        // build exceptions
+        exceptions_el.innerHTML = ''
+        exceptions              = []
+
+		for (const [i, line] of debug_trace.trace.entries()) {
+            const [fn, lineno, _v, _d, _o, exception] = line
+            if (exception === null) continue
+
+            exceptions.push(i)
+
+            const exc_li     = document.createElement('li')
+            exc_li.innerText = `${fn}:${lineno} ${debug_trace.sources[fn][lineno]}`
+            exc_li.onclick   = (e) => {
+                current_line = i
+                set_position()
+            }
+
+            exceptions_el.appendChild(exc_li)
+        }
+
+
 		// build tabs
+        header.innerHTML = ''
         for (const key of Object.keys(debug_trace.sources)) {
             let tab = document.createElement('span')
 			tab.innerText = key
@@ -495,8 +645,28 @@ upload.onchange = (e) => {
 		// show flame graph
 		flame_graph.style.display = 'block'
 
+
+        // build console
+        console_content  = []
+        footer.innerHTML = ''
+
+        for (const [i, [_1, _2, _3, _4, output, _5]] of debug_trace.trace.entries()) {
+            if (output === null) continue
+
+            const out = document.createElement('pre')
+            out.innerText     = output
+
+            out.onclick = (e) => {
+                current_line = i - 1
+                set_position()
+            }
+
+            footer.appendChild(out)
+            console_content.push({start: i, el: out})
+        }
+
         current_line = 1
-        jump_start()
+        jump_end()
     }
 
     reader.readAsText(file)
@@ -560,7 +730,14 @@ const play = () => {
 		play_btn.innerText = ''
 	}
 	else {
-		play_interval = setInterval(() => step_into(1), 100)
+		play_interval = setInterval(() => {
+            step_into(1)
+
+            const [fn, lineno, _1, _2] = debug_trace.trace[current_line]
+
+            if      (current_line === debug_trace.trace.length - 1) play()
+            else if (breakpoints.includes(`${fn}:${lineno}`))       play()
+        }, 150)
 		play_btn.innerText = ''
 	}
 }
@@ -596,13 +773,35 @@ const set_position = () => {
 		let value_el = document.createElement('td')
 
         name.innerText     = varname
-		equals.innerText   = ' :: '
-		value_el.innerHTML = `<span class="string">${value}</span>`
+		equals.innerText   = ' := '
+
+        if (value.length < 50) {
+            for (const token of tokenize_line(value)) {
+                let tok = document.createElement('span')
+                tok.innerText = token.content
+                tok.classList.add(token.type)
+
+                value_el.appendChild(tok)
+            }
+        }
+        else {
+            value_el.innerText = value
+        }
 
         varhint.appendChild(name)
         varhint.appendChild(equals)
         varhint.appendChild(value_el)
         variables.appendChild(varhint)
+    }
+
+    // output
+    for (const output of console_content) {
+        if (output.start <= current_line) {
+            output.el.classList.add('printed')
+        }
+        else {
+            output.el.classList.remove('printed')
+        }
     }
 }
 
@@ -676,24 +875,29 @@ const set_source = (source_name) => {
 
     code.innerHTML = ''
 
-	const [fn, lineno, _, depth] = debug_trace.trace[current_line]
+	const [fn, lineno, vars, depth, _o, exception] = debug_trace.trace[current_line]
 
     let line_number = 0
     let source      = debug_trace.sources[source_name]
 
-    for (const line of source) {
+    const start_indent = source[0].match(/^[\s]*/)[0]
+    let   indent_level = 0
+
+    for (const _line of source) {
+        const line = _line.replace(start_indent, '')
+
         let row        = document.createElement('tr')
         let breakpoint = document.createElement('td')
         let number     = document.createElement('td')
         let python     = document.createElement('td')
 
-        breakpoint.innerText = ''
+        breakpoint.innerText = ' '
         number.innerText     = line_number + 1
 
 		let is_current = fn === source_name && line_number === lineno
 
         if (is_current) {
-			breakpoint.innerText = ''
+			breakpoint.innerText = ' '
             breakpoint.style.color = 'red'
 
             python.classList.add('active-line')
@@ -711,7 +915,7 @@ const set_source = (source_name) => {
         const breakpoint_number = `${source_name}:${line_number}`
         if (breakpoints.includes(breakpoint_number)) {
 			if (is_current) {
-				breakpoint.innerText = ''
+				breakpoint.innerText = ' '
 			}
 
             breakpoint.style.color = 'red'
@@ -731,10 +935,23 @@ const set_source = (source_name) => {
         number.classList.add('line-number')
         python.classList.add('python')
 
-        for (let token of tokenize_line(line)) {
+        let tokens = tokenize_line(line)
+        if (tokens.length > 0 && tokens[0].type === 'whitespace') {
+            indent_level = tokens[0].content.length / 4
+            tokens       = tokens.slice(1)
+        }
+
+        python.innerHTML += '┆    '.repeat(indent_level)
+
+        for (let token of tokens) {
             let token_element       = document.createElement('span')
             token_element.innerText = token.content
             token_element.classList.add(token.type)
+
+            if (token.type === 'ident' && Object.keys(vars).includes(token.content)) {
+                token_element.style.borderBottom = '1px dashed var(--text)'
+                token_element.title = vars[token.content]
+            }
 
             python.appendChild(token_element)
         }
@@ -744,6 +961,26 @@ const set_source = (source_name) => {
         row.appendChild(python)
 
         code.appendChild(row)
+
+        if (is_current && exception !== null) {
+            const error_cell = document.createElement('td')
+            const error_msg  = document.createElement('div')
+            error_msg.innerText = exception
+            error_msg.classList.add('error-msg')
+            error_cell.appendChild(error_msg)
+
+            const error_row      = document.createElement('tr')
+            const error_icon     = document.createElement('td')
+            error_icon.innerText = ' '
+            error_icon.style.color = 'red'
+
+            error_row.appendChild(document.createElement('td'))
+            error_row.appendChild(error_icon)
+            error_row.appendChild(error_cell)
+
+            code.appendChild(error_row)
+        }
+
         line_number++
     }
 
@@ -759,9 +996,10 @@ const update_breakpoints = () => {
 
 	for (const bp of breakpoints) {
 		let li = document.createElement('li')
-		li.innerText = bp
+		li.innerText = `  ${bp}`
 
 		if (bp === `${fn}:${lineno}`) {
+            li.innerText   = `  ${bp}`
 			li.style.color = 'red'
 		}
 
@@ -785,44 +1023,56 @@ const render_flame_graph = () => {
 
 	ctx.fillRect(0, 0, flame_graph.width, flame_graph.height)
 
-	ctx.beginPath()
-	ctx.strokeStyle = '#343434'
-	ctx.lineWidth   = 2
+    ctx.fillStyle   = '#440022'
+    ctx.strokeStyle = 'black'
+    ctx.lineWidth   = 2
 
-	ctx.moveTo(0, 50)
+    let queue = [[0, call_tree]]
+    while (queue.length > 0) {
+        const [depth, top] = queue.pop()
+
+        const start_x = top.start     * step_width
+        const end_x   = (top.end + 1) * step_width
+
+        ctx.fillRect(start_x, 50 - 10 * depth, end_x - start_x, -10)
+        ctx.strokeRect(start_x, 50 - 10 * depth, end_x - start_x, -10)
+
+        for (const call of top.calls) {
+            queue.unshift([depth + 1, call])
+        }
+    }
+
 	for (let i = 0; i < total_steps; i++) {
 		const [fn, lineno, _, depth] = debug_trace.trace[i]
 
 		let height = 50 - 10 * depth
 
-		ctx.lineTo(i * step_width, height)
-		ctx.lineTo(i * step_width + step_width, height)
-	}
-	ctx.stroke()
+        if (exceptions.includes(i)) {
+			ctx.shadowBlur  = 5
+			ctx.shadowColor = 'black'
+			ctx.fillStyle = '#ff0000'
 
-	for (let i = 0; i < total_steps; i++) {
-		const [fn, lineno, _, depth] = debug_trace.trace[i]
-
-		let height = 50 - 10 * depth
-		if (i === current_line) {
-			ctx.shadowBlur  = 10
-			ctx.shadowColor = '#ff0088'
-			ctx.fillStyle   = '#ff0088'
-
-			ctx.beginPath()
-			ctx.ellipse(i * step_width + step_width/2, height, 5, 5, 0, 0, 2 * Math.PI)
-			ctx.fill()
+            ctx.font = '12pt "Iosevka Nerd Font"'
+            ctx.fillText(' ', i * step_width - 2.5, height + 5)
 		}
 		else if (breakpoints.includes(`${fn}:${lineno}`)) {
-			ctx.shadowBlur  = 10
-			ctx.shadowColor = '#ff0000'
-			ctx.strokeStyle  = '#ff0000'
+			ctx.shadowBlur  = 5
+			ctx.shadowColor = 'black'
+			ctx.strokeStyle = '#ff0000'
 
 			ctx.beginPath()
 			ctx.ellipse(i * step_width + step_width/2, height, 5, 5, 0, 0, 2 * Math.PI)
 			ctx.stroke()
 		}
-		else continue
+
+		if (i === current_line) {
+			ctx.shadowBlur  = 5
+			ctx.shadowColor = 'black'
+			ctx.fillStyle   = 'white'
+
+            ctx.font = '12pt "Iosevka Nerd Font"'
+            ctx.fillText(' ', i * step_width, height)
+		}
 	}
 }
     </script>
