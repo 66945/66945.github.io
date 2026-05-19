@@ -3,386 +3,7 @@
 <head>
     <title>Replay Debugger</title>
     <meta charset="UTF-8">
-    <style>
-
-:root {
-    --background: #000000;
-    --accent:     #ff0088;
-
-    --breakpoint: #ff0000;
-
-    --text-dark:   #454545;
-    --text:        #797979;
-    --text-bright: #bbbbbb;
-}
-
-html, body {
-    height: 100vh; 
-    max-height: 100vh;
-    box-sizing: border-box;
-    margin: 0;
-
-    overflow: hidden;
-}
-
-body {
-    font-family: 'Iosevka Nerd Font', monospace;
-
-    background-color: var(--background);
-    color:            var(--text);
-
-    width: 100%;
-    max-width: 100%;
-
-    /* overflow: hidden; */
-    display: flex;
-    flex-flow: column nowrap;
-
-    height: 100vh;
-    max-height: 100vh;
-    box-sizing: border-box;
-}
-
-header {
-    display:       flex;
-    border-bottom: 1px solid var(--accent);
-}
-
-header input[type="file"]::file-selector-button {
-    font-family:      'Iosevka', monospace;
-    align-self:       flex-end;
-    border:           none;
-    background-color: var(--accent);
-    color:            black;
-	font-weight:      bold;
-    cursor:           pointer;
-}
-
-header span.tab {
-    margin-left:  5pt;
-    margin-right: 5pt;
-    padding-left:  3pt;
-    padding-right: 3pt;
-    cursor:       pointer;
-}
-
-.tab.selected {
-    background-color: var(--accent);
-    color:            black;
-    font-weight:      bold;
-}
-
-main {
-    display: flex;
-    max-width: 100%;
-    max-height: 100%;
-
-    flex-grow: 1;
-
-    overflow: hidden;
-}
-
-#step-buttons {
-    position: sticky;
-    top: 0;
-    /* padding: 10pt; */
-
-    text-align:    right;
-	padding-right: 15pt;
-	margin:        0;
-
-    background-color: var(--background);
-}
-
-#step-buttons button {
-    background-color: var(--background);
-    border:           0px;
-    color:            var(--text-dark);
-	padding:          0;
-	margin:           0;
-	padding-left:      2pt;
-	padding-right:     2pt;
-    font-size:        1.2em;
-	font-family:      'Iosevka Nerd Font', monospace;
-    cursor:           pointer;
-}
-
-#step-buttons button:hover {
-	color: var(--accent);
-}
-
-.code {
-    height: 100%;
-
-    overflow-x: auto;
-    overflow-y: auto;
-
-    flex-grow: 1;
-    position:  relative;
-
-    /* For Firefox */
-    scrollbar-width: none;
-    /* For Internet Explorer and older Edge */
-    -ms-overflow-style: none;
-}
-
-.code::-webkit-scrollbar {
-    display: none;
-}
-
-.code table {
-    white-space: pre;
-    border-collapse: collapse;
-    border: 0 solid transparent;
-}
-
-.code table tr {
-    /*padding: 0;
-    margin: 0; */
-
-    border: 0 solid transparent;
-}
-
-.code table tr td {
-    padding-top: 0;
-    padding-bottom: 0;
-    /*margin-top: 0; */
-    margin-bottom: 0;
-
-    border-top: 0 solid transparent;
-    border-bottom: 0 solid transparent;
-}
-
-.breakpoint {
-    color: var(--breakpoint);
-    cursor: pointer;
-    min-width: 20pt; 
-    text-align: right;
-    color: #000000;
-
-    text-shadow: 0 0 10px;
-}
-
-.breakpoint:hover {
-    color: #770000;
-}
-
-.python {
-    padding-left: 20pt;
-    color: var(--text-dark);
-    border-left: 5px solid var(--background);
-}
-
-.active-line {
-    border-left:      5px solid var(--breakpoint);
-    background-color: #660000 !important;
-    color:            white   !important;
-    font-weight:      bold;
-}
-
-.active-line * {
-    color: white !important;
-}
-
-.active-line .whitespace {
-	color: black !important;
-}
-
-.line-number {
-    float: right;
-}
-
-/* syntax highlighting */
-
-.keyword {
-    color: var(--text)
-}
-
-.function {
-    color:       white;
-    font-weight: bold;
-}
-
-.ident {
-    color: var(--text-bright);
-}
-
-.constant, .numeric, .string {
-    color: var(--accent);
-}
-
-.comment {
-    color: var(--text-dark);
-    font-style: italic;
-}
-
-.whitespace {
-    color: #212121 !important;
-}
-
-.error-msg {
-    border: 1px solid red;
-
-    border-left: 5pt solid red;
-    background-color: #220000;
-    border-radius: 10pt;
-
-    margin: 10pt;
-    margin-left: 50pt;
-
-    color: red;
-    font-weight: bold;
-
-    padding: 5pt;
-    padding-left:  20pt;
-
-    box-shadow: 0 0 7pt red;
-}
-
-#resize {
-    width:     3px;
-    min-width: 3px;
-
-    border-left: 1px solid var(--accent);
-    border-right: 1px solid var(--accent);
-
-    background-color: var(--background);
-    cursor:           col-resize;
-}
-
-#resize:hover {
-    background-color: var(--accent);
-}
-
-#inspector {
-    flex-grow:   0;
-    flex-shrink: 0;
-    flex-basis:  300px;
-    overflow-x:  hidden;
-    overflow-y:  auto;
-
-	white-space: nowrap;
-}
-
-#inspector details {
-    margin-bottom: 10pt;
-}
-
-#inspector summary {
-    border-top:    1px solid var(--text-dark);
-    border-bottom: 1px solid var(--text-dark);
-
-    padding:      5pt;
-    padding-left: 10pt;
-
-    list-style: none;
-    cursor:     pointer;
-}
-
-#inspector summary:hover .icon {
-    color: var(--accent);
-}
-
-#inspector details[open] summary {
-    border-bottom: 1px dashed var(--text-dark);
-}
-
-#inspector ul {
-    list-style:   none;
-	margin-left:  10pt;
-	padding-left: 0;
-}
-
-#inspector table {
-	white-space: pre;
-	margin-left: 5pt;
-}
-
-#flame-graph {
-	width:      100%;
-	height:     50px;
-	border-top: 1px solid var(--accent);
-
-	image-rendering: pixelated;
-	image-rendering: crisp-edges;
-
-	display: none;
-}
-
-#foot-resize {
-    background-color: var(--background);
-    border-top:       1px solid var(--accent);
-    border-bottom:    1px solid var(--accent);
-    height:     3px;
-    min-height: 3px;
-
-    cursor: row-resize;
-}
-
-#foot-resize:hover {
-    background-color: var(--accent);
-}
-
-footer {
-    flex-basis:  10px;
-    flex-shrink: 0;
-    flex-grow:   0;
-    width:       100%;
-
-    background-color: var(--background);
-
-    overflow: auto;
-}
-
-footer pre {
-    font-family: 'Iosevka Nerd Font', monospace;
-    font-size:   12pt;
-    margin-left: 15pt;
-    cursor:      pointer;
-    color:       var(--text-dark);
-    font-style: italic;
-}
-
-footer pre.printed {
-    color:      var(--text-bright);
-    font-style: normal;
-}
-
-#drop-file {
-    position: fixed;
-
-    top:  0pt;
-    left: 0pt;
-
-    width:  100%;
-    height: 100%;
-
-    background-color: #000000cc;
-    color: var(--accent);
-
-    display: none;
-    align-items: center;
-    justify-content: center;
-
-    align-content: stretch;
-}
-
-#drop-file div {
-    border: 5px dashed var(--accent);
-
-    font-size:     100pt;
-    border-radius: 50pt;
-
-    width:  60%;
-    height: 60%;
-
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-
-    white-space: pre;
-}
-    </style>
+	<link id="stylesheet" rel="stylesheet" href="style_dark_plus.css">
 </head>
 <body>
     <header id="header">
@@ -391,7 +12,7 @@ footer pre.printed {
     <main>
         <div class="code">
             <div id="step-buttons">
-				<button style="cursor: grab;"></button>
+				<button style="cursor: grab;" id="grabber"></button>
                 <button onclick="jump_start()"> </button>
                 <button onclick="step_out(-1)"> </button>
                 <button onclick="step_into(-1)"> </button>
@@ -446,7 +67,11 @@ footer pre.printed {
 
     <div id="drop-file"><div> </div></div>
     <script>
+const stylesheet = document.getElementById('stylesheet')
+
 const header         = document.getElementById('header')
+const step_buttons   = document.getElementById('step-buttons')
+const grabber        = document.getElementById('grabber')
 const code           = document.getElementById('code')
 const inspector      = document.getElementById('inspector')
 const call_stack_el  = document.getElementById('call-stack')
@@ -469,7 +94,6 @@ let current_line = null // follow the appropriate format? or have the tabs actua
 
 let call_tree       = null
 let console_content = []
-let exceptions      = []
 
 // TODO: conditional breakpoints, etc.
 let breakpoints = []
@@ -477,14 +101,37 @@ let breakpoints = []
 
 // key events
 document.body.onkeydown = (e) => {
+	e.preventDefault()
     if (e.key === 'j')  step_forward(1)
     if (e.key === 'k')  step_forward(-1)
     if (e.key === 'l')  step_into(1)
     if (e.key === 'h')  step_out(-1)
     if (e.key === ' ')  play()
     if (e.key === '\r') jump_end()
+
+    if (e.key === 't') {
+		if (stylesheet.href.includes('style_dark_plus.css')) {
+			stylesheet.href = "style_noir.css"
+		}
+		else {
+			stylesheet.href = "style_dark_plus.css"
+		}
+		set_position()
+	}
 }
 
+
+grabber.onmousedown = e => {
+	e.preventDefault()
+    document.body.onmousemove = event => {
+        let w = event.pageX - 8
+        step_buttons.style.left = `${w}px`
+    }
+    document.body.onmouseup = e => {
+        document.body.onmousemove  = null
+        document.body.onmouseup    = null
+    }
+}
 
 resize_handle.onmousedown = e => {
     e.preventDefault()
@@ -612,13 +259,10 @@ upload.onchange = (e) => {
 
         // build exceptions
         exceptions_el.innerHTML = ''
-        exceptions              = []
 
 		for (const [i, line] of debug_trace.trace.entries()) {
             const [fn, lineno, _v, _d, _o, exception] = line
             if (exception === null) continue
-
-            exceptions.push(i)
 
             const exc_li     = document.createElement('li')
             exc_li.innerText = `${fn}:${lineno} ${debug_trace.sources[fn][lineno]}`
@@ -815,16 +459,28 @@ const tokenize_line = (line) => {
     let re_matches = []
 
     while (line.length > 0) {
-        if (re_matches = line.match(/^(def|if|elif|else|while|for|self|is|not|and|or|return|break|try|except)\b(.*)/)) {
+        if (re_matches = line.match(/^(def|self|is|in|not|and|or|as|True|False|None)\b(.*)/)) {
             tokens.push({type: 'keyword', content: re_matches[1]})
             line = re_matches[2]
         }
-        else if (re_matches = line.match(/^([a-zA-Z_][a-zA-Z_0-9]+)(\(.*)/)) {
-            tokens.push({type: 'function', content: re_matches[1]})
+        else if (re_matches = line.match(/^(if|elif|else|while|for|return|break|try|except|raise)\b(.*)/)) {
+            tokens.push({type: 'control', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^(int|str|bool|dict|tuple|list)\b(.*)/)) {
+            tokens.push({type: 'type', content: re_matches[1]})
             line = re_matches[2]
         }
         else if (re_matches = line.match(/^([A-Z_][A-Z_0-9]+\b)(.*)/)) {
             tokens.push({type: 'constant', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^([A-Z][a-zA-Z_0-9]+)\b(.*)/)) {
+            tokens.push({type: 'type', content: re_matches[1]})
+            line = re_matches[2]
+        }
+        else if (re_matches = line.match(/^([a-zA-Z_][a-zA-Z_0-9]+)(\(.*)/)) {
+            tokens.push({type: 'function', content: re_matches[1]})
             line = re_matches[2]
         }
         else if (re_matches = line.match(/^([a-zA-Z_][a-zA-Z_0-9]+\b)(.*)/)) {
@@ -898,7 +554,7 @@ const set_source = (source_name) => {
 
         if (is_current) {
 			breakpoint.innerText = ' '
-            breakpoint.style.color = 'red'
+            breakpoint.style.color = 'var(--breakpoint)'
 
             python.classList.add('active-line')
             setTimeout(() => {
@@ -918,7 +574,7 @@ const set_source = (source_name) => {
 				breakpoint.innerText = ' '
 			}
 
-            breakpoint.style.color = 'red'
+            breakpoint.style.color = 'var(--breakpoint)'
             breakpoint.onclick = e => {
                 breakpoints = breakpoints.filter(i => i !== breakpoint_number)
                 set_source(source_name)
@@ -941,7 +597,11 @@ const set_source = (source_name) => {
             tokens       = tokens.slice(1)
         }
 
-        python.innerHTML += '┆    '.repeat(indent_level)
+		const indent = document.createElement('span')
+		indent.style.color = 'var(--indent)'
+		indent.innerText   = '┆    '.repeat(indent_level)
+
+		python.appendChild(indent)
 
         for (let token of tokens) {
             let token_element       = document.createElement('span')
@@ -1000,7 +660,7 @@ const update_breakpoints = () => {
 
 		if (bp === `${fn}:${lineno}`) {
             li.innerText   = `  ${bp}`
-			li.style.color = 'red'
+			li.style.color = 'var(--breakpoint)'
 		}
 
 		breakpoints_el.appendChild(li)
@@ -1008,6 +668,7 @@ const update_breakpoints = () => {
 }
 
 
+// TODO: update flame graph to use css variables
 const render_flame_graph = () => {
 	flame_graph.width  = window.innerWidth
 	flame_graph.height = 50
@@ -1015,16 +676,22 @@ const render_flame_graph = () => {
 	const total_steps  = debug_trace.trace.length
 	const step_width   = flame_graph.width / total_steps
 
-	const ctx = flame_graph.getContext('2d')
 
-	ctx.fillStyle   = 'black'
+	const ctx    = flame_graph.getContext('2d')
+	const canvas = ctx.canvas
+
+	const bg_color = getComputedStyle(canvas).getPropertyValue('--background-dark')
+	const fg_color = getComputedStyle(canvas).getPropertyValue('--accent')
+	const bp_color = getComputedStyle(canvas).getPropertyValue('--breakpoint')
+
+	ctx.fillStyle   = bg_color
 	ctx.strokeStyle = 'none'
 	ctx.lineWidth   = 0
 
 	ctx.fillRect(0, 0, flame_graph.width, flame_graph.height)
 
-    ctx.fillStyle   = '#440022'
-    ctx.strokeStyle = 'black'
+    ctx.fillStyle   = fg_color + '66'
+    ctx.strokeStyle = bg_color
     ctx.lineWidth   = 2
 
     let queue = [[0, call_tree]]
@@ -1043,22 +710,30 @@ const render_flame_graph = () => {
     }
 
 	for (let i = 0; i < total_steps; i++) {
-		const [fn, lineno, _, depth] = debug_trace.trace[i]
+		const [fn, lineno, _, depth, output, exception] = debug_trace.trace[i]
 
 		let height = 50 - 10 * depth
 
-        if (exceptions.includes(i)) {
+        if (output !== null) {
 			ctx.shadowBlur  = 5
 			ctx.shadowColor = 'black'
-			ctx.fillStyle = '#ff0000'
+			ctx.fillStyle   = '#0a9bfc'
 
-            ctx.font = '12pt "Iosevka Nerd Font"'
-            ctx.fillText(' ', i * step_width - 2.5, height + 5)
+            ctx.font = '18px "Iosevka Nerd Font"'
+            ctx.fillText('󱞁 ', i * step_width + 1, height + 5)
+		}
+		else if (exception !== null) {
+			ctx.shadowBlur  = 5
+			ctx.shadowColor = 'black'
+			ctx.fillStyle   = '#ff0000'
+
+            ctx.font = '18px "Iosevka Nerd Font"'
+            ctx.fillText(' ', i * step_width, height + 5)
 		}
 		else if (breakpoints.includes(`${fn}:${lineno}`)) {
 			ctx.shadowBlur  = 5
 			ctx.shadowColor = 'black'
-			ctx.strokeStyle = '#ff0000'
+			ctx.strokeStyle = bp_color
 
 			ctx.beginPath()
 			ctx.ellipse(i * step_width + step_width/2, height, 5, 5, 0, 0, 2 * Math.PI)
@@ -1070,8 +745,8 @@ const render_flame_graph = () => {
 			ctx.shadowColor = 'black'
 			ctx.fillStyle   = 'white'
 
-            ctx.font = '12pt "Iosevka Nerd Font"'
-            ctx.fillText(' ', i * step_width, height)
+            ctx.font = '18px "Iosevka Nerd Font"'
+            ctx.fillText(' ', i * step_width + 3, height)
 		}
 	}
 }
