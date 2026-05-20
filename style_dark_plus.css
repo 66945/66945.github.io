@@ -2,18 +2,19 @@
     --background:       #1f1f1f;
     --background-dark:  #181818;
     --background-light: #797979;
+    --background-error: rgb(51, 14, 14);
     --accent:           #0078d4;
 
 	--indent: #454545;
 
-    --breakpoint: #0792fc;
+    --breakpoint: red;
 
     --step-line-left: #0792fc;
     --step-line:      #355f7f;
 
-    --text-dark:       #999999;
+    --text-dark:       #686868;
     --text:            #cccccc;
-    --text-bright:     white;
+    --text-bright:     #ededed;
 
 	--keyword:  var(--accent);
 	--control:  #c586c0;
@@ -24,6 +25,36 @@
 	--string:   #ce9178;
 	--ident:    #9cdcfe;
 	--comment:  #6a9955;
+}
+
+body.light-theme {
+    --background:       #fdf6e3;
+    --background-dark:  #eee8d5;
+    --background-light: #424242;
+    --background-error: var(--background-dark);
+    --accent:           #2aa198;
+
+    --indent: #cccccc;
+
+    --breakpoint: #dc322f;
+
+    --step-line-left: #dc322f;
+    --step-line:      #dc322f;
+    --step-line-fg:   black;
+
+    --text-dark:       #93a1a1;
+    --text:            #657b83;
+    --text-bright:     #586e75;
+
+    --keyword:  #2aa198;
+    --control:  #cb4b16;
+    --type:     #b58900;
+    --function: #268bd2;
+    --constant: #ff4343;
+    --number:   #173d03;
+    --string:   #859900;
+    --ident:    var(--text-bright);
+    --comment:  var(--text-dark);
 }
 
 html, body {
@@ -54,20 +85,45 @@ body {
 }
 
 header {
-    display:       flex;
-    border-bottom: 1px solid var(--background-light);
-
+    display:          flex;
 	background-color: var(--background-dark);
 }
 
-header input[type="file"]::file-selector-button {
-    font-family:      'Iosevka', monospace;
+header div {
+    display: flex;
+    padding: 0;
+    margin:  0;
+
+    flex-grow:   1;
+    align-items: center;
+
+    border-bottom: 1px solid var(--accent);
+}
+
+header #header {
+    flex-grow:   0;
+    flex-shrink: 0;
+    border-bottom: none;
+}
+
+input[type="file"] {
+    background-color: var(--background-dark);
+    color:            var(--text-dark);
+}
+
+input[type="file"]::file-selector-button {
+    content:          'Open File';
+    background-color: var(--background-dark);
+    color:            var(--text);
+    font-family:      'Iosevka Nerd Font', monospace;
     align-self:       flex-end;
     border:           none;
-    background-color: var(--accent);
-    color:            black;
 	font-weight:      bold;
     cursor:           pointer;
+}
+
+input[type="file"]:hover::file-selector-button {
+    color: var(--accent);
 }
 
 header span.tab {
@@ -75,22 +131,31 @@ header span.tab {
     padding-left:  10pt;
     padding-right: 10pt;
 	margin:        0;
-	border-right:  1px solid var(--background-light);
 	border-top:    3px solid var(--background-dark);
+	border-bottom: 1px solid var(--accent);
+    font-family:  'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size:     .8em;
 	color:         var(--text-dark);
     cursor:        pointer;
-}
-
-.tab::after {
-	padding-left: 5pt;
-	content: ' ';
 }
 
 .tab.selected {
     background-color: var(--background);
 	border-top:       3px solid var(--accent);
-    font-weight:      bold;
+	border-left:      1px solid var(--accent);
+	border-right:     1px solid var(--accent);
+    border-bottom:    1px solid var(--background);
 	color:            var(--text);
+}
+
+.tab::after {
+	padding-left: 5pt;
+    font-family:  'Iosevka Nerd Font', monospace;
+	content:      ' ';
+}
+
+.tab.selected::after {
+    color: var(--accent) !important;
 }
 
 main {
@@ -104,8 +169,8 @@ main {
 }
 
 #step-buttons {
-    position: sticky;
-	display: inline-block;
+    position: fixed;
+	display:  inline-block;
     /* padding: 10pt; */
 
 	top:  10pt;
@@ -117,14 +182,18 @@ main {
 	padding-right: 5pt;
 	margin:        0;
 
-	border: 1px solid var(--background-light);
+	border: 1px solid var(--accent);
 	border-radius: 5pt;
 
     background-color: var(--background-dark);
 	box-shadow: 0 0 10px black;
 }
 
-#step-buttons button {
+body.light-theme #step-buttons {
+	box-shadow: 0 0 5px #c0c0c0;
+}
+
+button {
     background-color: var(--background-dark);
     border:           0px;
     color:            var(--accent);
@@ -137,8 +206,37 @@ main {
     cursor:           pointer;
 }
 
-#step-buttons button:hover {
+button:hover {
 	color: var(--text);
+}
+
+.right-panel {
+    position: relative;
+
+    height:      100%;
+    width:       100%;
+    flex-grow:   1;
+    flex-shrink: 1;
+
+    overflow: hidden;
+
+    display:   flex;
+    flex-flow: column nowrap;
+}
+
+#minimap {
+    position: absolute;
+    top:      0;
+    right:    0;
+
+    width:  150px;
+    height: 100%;
+
+    border-left:   1px solid var(--background);
+    border-bottom: 1px solid var(--background);
+
+    shape-rendering: crispEdges;
+    image-rendering: pixelated;
 }
 
 .code {
@@ -161,15 +259,15 @@ main {
 }
 
 .code table {
-    white-space: pre;
+    width:           100%;
+    white-space:     pre;
     border-collapse: collapse;
-    border: 0 solid transparent;
+    border:          0 solid transparent;
 }
 
 .code table tr {
     /*padding: 0;
     margin: 0; */
-
     border: 0 solid transparent;
 }
 
@@ -186,20 +284,27 @@ main {
 .breakpoint {
     cursor:     pointer;
     min-width:  20pt; 
+    max-width:  20pt; 
+    width:      20pt;
     text-align: right;
-    color:      var(--background);
+    color:      transparent;
 
     text-shadow: 0 0 10px;
 }
 
+body.light-theme .breakpoint {
+    text-shadow: none;
+}
+
 .breakpoint:hover {
-    color: var(--step-line);
+    color:   var(--breakpoint);
+    opacity: 50%;
 }
 
 .python {
     padding-left: 20pt;
     color:        var(--text);
-    border-left:  5px solid var(--background);
+    border-left:  5px solid transparent;
 }
 
 .active-line {
@@ -209,7 +314,7 @@ main {
 }
 
 .active-line * {
-	color: white !important;
+	color: var(--step-line-fg) !important;
 }
 
 .active-line .whitespace {
@@ -254,34 +359,55 @@ main {
 }
 
 .whitespace {
-    color: black !important;
+    color: var(--indent) !important;
 }
 
 .error-msg {
-    border: 1px solid red;
+    position: relative;
+    /* border-top:  1px solid red; */
+    border-left: 1px solid red;
 
-    border-left: 5pt solid red;
-    background-color: #220000;
-    border-radius: 10pt;
+    padding-bottom: 5pt;
+    margin:         10pt;
+    margin-left:    10pt;
+}
 
-    margin: 10pt;
-    margin-left: 50pt;
+.error-msg::after {
+    content:       '';
+    position:      absolute;
+    left:          0;
+    bottom:        0;
+    border-bottom: 1px solid red;
+    width:         10px;
+}
 
-    color: red;
+.error-msg b {
+    display: inline-block;
+
+    background-color: red;
+    color:            black;
+
+    padding-left:  10pt;
+    padding-right: 10pt;
+
+    margin-bottom: 5pt;
+}
+
+.error-msg p {
+    color:       red;
     font-weight: bold;
-
-    padding: 5pt;
-    padding-left:  20pt;
-
-    box-shadow: 0 0 7pt red;
+    margin:      0;
+    margin-left: 20pt;
 }
 
 #resize {
     width:     5px;
     min-width: 5px;
 
-    background-color: var(--background-light);
-    cursor:           col-resize;
+    background-color: var(--background-dark);
+    border-bottom:    1px solid var(--background);
+    border-right:     1px solid var(--background);
+    cursor:           ew-resize;
 }
 
 #resize:hover {
@@ -296,61 +422,88 @@ main {
     overflow-y:  auto;
 
 	background-color: var(--background-dark);
+    border-bottom:    1px solid var(--background);
 
 	white-space: nowrap;
+
+    /* For Firefox */
+    scrollbar-width: none;
+    /* For Internet Explorer and older Edge */
+    -ms-overflow-style: none;
 }
 
-#inspector details {
-    margin-bottom: 10pt;
-    border-bottom: 1px dashed var(--text-dark);
+#inspector::-webkit-scrollbar {
+    display: none;
 }
 
 #inspector summary {
-    padding:      5pt;
-    padding-left: 10pt;
+    font-family:    'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding:        5pt;
+    padding-left:   10pt;
+    padding-bottom: 0;
 
     list-style: none;
     cursor:     pointer;
 }
 
 #inspector summary .icon {
-	color: var(--background-light);
+    font-family:  'Iosevka Nerd Font', monospace;
+	color:        var(--background-light);
 	margin-right: 5pt;
 }
 
-#inspector summary:hover {
+#inspector details:hover summary .icon {
     color: var(--accent);
 }
 
-#inspector details[open] summary {
-    border-bottom: 1px dashed var(--text-dark);
+#inspector details ul {
+    position:    relative;
+    list-style:  none;
+    border-left: 1px solid var(--indent);
+
+    margin:        0;
+    margin-bottom: 5pt;
+	margin-left:   15pt;
+	padding:       10pt;
+
+    cursor: pointer;
 }
 
-#inspector ul {
-    list-style:   none;
-	margin-left:  10pt;
-	padding-left: 0;
+#inspector details:hover ul {
+    border-left: 1px solid var(--accent);
+}
+
+#inspector details ul::after {
+    content:  '';
+    position: absolute;
+    left:          0;
+    bottom:        0;
+    width:         10px;
+    border-bottom: 1px solid var(--indent);
+}
+
+#inspector details:hover ul::after {
+    border-bottom: 1px solid var(--accent);
 }
 
 #inspector table {
 	white-space: pre;
-	margin-left: 5pt;
 }
 
 #flame-graph {
 	width:      100%;
 	height:     50px;
-	border-top: 1px solid var(--accent);
 
+    cursor:  text;
 	display: none;
 }
 
 #foot-resize {
-    background-color: var(--background-light);
+    background-color: var(--background-dark);
+    border-top: 1px solid var(--background);
     height:     5px;
     min-height: 5px;
-
-    cursor: row-resize;
+    cursor:     ns-resize;
 }
 
 #foot-resize:hover {
@@ -358,14 +511,16 @@ main {
 }
 
 footer {
-    flex-basis:  10px;
+    flex-basis:  0px;
     flex-shrink: 0;
     flex-grow:   0;
     width:       100%;
 
     background-color: var(--background-dark);
+    border-bottom:    1px solid var(--background);
 
     overflow: auto;
+    display:  none;
 }
 
 footer pre {
@@ -374,13 +529,20 @@ footer pre {
     margin-left: 15pt;
     cursor:      pointer;
     color:       var(--text-dark);
-    font-style: italic;
+    font-style:  italic;
 }
 
 footer pre.printed {
-    color:       var(--text-bright);
-	font-weight: bold;
-    font-style:  normal;
+    color:      var(--text);
+    font-style: normal;
+}
+
+footer pre.printed.debug {
+    color: var(--comment);
+}
+
+footer pre.printed.error {
+    color: red;
 }
 
 #drop-file {
@@ -392,7 +554,6 @@ footer pre.printed {
     width:  100%;
     height: 100%;
 
-    background-color: #000000cc;
     color: var(--accent);
 
     display: none;
@@ -403,6 +564,7 @@ footer pre.printed {
 }
 
 #drop-file div {
+    background-color:  var(--background-dark);
     border: 5px dashed var(--accent);
 
     font-size:     100pt;

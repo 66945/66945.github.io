@@ -6,28 +6,16 @@
 	<link id="stylesheet" rel="stylesheet" href="style_dark_plus.css">
 </head>
 <body>
-    <header id="header">
-        <input type="file" id="json_file_upload">
+    <input type="file" id="json_file_upload">
+    <header>
+        <div id="header">
+
+        </div>
+        <div style="justify-content: flex-end;">
+            <button style="margin-right: 20pt;" onclick="document.body.classList.toggle('light-theme')"> </button>
+        </div>
     </header>
     <main>
-        <div class="code">
-            <div id="step-buttons">
-				<button style="cursor: grab;" id="grabber"></button>
-                <button onclick="jump_start()"> </button>
-                <button onclick="step_out(-1)"> </button>
-                <button onclick="step_into(-1)"> </button>
-                <button onclick="step_forward(-1)"> </button>
-
-                <button onclick="play()" id="playbtn"> </button>
-
-                <button onclick="step_forward()"> </button>
-                <button onclick="step_into()"> </button>
-                <button onclick="step_out()"> </button>
-                <button onclick="jump_end()"> </button>
-            </div>
-            <table id="code"></table>
-        </div>
-        <div id="resize"></div>
         <div id="inspector">
             <details>
                 <summary><span class="icon"> </span> call stack</summary>
@@ -35,7 +23,7 @@
             </details>
             <details>
                 <summary><span class="icon">󱒔 </span> variables</summary>
-                <table id="variables"></table>
+                <ul><table id="variables"></table></ul>
             </details>
             <details>
                 <summary><span class="icon">󰈈 </span> watch</summary>
@@ -46,7 +34,7 @@
                 <ul id="breakpoints"></ul>
             </details>
             <details>
-                <summary><span class="icon"> </span> outline</summary>
+                <summary><span class="icon"> </span> outline</summary>
 				<ul id="outline"></ul>
             </details>
             <details>
@@ -57,13 +45,35 @@
 				<summary><span class="icon"> </span> explain</summary>
 			</details>
         </div>
+        <div id="resize"></div>
+        <div class="right-panel">
+            <div class="code">
+                <div id="step-buttons">
+                    <button style="cursor: grab;" id="grabber"></button>
+                    <button onclick="jump_start()"> </button>
+                    <button onclick="step_out(-1)"> </button>
+                    <button onclick="step_into(-1)"> </button>
+                    <button onclick="step_forward(-1)"> </button>
+
+                    <button onclick="play()" id="playbtn"> </button>
+
+                    <button onclick="step_forward()"> </button>
+                    <button onclick="step_into()"> </button>
+                    <button onclick="step_out()"> </button>
+                    <button onclick="jump_end()"> </button>
+                </div>
+                <table id="code"></table>
+            </div>
+            <canvas id="minimap"></canvas>
+
+            <div id="foot-resize"></div>
+            <footer id="footer">
+                <div id="console"> </div>
+            </footer>
+        </div>
     </main>
 
 	<canvas id="flame-graph"></canvas>
-    <div id="foot-resize"></div>
-    <footer id="footer">
-        <div id="console"> </div>
-    </footer>
 
     <div id="drop-file"><div> </div></div>
     <script>
@@ -79,6 +89,7 @@ const variables      = document.getElementById('variables')
 const breakpoints_el = document.getElementById('breakpoints')
 const exceptions_el  = document.getElementById('exceptions')
 const outline        = document.getElementById('outline')
+const minimap        = document.getElementById('minimap')
 const flame_graph    = document.getElementById('flame-graph')
 const footer         = document.getElementById('footer')
 const resize_handle  = document.getElementById('resize')
@@ -110,6 +121,9 @@ document.body.onkeydown = (e) => {
     if (e.key === '\r') jump_end()
 
     if (e.key === 't') {
+        step_buttons.style.left = null
+        step_buttons.style.top  = null
+
 		if (stylesheet.href.includes('style_dark_plus.css')) {
 			stylesheet.href = "style_noir.css"
 		}
@@ -123,9 +137,17 @@ document.body.onkeydown = (e) => {
 
 grabber.onmousedown = e => {
 	e.preventDefault()
+
+    const step_rect = step_buttons.getBoundingClientRect()
+    const m_x       = e.pageX - step_rect.x
+    const m_y       = e.pageY - step_rect.y
+
     document.body.onmousemove = event => {
-        let w = event.pageX - 8
+        let w = event.pageX - m_x
+        let h = event.pageY - m_y
+
         step_buttons.style.left = `${w}px`
+        step_buttons.style.top  = `${h}px`
     }
     document.body.onmouseup = e => {
         document.body.onmousemove  = null
@@ -136,8 +158,8 @@ grabber.onmousedown = e => {
 resize_handle.onmousedown = e => {
     e.preventDefault()
     document.body.onmousemove = event => {
-        let w = window.innerWidth - event.pageX
-        if (w < 100) w = 10
+        let w = event.pageX
+        if (w < 100) w = 0
         inspector.style.flexBasis = `${w}px`
     }
     document.body.onmouseup = e => {
@@ -145,12 +167,27 @@ resize_handle.onmousedown = e => {
     }
 }
 
+foot_resize.ondblclick = e => {
+    if (footer.style.display === 'block') {
+        footer.style.display = 'none'
+    }
+    else {
+        footer.style.display   = 'block'
+        footer.style.flexBasis = '200px'
+    }
+}
+
 foot_resize.onmousedown = e => {
     e.preventDefault()
     document.body.onmousemove = event => {
-        let h = window.innerHeight - event.pageY
-        if (h < 100) h = 10
-        footer.style.flexBasis = `${h}px`
+        let h = window.innerHeight - 50 - event.pageY
+        if (h < 100) {
+            footer.style.display   = 'none'
+        }
+        else {
+            footer.style.display   = 'block'
+            footer.style.flexBasis = `${h}px`
+        }
     }
     document.body.onmouseup = e => {
         document.body.onmousemove  = null
@@ -240,6 +277,7 @@ upload.onchange = (e) => {
 					for (let j = 0; j < prev_fn.depth - depth; j++) {
 						fn_li.innerHTML      = `${indent}<i>${fn}</i> `
                         fn_li.style.fontSize = '.9em'
+                        fn_li.style.color    = 'var(--text-dark)'
 
 						call_stack.at(-1).end = i - 1
 						call_stack.pop()
@@ -297,8 +335,11 @@ upload.onchange = (e) => {
         for (const [i, [_1, _2, _3, _4, output, _5]] of debug_trace.trace.entries()) {
             if (output === null) continue
 
-            const out = document.createElement('pre')
-            out.innerText     = output
+            const [level, content] = output.split('\t')
+
+            const out     = document.createElement('pre')
+            out.innerText = content
+            out.classList.add(level.toLowerCase())
 
             out.onclick = (e) => {
                 current_line = i - 1
@@ -533,13 +574,12 @@ const set_source = (source_name) => {
 
 	const [fn, lineno, vars, depth, _o, exception] = debug_trace.trace[current_line]
 
-    let line_number = 0
-    let source      = debug_trace.sources[source_name]
+    let source = debug_trace.sources[source_name]
 
     const start_indent = source[0].match(/^[\s]*/)[0]
     let   indent_level = 0
 
-    for (const _line of source) {
+    for (const [line_number, _line] of source.entries()) {
         const line = _line.replace(start_indent, '')
 
         let row        = document.createElement('tr')
@@ -609,7 +649,7 @@ const set_source = (source_name) => {
             token_element.classList.add(token.type)
 
             if (token.type === 'ident' && Object.keys(vars).includes(token.content)) {
-                token_element.style.borderBottom = '1px dashed var(--text)'
+                token_element.style.borderBottom = '1px solid var(--accent)'
                 token_element.title = vars[token.content]
             }
 
@@ -625,26 +665,29 @@ const set_source = (source_name) => {
         if (is_current && exception !== null) {
             const error_cell = document.createElement('td')
             const error_msg  = document.createElement('div')
-            error_msg.innerText = exception
+            error_msg.innerHTML = `<b>Exception at ${source_name}:${line_number}</b><br><p>${exception}</p>`
             error_msg.classList.add('error-msg')
             error_cell.appendChild(error_msg)
 
-            const error_row      = document.createElement('tr')
-            const error_icon     = document.createElement('td')
-            error_icon.innerText = ' '
-            error_icon.style.color = 'red'
+            const error_row  = document.createElement('tr')
+            const error_icon = document.createElement('td')
 
-            error_row.appendChild(document.createElement('td'))
+            error_row.style.backgroundColor = 'var(--background-error)'
+            error_icon.innerText            = ' '
+            error_icon.style.textAlign      = 'right'
+            error_icon.style.fontSize       = '1.2em'
+            error_icon.style.color          = 'red'
+
             error_row.appendChild(error_icon)
+            error_row.appendChild(document.createElement('td'))
             error_row.appendChild(error_cell)
 
             code.appendChild(error_row)
         }
-
-        line_number++
     }
 
 	update_breakpoints()
+    render_minimap(source_name)
 	render_flame_graph()
 }
 
@@ -657,6 +700,10 @@ const update_breakpoints = () => {
 	for (const bp of breakpoints) {
 		let li = document.createElement('li')
 		li.innerText = `  ${bp}`
+        li.onclick   = e => {
+            breakpoints = breakpoints.filter(i => i !== bp)
+            set_position()
+        }
 
 		if (bp === `${fn}:${lineno}`) {
             li.innerText   = `  ${bp}`
@@ -668,7 +715,68 @@ const update_breakpoints = () => {
 }
 
 
-// TODO: update flame graph to use css variables
+const render_minimap = (source_name) => {
+    const rect     = minimap.getBoundingClientRect()
+    minimap.width  = rect.width
+    minimap.height = rect.height
+
+    const char_x  = 2
+    const char_y  = 5
+    const space_x = 1
+    const space_y = 2
+
+    const pad_top = 10
+
+    let source = debug_trace.sources[source_name]
+
+    const start_indent = source[0].match(/^[\s]*/)[0]
+    let   indent_level = 0
+
+	const ctx    = minimap.getContext('2d')
+	const canvas = ctx.canvas
+
+	const background = getComputedStyle(canvas).getPropertyValue('--background-dark')
+	const keyword    = getComputedStyle(canvas).getPropertyValue('--keyword')
+	const control    = getComputedStyle(canvas).getPropertyValue('--control')
+	const type       = getComputedStyle(canvas).getPropertyValue('--type')
+	const func       = getComputedStyle(canvas).getPropertyValue('--function')
+	const constant   = getComputedStyle(canvas).getPropertyValue('--constant')
+	const number     = getComputedStyle(canvas).getPropertyValue('--number')
+	const string     = getComputedStyle(canvas).getPropertyValue('--string')
+	const ident      = getComputedStyle(canvas).getPropertyValue('--ident')
+	const comment    = getComputedStyle(canvas).getPropertyValue('--comment')
+
+    ctx.fillStyle = background
+    ctx.fillRect(0, 0, minimap.width, minimap.height)
+
+    for (const [line_number, _line] of source.entries()) {
+        const line = _line.replace(start_indent, '')
+
+        let   x_pos  = 0
+        const tokens = tokenize_line(line)
+        for (const token of tokens) {
+            // 10 x 5 chars?
+            ctx.fillStyle = background
+
+            switch (token.type) {
+                case 'keyword': ctx.fillStyle = keyword; break
+                case 'control': ctx.fillStyle = control; break
+                case 'type': ctx.fillStyle = type; break
+                case 'function': ctx.fillStyle = func; break
+                case 'constant': ctx.fillStyle = constant; break
+                case 'number': ctx.fillStyle = number; break
+                case 'string':  ctx.fillStyle = string;  break
+                case 'ident':   ctx.fillStyle = ident;   break
+                case 'comment': ctx.fillStyle = comment; break
+            }
+
+            ctx.fillRect(x_pos, pad_top + (char_y + space_y) * line_number, char_x * token.content.length, char_y)
+            x_pos += char_x * token.content.length
+        }
+    }
+}
+
+
 const render_flame_graph = () => {
 	flame_graph.width  = window.innerWidth
 	flame_graph.height = 50
@@ -715,40 +823,36 @@ const render_flame_graph = () => {
 		let height = 50 - 10 * depth
 
         if (output !== null) {
-			ctx.shadowBlur  = 5
-			ctx.shadowColor = 'black'
+//			ctx.shadowBlur  = 5
+//			ctx.shadowColor = 'black'
 			ctx.fillStyle   = '#0a9bfc'
 
             ctx.font = '18px "Iosevka Nerd Font"'
             ctx.fillText('󱞁 ', i * step_width + 1, height + 5)
 		}
 		else if (exception !== null) {
-			ctx.shadowBlur  = 5
-			ctx.shadowColor = 'black'
+//			ctx.shadowBlur  = 5
+//			ctx.shadowColor = 'black'
 			ctx.fillStyle   = '#ff0000'
 
             ctx.font = '18px "Iosevka Nerd Font"'
             ctx.fillText(' ', i * step_width, height + 5)
 		}
 		else if (breakpoints.includes(`${fn}:${lineno}`)) {
-			ctx.shadowBlur  = 5
-			ctx.shadowColor = 'black'
+//			ctx.shadowBlur  = 5
+//			ctx.shadowColor = 'black'
 			ctx.strokeStyle = bp_color
 
 			ctx.beginPath()
 			ctx.ellipse(i * step_width + step_width/2, height, 5, 5, 0, 0, 2 * Math.PI)
 			ctx.stroke()
 		}
-
-		if (i === current_line) {
-			ctx.shadowBlur  = 5
-			ctx.shadowColor = 'black'
-			ctx.fillStyle   = 'white'
-
-            ctx.font = '18px "Iosevka Nerd Font"'
-            ctx.fillText(' ', i * step_width + 3, height)
-		}
 	}
+
+    //ctx.shadowBlur  = 5
+    //ctx.shadowColor = fg_color
+    ctx.fillStyle   = fg_color
+    ctx.fillRect(current_line * step_width + step_width/2 - 2, 0, 4, 50)
 }
     </script>
 </body>
