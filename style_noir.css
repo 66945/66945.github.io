@@ -1,12 +1,23 @@
 :root {
-    --background: #000000;
-    --accent:     #ff0088;
+    --background:      #000000;
+    --background-dark: #000000;
+    --accent:          #ff0088;
 
     --breakpoint: #ff0000;
 
     --text-dark:   #454545;
     --text:        #797979;
     --text-bright: #bbbbbb;
+
+	--keyword:  var(--text);
+	--control:  var(--text);
+	--type:     var(--text);
+	--function: white;
+	--constant: var(--accent);
+	--number:   var(--accent);
+	--string:   var(--accent);
+	--ident:    var(--text-bright);
+	--comment:  var(--text-dark);
 }
 
 html, body {
@@ -130,7 +141,7 @@ main {
     width:  150px;
     height: 100%;
 
-    border-left: 1px solid var(--accent);
+    border-left:   1px solid var(--accent);
 
     shape-rendering: crispEdges;
     image-rendering: pixelated;
@@ -220,21 +231,21 @@ main {
 /* syntax highlighting */
 
 .keyword {
-    color: var(--text)
+    color: var(--keyword)
 }
 
 .control {
-    color:       var(--text);
+    color:       var(--control);
 	font-weight: bold;
 }
 
 .type {
-	color:      var(--text);
+	color:      var(--type);
 	font-style: italic;
 }
 
 .function {
-    color:       white;
+    color:       var(--function);
     font-weight: bold;
 }
 
@@ -299,7 +310,6 @@ main {
 
 	white-space: nowrap;
 
-    border-bottom: 1px solid var(--accent);
 
     /* For Firefox */
     scrollbar-width: none;
@@ -349,6 +359,8 @@ main {
 	width:      100%;
 	height:     50px;
 
+	border-top: 1px solid var(--accent);
+
     cursor:  text;
 	display: none;
 }
@@ -374,7 +386,6 @@ footer {
     width:       100%;
 
     background-color: var(--background);
-	border-bottom:    1px solid var(--accent);
 
     overflow: auto;
     display:  none;

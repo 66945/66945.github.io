@@ -12,7 +12,7 @@
 
         </div>
         <div style="justify-content: flex-end;">
-            <button style="margin-right: 20pt;" onclick="document.body.classList.toggle('light-theme')"> </button>
+            <button style="margin-right: 20pt;" onclick="swap_theme()"> </button>
         </div>
     </header>
     <main>
@@ -132,6 +132,11 @@ document.body.onkeydown = (e) => {
 		}
 		set_position()
 	}
+}
+
+const swap_theme = () => {
+	document.body.classList.toggle('light-theme')
+	set_position()
 }
 
 
