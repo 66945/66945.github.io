@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Replay Debugger</title>
+    <meta charset="UTF-8">
+	<link id="stylesheet" rel="stylesheet" href="style_dark_plus.css">
+</head>
+<body class="is-replay">
+    <button onclick="end_session()" class="live">end session</button>
+    <input type="file" id="json_file_upload" class="replay">
+    <header>
+        <div id="header"></div>
+        <div style="justify-content: flex-end;">
+            <button style="margin-right: 20pt;" onclick="swap_theme()"> </button>
+        </div>
+    </header>
+    <main>
+        <div id="inspector">
+            <details>
+                <summary><span class="icon"> </span> call stack</summary>
+                <ul id="call-stack"></ul>
+            </details>
+            <details>
+                <summary><span class="icon">󱒔 </span> variables</summary>
+                <ul><table id="variables"></table></ul>
+            </details>
+            <details>
+                <summary><span class="icon">󰈈 </span> watch</summary>
+                <ul id="watch"></ul>
+            </details>
+            <details>
+                <summary><span class="icon"> </span> breakpoints</summary>
+                <ul id="breakpoints"></ul>
+            </details>
+            <details class="replay">
+                <summary><span class="icon"> </span> outline</summary>
+				<ul id="outline"></ul>
+            </details>
+            <details class="replay">
+                <summary><span class="icon"> </span> exceptions</summary>
+                <ul id="exceptions"></ul>
+            </details>
+			<details class="replay">
+				<summary><span class="icon"> </span> explain</summary>
+			</details>
+        </div>
+        <div id="resize"></div>
+        <div class="right-panel">
+            <div class="code">
+                <div id="step-buttons">
+                    <button style="cursor: grab;" id="grabber"></button>
+                    <span class="replay">
+                        <button onclick="jump_start()"> </button>
+                        <button onclick="step_out(-1)"> </button>
+                        <button onclick="step_into(-1)"> </button>
+                        <button onclick="step_forward(-1)"> </button>
+                    </span>
+
+                    <button onclick="play()" id="playbtn"> </button>
+
+                    <span>
+                        <button onclick="step_forward()"> </button>
+                        <button onclick="step_into()"> </button>
+                        <button onclick="step_out()"> </button>
+                        <button onclick="jump_end()"> </button>
+                    </span>
+                </div>
+                <table id="code"></table>
+            </div>
+            <canvas id="minimap"></canvas>
+
+            <div id="foot-resize"></div>
+            <footer id="footer">
+                <div id="console"></div>
+            </footer>
+        </div>
+    </main>
+
+	<canvas id="flame-graph"></canvas>
+
+    <div id="drop-file"><div> </div></div>
+    <script src="script.js"></script>
+</body>
+</html>
