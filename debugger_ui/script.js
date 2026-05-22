@@ -4,6 +4,7 @@ const header         = document.getElementById('header')
 const step_buttons   = document.getElementById('step-buttons')
 const grabber        = document.getElementById('grabber')
 const code           = document.getElementById('code')
+const code_container = document.getElementById('code-container')
 const inspector      = document.getElementById('inspector')
 const call_stack_el  = document.getElementById('call-stack')
 const variables      = document.getElementById('variables')
@@ -22,6 +23,7 @@ const drop_file      = document.getElementById('drop-file')
 const play_btn = document.getElementById('playbtn')
 
 let sources          = {}
+let current_position = {source: null, line: 0}
 let current_function = ''
 
 // TODO: conditional breakpoints, etc.
@@ -104,9 +106,32 @@ foot_resize.onmousedown = e => {
             footer.style.display   = 'flex'
             footer.style.flexBasis = `${h}px`
         }
+
+        render_minimap(current_function)
     }
     document.body.onmouseup = e => {
         document.body.onmousemove  = null
+        document.body.onmouseup    = null
+    }
+}
+
+code_container.onscroll = () => {
+    render_minimap(current_function)
+}
+
+minimap.onmousedown = (event) => {
+    let clicked_line = Math.trunc((event.offsetY - 10) / 6)
+    clicked_line     = Math.min(clicked_line, sources[current_function].length - 1)
+    focus_line(clicked_line)
+
+    minimap.onmousemove = (event) => {
+        let clicked_line = Math.trunc((event.offsetY - 10) / 6)
+        clicked_line     = Math.min(clicked_line, sources[current_function].length - 1)
+        focus_line(clicked_line)
+    }
+    minimap.onmouseup = () => {
+        minimap.onmousemove = null
+        minimap.onmouseup   = null
     }
 }
 
@@ -135,9 +160,9 @@ const render_variables = (vars) => {
 		let value_el = document.createElement('td')
 
         name.innerText   = varname
-		equals.innerText = ' := '
+		equals.innerText = ' = '
 
-        // TODO: render more complex types
+        // TODO: recursion for list and dict rendering
         if (typeof value === 'string') {
             let formatted = value.replaceAll('<', '&lt;')
                 .replaceAll('>', '&gt;')
@@ -148,6 +173,28 @@ const render_variables = (vars) => {
 
             value_el.classList.add('string')
             value_el.innerHTML = `'${formatted}'`
+        }
+        else if (typeof value === 'number') {
+            value_el.classList.add('numeric')
+            value_el.innerText = value
+        }
+        else if (typeof value === 'boolean') {
+            value_el.classList.add('numeric')
+            value_el.innerText = value ? 'True' : 'False'
+        }
+        else if (typeof value === 'object') {
+            if (value instanceof Array) {
+                value_el.classList.add('other')
+                value_el.innerText = '[ ... ]'
+            }
+            else if ('type' in value) {
+                value_el.classList.add('type')
+                value_el.innerText = value.type
+            }
+            else {
+                value_el.classList.add('other')
+                value_el.innerText = '{ ... }'
+            }
         }
 
         varhint.appendChild(name)
@@ -245,19 +292,30 @@ const tokenize_line = (line) => {
 }
 
 
-// TODO: break apart then redistribute
-const set_source = (source_name, lineno=null, vars=null, exception=null) => {
+const focus_line = (line_number) => {
+    code.childNodes[line_number].scrollIntoView({
+        behavior: 'smooth',
+        block:    'center',
+        inline:   'start',
+    })
+    render_minimap(current_function)
+}
+
+
+const set_source = (source_name, vars=null, exception=null) => {
     vars = vars ?? {}
 
-    // NOTE: should tabs be their own thing?
+    // TODO: should tabs be their own thing?
     const tabs = document.getElementsByClassName('tab')
     for (const tab of tabs) {
-        tab.classList.add('selected')
+        tab.classList.remove('selected')
+        tab.classList.remove('current')
+
         if (tab.innerText === source_name) {
             tab.classList.add('selected')
         }
-        else {
-            tab.classList.remove('selected')
+        if (tab.innerText === current_position.source) {
+            tab.classList.add('current')
         }
     }
     current_function = source_name
@@ -279,21 +337,14 @@ const set_source = (source_name, lineno=null, vars=null, exception=null) => {
         breakpoint.innerText = ' '
         number.innerText     = line_number + 1
 
-		let is_current = line_number === lineno
+        const is_current = source_name === current_position.source
+                        && line_number === current_position.line
 
         if (is_current) {
 			breakpoint.innerText   = ' '
             breakpoint.style.color = 'var(--breakpoint)'
 
             python.classList.add('active-line')
-            setTimeout(() => {
-				// scroll to breakpoint instead to left align
-				breakpoint.scrollIntoView({
-					behavior: 'smooth',
-					block:    'center',
-					inline:   'start',
-				})
-            }, 5)
         }
 
         // why am I rerendering the whole thing for 1 breakpoint?
@@ -307,11 +358,19 @@ const set_source = (source_name, lineno=null, vars=null, exception=null) => {
 
         breakpoint.onclick = e => {
             if (breakpoints.includes(breakpoint_number)) {
+                if (is_current) {
+                    breakpoint.innerText = ' '
+                }
+                else {
+                    breakpoint.style.color = null
+                }
                 breakpoints = breakpoints.filter(i => i !== breakpoint_number)
-                breakpoint.style.color = null
                 set_breakpoint(source_name, line_number, false)
             }
             else {
+                if (is_current) {
+                    breakpoint.innerText = ' '
+                }
                 breakpoints.push(breakpoint_number)
                 breakpoint.style.color = 'var(--breakpoint)'
                 set_breakpoint(source_name, line_number)
@@ -365,10 +424,12 @@ const set_source = (source_name, lineno=null, vars=null, exception=null) => {
             const error_icon = document.createElement('td')
 
             error_row.style.backgroundColor = 'var(--background-error)'
+            error_row.style.borderTop       = '1px solid var(--error-text)'
+            error_row.style.borderBottom    = '1px solid var(--error-text)'
             error_icon.innerText            = ' '
             error_icon.style.textAlign      = 'right'
             error_icon.style.fontSize       = '1.2em'
-            error_icon.style.color          = 'red'
+            error_icon.style.color          = 'var(--error-text)'
 
             error_row.appendChild(error_icon)
             error_row.appendChild(document.createElement('td'))
@@ -382,16 +443,16 @@ const set_source = (source_name, lineno=null, vars=null, exception=null) => {
 }
 
 
-const render_minimap = (source_name) => {
+const render_minimap = (source_name, small=false) => {
     const rect     = minimap.getBoundingClientRect()
     minimap.width  = rect.width
     minimap.height = rect.height
 
-    const char_x  = 2
-    const char_y  = 5
-    const space_x = 1
-    const space_y = 2
-    const pad_top = 10
+    const char_x  = small ? 1  : 2
+    const char_y  = small ? 2  : 5
+    const space_x = small ? 0  : 1
+    const space_y = small ? 1  : 2
+    const pad_top = small ? 10 : 10
 
     const source = sources[source_name]
 
@@ -401,28 +462,66 @@ const render_minimap = (source_name) => {
 	const ctx    = minimap.getContext('2d')
 	const canvas = ctx.canvas
 
-	const background = getComputedStyle(canvas).getPropertyValue('--background-dark')
-	const keyword    = getComputedStyle(canvas).getPropertyValue('--keyword')
-	const control    = getComputedStyle(canvas).getPropertyValue('--control')
-	const type       = getComputedStyle(canvas).getPropertyValue('--type')
-	const func       = getComputedStyle(canvas).getPropertyValue('--function')
-	const constant   = getComputedStyle(canvas).getPropertyValue('--constant')
-	const number     = getComputedStyle(canvas).getPropertyValue('--number')
-	const string     = getComputedStyle(canvas).getPropertyValue('--string')
-	const ident      = getComputedStyle(canvas).getPropertyValue('--ident')
-	const comment    = getComputedStyle(canvas).getPropertyValue('--comment')
+	const background      = getComputedStyle(canvas).getPropertyValue('--background')
+	const background_dark = getComputedStyle(canvas).getPropertyValue('--step-line-left') + '33'
+	const breakpoint      = getComputedStyle(canvas).getPropertyValue('--breakpoint')
+	const step_line       = getComputedStyle(canvas).getPropertyValue('--step-line-left')
+	const keyword         = getComputedStyle(canvas).getPropertyValue('--keyword')
+	const control         = getComputedStyle(canvas).getPropertyValue('--control')
+	const type            = getComputedStyle(canvas).getPropertyValue('--type')
+	const func            = getComputedStyle(canvas).getPropertyValue('--function')
+	const constant        = getComputedStyle(canvas).getPropertyValue('--constant')
+	const number          = getComputedStyle(canvas).getPropertyValue('--number')
+	const string          = getComputedStyle(canvas).getPropertyValue('--string')
+	const ident           = getComputedStyle(canvas).getPropertyValue('--ident')
+	const comment         = getComputedStyle(canvas).getPropertyValue('--comment')
 
     ctx.fillStyle = background
     ctx.fillRect(0, 0, minimap.width, minimap.height)
 
+    const code_rect = code_container.getBoundingClientRect()
+    const offset    = code_rect.top
+
+    // view window
+    let first_line = null
+    let last_line  = null
+
+    for (const [i, line_tr] of code.childNodes.entries()) {
+        const rect = line_tr.getBoundingClientRect()
+
+        if (first_line === null && rect.top - offset >= 0) {
+            first_line = i
+        }
+
+        if (last_line === null && rect.bottom - offset >= code_rect.height) {
+            last_line = i
+            break
+        }
+    }
+
+    last_line ??= source.length
+
+    ctx.fillStyle = background_dark
+
+    const view_height = (last_line - first_line) * (char_y + space_y)
+    ctx.fillRect(0, pad_top + first_line * (char_y + space_y), minimap.width, view_height)
+
+    // blocky code
     for (const [line_number, _line] of source.entries()) {
+        const is_current = source_name === current_position.source
+                        && line_number === current_position.line
+        
+        if (is_current) {
+            ctx.fillStyle = step_line
+            ctx.fillRect(0, pad_top + line_number * (char_y + space_y), minimap.width, char_y)
+        }
+
         const line = _line.replace(start_indent, '')
 
         let   x_pos  = 0
         const tokens = tokenize_line(line)
         for (const token of tokens) {
-            // 10 x 5 chars?
-            ctx.fillStyle = background
+            ctx.fillStyle = '#0000'
 
             switch (token.type) {
                 case 'keyword':  ctx.fillStyle = keyword;  break
@@ -430,7 +529,7 @@ const render_minimap = (source_name) => {
                 case 'type':     ctx.fillStyle = type;     break
                 case 'function': ctx.fillStyle = func;     break
                 case 'constant': ctx.fillStyle = constant; break
-                case 'number':   ctx.fillStyle = number;   break
+                case 'numeric':  ctx.fillStyle = number;   break
                 case 'string':   ctx.fillStyle = string;   break
                 case 'ident':    ctx.fillStyle = ident;    break
                 case 'comment':  ctx.fillStyle = comment;  break
@@ -439,7 +538,13 @@ const render_minimap = (source_name) => {
             ctx.fillRect(x_pos, pad_top + (char_y + space_y) * line_number, char_x * token.content.length, char_y)
             x_pos += char_x * token.content.length
         }
+
+        if (breakpoints.includes(`${source_name}:${line_number}`)) {
+            ctx.fillStyle = breakpoint
+            ctx.fillRect(0, pad_top + line_number * (char_y + space_y), 2 * char_x, char_y)
+        }
     }
+
 }
 
 // live vs replay

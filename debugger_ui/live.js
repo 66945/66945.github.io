@@ -1,4 +1,4 @@
-const synapse      = window.parent
+const synapse      = window.opener ?? window.parent
 const synapse_host = 'https://pbides.powerbi.com'
 
 let is_playing = false
@@ -13,16 +13,19 @@ const play = () => {
 }
 
 const step_forward = () => {
+    current_position = {source: null, line: null}
     set_source(current_function)
     synapse.postMessage({type: 'step', content: 'next'}, synapse_host)
 }
 
 const step_into = () => {
+    current_position = {source: null, line: null}
     set_source(current_function)
     synapse.postMessage({type: 'step', content: 'step'}, synapse_host)
 }
 
 const step_out = () => {
+    current_position = {source: null, line: null}
     set_source(current_function)
     synapse.postMessage({type: 'step', content: 'step_return'}, synapse_host)
 }
@@ -71,12 +74,19 @@ window.addEventListener('message', (event) => {
 
     case 'step_to': {
         console.log('step to ', content)
+        current_position = {
+            source: content.name,
+            line:   content.line,
+        }
+
         render_variables(content.vars)
         render_call_stack(content.call_stack)
-        set_source(content.name, content.line, content.vars)
+        set_source(content.name, content.vars, content.exception)
+
+        focus_line(content.line)
 
         if (is_playing) {
-            setTimeout(() => step_forward(), 250)
+            setTimeout(() => step_forward(), 500)
         }
         break
     }

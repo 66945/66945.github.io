@@ -2,13 +2,7 @@ async function render({ model, el, experimental }) {
     // editor logic
 
     const local_host   = 'http://localhost:8001'
-    //const editor_frame = document.createElement('iframe')
-    //editor_frame.src = `${local_host}/debugger_real.html?env=live`
-
-    //el.appendChild(editor_frame)
-
-    //const editor = editor_frame.contentWindow
-    const editor = window.open(`${local_host}/debugger_real.html?env=live`, 'Connected', 600, 600)
+    let   editor       = null
 
     const message_listener = async (event) => {
         if (event.origin !== local_host) return
@@ -26,9 +20,7 @@ async function render({ model, el, experimental }) {
         }
 
         case 'end': {
-            window.removeEventListener('message', message_listener)
-            editor.close()
-            //editor_frame.style.display = 'none'
+            await experimental.invoke('breakpoint_cmd', 'quit')
             break
         }
         }
@@ -42,7 +34,8 @@ async function render({ model, el, experimental }) {
                 name:       frame.name,
                 line:       frame.line,
                 vars:       frame.vars,
-                call_stack: ['unsupported', frame.name],
+                call_stack: frame.stack,
+                exception:  frame.exception,
             },
         }, local_host)
     })
@@ -66,25 +59,71 @@ async function render({ model, el, experimental }) {
         }, local_host)
     })
 
+    model.on('change:is_active', () => {
+        const is_active = model.get('is_active')
+
+        if (is_active) {
+            window.addEventListener('message', message_listener)
+            editor = window.open(`${local_host}/debugger_real.html?env=live`)
+            status.innerText = 'Running ...'
+        }
+        else {
+            window.removeEventListener('message', message_listener)
+            editor.close()
+            status.innerText = 'Done!'
+        }
+    })
+
 
     // widget logic (not much)
-    // TODO: add editor to fabric taskbar?
+    let debug_btn = document.getElementById('custom-debug-btn')
+    if (debug_btn === null) {
+        debug_btn           = document.createElement('button')
+        debug_btn.id        = 'custom-debug-btn'
+        debug_btn.innerText = 'Debug'
+
+
+        // add to ribbon
+        const selector = 'div[data-sa-nm2="appDevToolsPanelRibbonTab"]'
+        const ribbons  = document.body.querySelectorAll(selector)
+        for (const ribbon of ribbons) {
+            if (ribbon.checkVisibility({visibilityProperty: true})) {
+                ribbon.appendChild(debug_btn)
+            }
+        }
+
+        debug_btn.onclick = () => {
+            const rect = debug_btn.getBoundingClientRect()
+            const ec   = document.getElementById('custom-debug-dropdown')
+
+            ec.style.top     = `${rect.bottom}px`
+            ec.style.left    = `${rect.left}px`
+            ec.style.display = 'flex'
+        }
+    }
+
+    const endpoints_container = document.createElement('div')
+    endpoints_container.id    = 'custom-debug-dropdown'
+    el.appendChild(endpoints_container)
+
+
+    const status     = document.createElement('p')
+    status.innerText = 'standby'
+    el.appendChild(status)
+
 
     const btns = document.createElement('div')
-
     const endpoint_buttons = () => {
         const endpoints = model.get('endpoints')
         for (const endpoint of endpoints) {
-            const endpoint_btn = document.createElement('button')
-
-            endpoint_btn.innerText = endpoint
-            endpoint_btn.onclick   = async () => {
-                window.addEventListener('message', message_listener)
-                //editor_frame.style.display = 'block'
+            const dropdown_btn = document.createElement('button')
+            
+            dropdown_btn.innerText = endpoint
+            dropdown_btn.onclick   = async () => {
+                endpoints_container.style.display = 'none'
                 await experimental.invoke('debug_endpoint', endpoint)
             }
-
-            btns.appendChild(endpoint_btn)
+            endpoints_container.appendChild(dropdown_btn)
         }
     }
 

@@ -3,11 +3,14 @@
     --background-dark: #000000;
     --accent:          #ff0088;
 
-    --breakpoint: #ff0000;
+    --breakpoint:     #ff0000;
+    --step-line-left: var(--accent);
 
     --text-dark:   #454545;
     --text:        #797979;
     --text-bright: #bbbbbb;
+
+    --error-text: red;
 
 	--keyword:  var(--text);
 	--control:  var(--text);

@@ -3,9 +3,10 @@
     --background-dark:  #181818;
     --background-light: #797979;
     --background-error: rgb(51, 14, 14);
-    --accent:           #0078d4;
+    --accent:           #117865;
 
 	--indent: #454545;
+    --shadow: black;
 
     --breakpoint: red;
 
@@ -16,7 +17,10 @@
     --text:            #cccccc;
     --text-bright:     #ededed;
 
-	--keyword:  var(--accent);
+    --error-text: red;
+    --error-bold: black;
+
+	--keyword:  #0078d4;
 	--control:  #c586c0;
 	--type:     #4ec9b0;
 	--function: #dcdcaa;
@@ -27,14 +31,34 @@
 	--comment:  #6a9955;
 }
 
+body.green-theme {
+    --background:       #1b1b1b;
+    --background-dark:  #181818;
+    --background-light: #797979;
+    --background-error: rgb(51, 14, 14);
+    --accent: #117865;
+
+	--keyword:  #2aa198;
+	--control:  var(--accent);
+	--type:     #4fc1ff;
+	--function: #00e4ab; /* #18c0b2; */
+	--constant: #ff6565;
+	--number:   var(--constant);
+	--string:   #ff6565; /*#0078d4;/* #4ec9b0; */
+	--ident:    #b0c4c1;
+	--comment:  #747474;
+    --other: var(--text-dark);
+}
+
 body.light-theme {
     --background:       #fdf6e3;
     --background-dark:  #eee8d5;
     --background-light: #424242;
-    --background-error: var(--background-dark);
+    --background-error: var(--breakpoint);
     --accent:           #2aa198;
 
     --indent: #cccccc;
+    --shadow: #c0c0c0;
 
     --breakpoint: #dc322f;
 
@@ -45,6 +69,9 @@ body.light-theme {
     --text-dark:       #93a1a1;
     --text:            #657b83;
     --text-bright:     #586e75;
+
+    --error-text: black;
+    --error-bold: red;
 
     --keyword:  #2aa198;
     --control:  #cb4b16;
@@ -161,6 +188,15 @@ header span.tab {
     color: var(--accent) !important;
 }
 
+.tab.current {
+    color:       var(--accent);
+    font-weight: bold;
+}
+
+.tab.current::after {
+    color: var(--accent) !important;
+}
+
 main {
     display: flex;
     max-width: 100%;
@@ -189,11 +225,7 @@ main {
 	border-radius: 5pt;
 
     background-color: var(--background-dark);
-	box-shadow: 0 0 10px black;
-}
-
-body.light-theme #step-buttons {
-	box-shadow: 0 0 5px #c0c0c0;
+	box-shadow: 0 0 10px var(--shadow);
 }
 
 button {
@@ -239,6 +271,8 @@ button:hover {
 
     shape-rendering: crispEdges;
     image-rendering: pixelated;
+
+    box-shadow: 2px 0 10px var(--shadow);
 }
 
 .code {
@@ -249,6 +283,8 @@ button:hover {
 
     flex-grow: 1;
     position:  relative;
+
+    background-color: var(--background);
 
     /* For Firefox */
     scrollbar-width: none;
@@ -331,11 +367,12 @@ body.light-theme .breakpoint {
 /* syntax highlighting */
 
 .keyword {
-    color: var(--keyword)
+    color: var(--keyword);
+    font-style: italic;
 }
 
 .control {
-    color: var(--control)
+    color: var(--control);
 }
 
 .type {
@@ -360,6 +397,10 @@ body.light-theme .breakpoint {
     font-style: italic;
 }
 
+.other {
+    color: var(--other);
+}
+
 .whitespace {
     color: var(--indent) !important;
 }
@@ -367,7 +408,7 @@ body.light-theme .breakpoint {
 .error-msg {
     position: relative;
     /* border-top:  1px solid red; */
-    border-left: 1px solid red;
+    border-left: 1px solid var(--error-text);
 
     padding-bottom: 5pt;
     margin:         10pt;
@@ -379,15 +420,15 @@ body.light-theme .breakpoint {
     position:      absolute;
     left:          0;
     bottom:        0;
-    border-bottom: 1px solid red;
+    border-bottom: 1px solid var(--error-text);
     width:         10px;
 }
 
 .error-msg b {
     display: inline-block;
 
-    background-color: red;
-    color:            black;
+    background-color: var(--error-text);
+    color:            var(--error-bold);
 
     padding-left:  10pt;
     padding-right: 10pt;
@@ -396,7 +437,7 @@ body.light-theme .breakpoint {
 }
 
 .error-msg p {
-    color:       red;
+    color:       var(--error-text);
     font-weight: bold;
     margin:      0;
     margin-left: 20pt;

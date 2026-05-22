@@ -125,18 +125,32 @@ const scan_while = (dir, cond) => {
         current_step = Math.max(0, current_step)
         current_step = Math.min(debug_trace.length - 1, current_step)
 
-        const [new_source_name, new_lineno, new_locals, new_depth] = debug_trace[current_step]; // WARN: load bearing semicolon
+        const [
+            new_source_name,
+            new_lineno,
+            new_locals,
+            new_depth,
+            new_output,
+            new_exception
+        ] = debug_trace[current_step]
 
-		// ...
+        // TODO: handle variable spans?
 
-        [source_name, lineno, locals, depth] = [new_source_name, new_lineno, new_locals, new_depth]
+        source_name = new_source_name
+        lineno      = new_lineno
+        locals      = new_locals
+        depth       = new_depth
+        output      = new_output
+        exception   = new_exception
     }
     while (current_step < debug_trace.length - 1
         && current_step > 0
         && !breakpoints.includes(`${source_name}:${lineno}`)
         && cond())
 
-    set_source(source_name, lineno)
+    current_position = {source: source_name, line: lineno}
+    set_source(source_name, locals, exception)
+    focus_line(lineno)
     render_refresh()
 }
 
