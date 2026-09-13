@@ -1,6 +1,6 @@
 // This is f#@%ing awsome: https://rss2json.com/
 
-const CNN   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Frss.cnn.com%2Frss%2Fcnn_allpolitics.rss";
+const CNN   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Fcnn.com%2Fservices%2Frss";
 const FOX   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Ffeeds.foxnews.com%2Ffoxnews%2Fpolitics";
 const ONION = "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ftheonion.com%2Fpolitics%2Frss";
 
