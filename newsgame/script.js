@@ -2,7 +2,7 @@
 
 const CNN   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Frss.cnn.com%2Frss%2Fcnn_allpolitics.rss";
 const FOX   = "https://api.rss2json.com/v1/api.json?rss_url=http%3A%2F%2Ffeeds.foxnews.com%2Ffoxnews%2Fpolitics";
-const ONION = "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fpolitics.theonion.com%2Frss";
+const ONION = "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ftheonion.com%2Fpolitics%2Frss";
 
 const TIMES_RE  = /title>(.*)</g; // For legacy NYT
 
